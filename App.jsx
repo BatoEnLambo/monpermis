@@ -165,6 +165,44 @@ function App() {
         {view === "uploads" && project && <Uploads uploads={uploads} addFiles={addFiles} removeFile={removeFile} />}
       </main>
 
+      <footer style={{ background: GRAY_900, color: GRAY_300, marginTop: 64 }}>
+        <div style={{ maxWidth: 720, margin: "0 auto", padding: "40px 20px 24px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", gap: 40, flexWrap: "wrap", marginBottom: 32 }}>
+            {/* Logo */}
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: ACCENT, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <span style={{ color: WHITE, fontWeight: 700, fontSize: 14 }}>MP</span>
+                </div>
+                <span style={{ fontWeight: 700, fontSize: 18, color: WHITE, letterSpacing: "-0.02em" }}>MonPermis</span>
+              </div>
+              <div style={{ fontSize: 13, color: GRAY_500, lineHeight: 1.6 }}>Plans et permis de construire,<br />clé en main.</div>
+            </div>
+            {/* Liens */}
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: WHITE, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 12 }}>Liens</div>
+              {["Accueil", "Tarifs", "FAQ", "Contact"].map(link => (
+                <div key={link} style={{ fontSize: 13, color: GRAY_500, padding: "4px 0", cursor: "pointer" }}
+                  onMouseOver={e => e.target.style.color = WHITE}
+                  onMouseOut={e => e.target.style.color = GRAY_500}>
+                  {link}
+                </div>
+              ))}
+            </div>
+            {/* Contact */}
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: WHITE, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 12 }}>Contact</div>
+              <div style={{ fontSize: 13, color: GRAY_500, padding: "4px 0" }}>contact@monpermis.fr</div>
+              <div style={{ fontSize: 13, color: GRAY_500, padding: "4px 0" }}>Vendée, France</div>
+            </div>
+          </div>
+          <div style={{ borderTop: `1px solid ${GRAY_700}`, paddingTop: 16, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+            <span style={{ fontSize: 12, color: GRAY_500 }}>© 2026 MonPermis — Tous droits réservés</span>
+            <span style={{ fontSize: 12, color: GRAY_500 }}>Mentions légales · CGV</span>
+          </div>
+        </div>
+      </footer>
+
       {project && (
         <ChatWidget open={chatOpen} onToggle={() => setChatOpen(!chatOpen)} messages={messages} onSend={sendMessage} />
       )}
