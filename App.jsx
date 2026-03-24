@@ -247,6 +247,14 @@ function PaymentPage({ form, onPay, onBack }) {
           </div>
         </div>
 
+        <div style={{ padding: "14px 28px", background: SUCCESS_BG, borderTop: `1px solid #c3e6cb`, borderBottom: `1px solid #c3e6cb`, display: "flex", alignItems: "flex-start", gap: 10 }}>
+          <span style={{ color: SUCCESS, fontSize: 16, marginTop: 1 }}>✓</span>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: SUCCESS }}>Garantie acceptation</div>
+            <div style={{ fontSize: 12, color: GRAY_700, lineHeight: 1.5, marginTop: 2 }}>Corrections illimitées si la mairie demande des modifications. Remboursé sous 14 jours si insatisfait.</div>
+          </div>
+        </div>
+
         <div style={{ padding: "24px 28px", background: GRAY_50 }}>
           {pricing.price ? (
             <>
