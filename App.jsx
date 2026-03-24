@@ -265,6 +265,50 @@ function Landing({ onStart }) {
           </div>
         </div>
       </div>
+
+      {/* TARIFS */}
+      <div style={{ marginTop: 56, paddingTop: 48, borderTop: `1px solid ${GRAY_200}`, textAlign: "center" }}>
+        <h2 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 10px", letterSpacing: "-0.02em", color: GRAY_900 }}>
+          Des prix clairs, sans surprise
+        </h2>
+        <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 32px" }}>
+          Bien moins cher qu'un architecte, avec la même qualité de dossier.
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, textAlign: "left" }}>
+          {[
+            { title: "Piscine / Garage", sub: "Déclaration préalable", price: "À partir de 390€", detail: "Dossier DP complet" },
+            { title: "Extension", sub: "Permis de construire", price: "À partir de 790€", detail: "Plans + dossier PC" },
+            { title: "Maison plain-pied", sub: "Permis de construire", price: "À partir de 990€", detail: "Plans + dossier PC", popular: true },
+            { title: "Maison R+1 / complexe", sub: "Permis de construire", price: "À partir de 1 190€", detail: "Plans + dossier PC" },
+          ].map((card, i) => (
+            <div key={i} style={{ background: WHITE, border: `1px solid ${card.popular ? ACCENT : GRAY_200}`, borderRadius: 12, padding: 22, position: "relative" }}>
+              {card.popular && (
+                <div style={{ position: "absolute", top: 12, right: 12, background: ACCENT_LIGHT, color: ACCENT, fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 6 }}>
+                  Populaire
+                </div>
+              )}
+              <div style={{ fontSize: 12, color: GRAY_500, marginBottom: 4 }}>{card.sub}</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: GRAY_900, marginBottom: 10 }}>{card.title}</div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: ACCENT, marginBottom: 6 }}>{card.price}</div>
+              <div style={{ fontSize: 13, color: GRAY_500 }}>{card.detail}</div>
+            </div>
+          ))}
+        </div>
+        <p style={{ fontSize: 13, color: GRAY_500, marginTop: 20 }}>
+          Un architecte facture entre 1 500€ et 4 000€ pour le même service.
+        </p>
+      </div>
+
+      {/* GARANTIE */}
+      <div style={{ marginTop: 48, background: ACCENT_LIGHT, border: `1px solid ${ACCENT}44`, borderRadius: 12, padding: "24px 28px", display: "flex", alignItems: "flex-start", gap: 16 }}>
+        <div style={{ fontSize: 28, minWidth: 36 }}>🛡️</div>
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: GRAY_900, marginBottom: 6 }}>Garantie acceptation</div>
+          <div style={{ fontSize: 14, color: GRAY_700, lineHeight: 1.6 }}>
+            Si la mairie demande des modifications ou des pièces complémentaires, on corrige et on redépose sans frais. Satisfait ou remboursé sous 14 jours.
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
