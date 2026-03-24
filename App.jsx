@@ -221,6 +221,50 @@ function Landing({ onStart }) {
           </button>
         </div>
       </div>
+
+      {/* UN VRAI DOSSIER */}
+      <div style={{ background: GRAY_100, borderRadius: 16, padding: "48px 24px", marginTop: 56, textAlign: "center" }}>
+        <h2 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 10px", letterSpacing: "-0.02em", color: GRAY_900 }}>
+          Un vrai dossier, accepté en mairie
+        </h2>
+        <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 28px" }}>
+          Voici un exemple réel de dossier que nous avons réalisé et qui a été accepté.
+        </p>
+        <div style={{ width: "100%", maxWidth: 600, height: 400, background: GRAY_300, borderRadius: 12, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center", color: GRAY_500, fontSize: 15, fontWeight: 500 }}>
+          Photo dossier accepté
+        </div>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: SUCCESS_BG, color: SUCCESS, fontSize: 13, fontWeight: 600, padding: "8px 16px", borderRadius: 20, marginTop: 20 }}>
+          <span>✓</span> Permis accordé — Vendée
+        </div>
+      </div>
+
+      {/* QUI SUIS-JE */}
+      <div style={{ marginTop: 56, paddingTop: 48, borderTop: `1px solid ${GRAY_200}` }}>
+        <div style={{ display: "flex", gap: 28, alignItems: "flex-start" }}>
+          <div style={{ width: 120, height: 120, minWidth: 120, borderRadius: "50%", background: GRAY_300, display: "flex", alignItems: "center", justifyContent: "center", color: GRAY_500, fontSize: 13, fontWeight: 500 }}>
+            Photo
+          </div>
+          <div style={{ flex: 1 }}>
+            <h2 style={{ fontSize: 22, fontWeight: 700, margin: "0 0 12px", letterSpacing: "-0.02em", color: GRAY_900 }}>
+              Baptiste, fondateur de MonPermis
+            </h2>
+            <p style={{ fontSize: 14, color: GRAY_700, lineHeight: 1.7, margin: "0 0 20px" }}>
+              Je construis ma propre maison en ossature bois en Vendée. J'ai fait mes plans moi-même sur SketchUp et obtenu mon permis de construire du premier coup. Je connais chaque pièce du dossier, chaque exigence de la mairie, chaque galère du parcours. J'ai créé MonPermis pour que vous n'ayez pas à vivre ça seul.
+            </p>
+            <div style={{ display: "flex", gap: 16 }}>
+              {[
+                "1 permis obtenu",
+                "Plans SketchUp maîtrisés",
+                "Basé en Vendée",
+              ].map((stat, i) => (
+                <div key={i} style={{ background: GRAY_50, border: `1px solid ${GRAY_200}`, borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 600, color: GRAY_700 }}>
+                  {stat}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
