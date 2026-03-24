@@ -508,14 +508,15 @@ function PaymentPage({ form, onPay, onBack }) {
               </button>
               <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
-              <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: 14 }}>
-                {["Visa", "Mastercard", "CB"].map(c => (
-                  <span key={c} style={{ fontSize: 11, color: GRAY_500, background: GRAY_100, padding: "2px 8px", borderRadius: 4 }}>{c}</span>
+              <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 16 }}>
+                {[
+                  "🔒 Paiement sécurisé Stripe",
+                  "✓ Satisfait ou remboursé 14j",
+                  "🛡️ Corrections illimitées",
+                ].map((item, i) => (
+                  <span key={i} style={{ fontSize: 11, color: GRAY_500 }}>{item}</span>
                 ))}
               </div>
-              <p style={{ fontSize: 11, color: GRAY_500, textAlign: "center", marginTop: 10, lineHeight: 1.5 }}>
-                Paiement sécurisé par Stripe. Satisfait ou remboursé sous 14 jours.
-              </p>
             </>
           ) : (
             <>
