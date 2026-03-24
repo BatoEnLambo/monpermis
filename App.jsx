@@ -132,7 +132,7 @@ function App() {
   };
 
   return (
-    <div style={{ fontFamily: FONT, background: GRAY_50, minHeight: "100vh", color: GRAY_900 }}>
+    <div style={{ fontFamily: FONT, background: WHITE, minHeight: "100vh", color: GRAY_900 }}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
       <nav style={{ background: WHITE, borderBottom: `1px solid ${GRAY_200}`, padding: "0 24px", display: "flex", alignItems: "center", height: 56, justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 }}>
@@ -194,7 +194,7 @@ function Landing({ onStart }) {
       </div>
 
       {/* COMMENT CA MARCHE */}
-      <div style={{ borderTop: `1px solid ${GRAY_200}`, paddingTop: 48 }}>
+      <div style={{ background: GRAY_100, borderRadius: 16, padding: "48px 24px", marginTop: 56 }}>
         <h2 style={{ fontSize: 24, fontWeight: 700, textAlign: "center", margin: "0 0 32px", letterSpacing: "-0.02em", color: GRAY_900 }}>
           Comment ça marche
         </h2>
@@ -311,7 +311,7 @@ function Landing({ onStart }) {
       </div>
 
       {/* FAQ */}
-      <div style={{ marginTop: 56, paddingTop: 48, borderTop: `1px solid ${GRAY_200}`, textAlign: "center" }}>
+      <div style={{ marginTop: 56, background: GRAY_100, borderRadius: 16, padding: "48px 24px", textAlign: "center" }}>
         <h2 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 32px", letterSpacing: "-0.02em", color: GRAY_900 }}>
           Questions fréquentes
         </h2>
