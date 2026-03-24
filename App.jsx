@@ -57,12 +57,39 @@ function App() {
   const [project, setProject] = useState(null);
   const [uploads, setUploads] = useState({});
   const [formStep, setFormStep] = useState(0);
+  const [messages, setMessages] = useState([]);
+  const [chatOpen, setChatOpen] = useState(false);
   const [form, setForm] = useState({
     firstName: "", lastName: "", email: "", phone: "",
-    projectType: "", address: "", city: "", postalCode: "",
+    projectType: "", address: "", city: "Paris", postalCode: "75000",
     surface: "", floors: "1", rooms: "3", roofType: "", style: "",
     description: "", deadline: "", budget: "",
   });
+
+  // Persist uploads and messages to localStorage for admin access
+  useEffect(() => {
+    const saved = localStorage.getItem("monpermis_uploads");
+    if (saved) setUploads(JSON.parse(saved));
+    const savedMessages = localStorage.getItem("monpermis_messages");
+    if (savedMessages) setMessages(JSON.parse(savedMessages));
+  }, []);
+
+  useEffect(() => {
+    if (Object.keys(uploads).length > 0) {
+      localStorage.setItem("monpermis_uploads", JSON.stringify(uploads));
+    }
+  }, [uploads]);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem("monpermis_messages", JSON.stringify(messages));
+    }
+  }, [messages]);
+
+  const sendMessage = (text) => {
+    const msg = { id: Date.now(), text, sender: "client", timestamp: new Date().toISOString() };
+    setMessages(prev => [...prev, msg]);
+  };
 
   const updateForm = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
 
@@ -79,13 +106,28 @@ function App() {
       status: "active",
     };
     setProject(newProject);
+    localStorage.setItem("monpermis_project", JSON.stringify(newProject));
+    setChatOpen(true);
     setView("dashboard");
   };
 
   const addFiles = (categoryId, files) => {
+    const newFiles = Array.from(files).map(f => {
+      // Convert file to base64 for localStorage persistence
+      const reader = new FileReader();
+      reader.readAsDataURL(f);
+      const fileData = { name: f.name, size: f.size, type: f.type, addedAt: new Date().toISOString() };
+      reader.onload = () => {
+        const stored = JSON.parse(localStorage.getItem("monpermis_files_data") || "{}");
+        if (!stored[categoryId]) stored[categoryId] = [];
+        stored[categoryId].push({ ...fileData, data: reader.result });
+        localStorage.setItem("monpermis_files_data", JSON.stringify(stored));
+      };
+      return fileData;
+    });
     setUploads(prev => ({
       ...prev,
-      [categoryId]: [...(prev[categoryId] || []), ...Array.from(files).map(f => ({ name: f.name, size: f.size, type: f.type, addedAt: new Date().toISOString() }))],
+      [categoryId]: [...(prev[categoryId] || []), ...newFiles],
     }));
   };
 
@@ -129,6 +171,10 @@ function App() {
         {view === "dashboard" && project && <Dashboard project={project} uploads={uploads} onGoUploads={() => setView("uploads")} />}
         {view === "uploads" && project && <Uploads uploads={uploads} addFiles={addFiles} removeFile={removeFile} />}
       </main>
+
+      {project && (
+        <ChatWidget open={chatOpen} onToggle={() => setChatOpen(!chatOpen)} messages={messages} onSend={sendMessage} />
+      )}
     </div>
   );
 }
@@ -211,15 +257,9 @@ function PaymentPage({ form, onPay, onBack }) {
         <div style={{ padding: "24px 28px", background: GRAY_50 }}>
           {pricing.price ? (
             <>
-              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 20 }}>
-                <div>
-                  <span style={{ fontSize: 36, fontWeight: 700, color: GRAY_900, letterSpacing: "-0.03em" }}>{pricing.price} €</span>
-                  <span style={{ fontSize: 14, color: GRAY_500, marginLeft: 4 }}>TTC</span>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ fontSize: 12, color: GRAY_500, textDecoration: "line-through" }}>{Math.round(pricing.price * 1.4)} €</div>
-                  <div style={{ fontSize: 12, color: ACCENT, fontWeight: 600 }}>-30% lancement</div>
-                </div>
+              <div style={{ marginBottom: 20 }}>
+                <span style={{ fontSize: 36, fontWeight: 700, color: GRAY_900, letterSpacing: "-0.03em" }}>{pricing.price} €</span>
+                <span style={{ fontSize: 14, color: GRAY_500, marginLeft: 4 }}>TTC</span>
               </div>
 
               <button onClick={handlePay} disabled={processing}
@@ -273,9 +313,13 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
   const steps = ["Vous", "Votre projet", "Détails", "Récapitulatif"];
 
   const canNext = () => {
-    if (step === 0) return form.firstName && form.lastName && form.email;
+    if (step === 0) {
+      if (!form.email || !form.email.includes("@")) return false;
+      if (form.phone && form.phone.replace(/\s/g, "").length !== 10) return false;
+      return true;
+    }
     if (step === 1) return form.projectType && form.address && form.city && form.postalCode;
-    if (step === 2) return form.surface;
+    if (step === 2) return form.surface && Number(form.surface) <= 150;
     return true;
   };
 
@@ -315,8 +359,8 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
               <Input label="Adresse du terrain" value={form.address} onChange={v => updateForm("address", v)} placeholder="12 rue des Lilas" />
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 14, marginTop: 14 }}>
-              <Input label="Ville" value={form.city} onChange={v => updateForm("city", v)} placeholder="Talmont-Saint-Hilaire" />
-              <Input label="Code postal" value={form.postalCode} onChange={v => updateForm("postalCode", v)} placeholder="85440" />
+              <Input label="Ville" value={form.city} onChange={v => updateForm("city", v)} placeholder="Paris" />
+              <Input label="Code postal" value={form.postalCode} onChange={v => updateForm("postalCode", v)} placeholder="75000" />
             </div>
           </div>
         )}
@@ -326,7 +370,10 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
             <h2 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Détails du projet</h2>
             <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Plus on en sait, plus on avance vite</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
-              <Input label="Surface (m²)" value={form.surface} onChange={v => updateForm("surface", v)} placeholder="120" type="number" />
+              <Input label="Surface (m²)" value={form.surface} onChange={v => { if (v === "" || Number(v) <= 150) updateForm("surface", v); }} placeholder="120" type="number" max={150} />
+              {form.surface && Number(form.surface) > 150 && (
+                <div style={{ gridColumn: "1 / -1", fontSize: 12, color: "#c0392b", marginTop: -8 }}>Surface maximale : 150 m²</div>
+              )}
               <SelectInput label="Niveaux" options={["1 (plain-pied)", "2 (R+1)", "3 (R+2)"]} value={form.floors} onChange={v => updateForm("floors", v)} />
               <Input label="Chambres" value={form.rooms} onChange={v => updateForm("rooms", v)} placeholder="3" type="number" />
             </div>
@@ -601,11 +648,11 @@ function UploadZone({ category, files, onAdd, onRemove }) {
   );
 }
 
-function Input({ label, value, onChange, placeholder, type = "text" }) {
+function Input({ label, value, onChange, placeholder, type = "text", max }) {
   return (
     <div>
       <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>{label}</label>
-      <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
+      <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} max={max}
         style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 14, boxSizing: "border-box", outline: "none", transition: "border 0.15s", background: WHITE }}
         onFocus={e => e.target.style.borderColor = ACCENT}
         onBlur={e => e.target.style.borderColor = GRAY_300} />
@@ -625,6 +672,120 @@ function SelectInput({ label, options, value, onChange }) {
         {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
       </select>
     </div>
+  );
+}
+
+function ChatWidget({ open, onToggle, messages, onSend }) {
+  const [text, setText] = useState("");
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    if (open && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, open]);
+
+  const handleSend = () => {
+    if (!text.trim()) return;
+    onSend(text.trim());
+    setText("");
+  };
+
+  const handleKey = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  return (
+    <>
+      {/* Toggle button */}
+      <button onClick={onToggle}
+        style={{
+          position: "fixed", bottom: 24, right: 24, width: 56, height: 56,
+          borderRadius: "50%", border: "none", background: ACCENT, color: WHITE,
+          fontSize: 24, cursor: "pointer", boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          zIndex: 100, transition: "transform 0.2s",
+        }}
+        onMouseOver={e => e.currentTarget.style.transform = "scale(1.08)"}
+        onMouseOut={e => e.currentTarget.style.transform = "scale(1)"}>
+        {open ? "✕" : "💬"}
+      </button>
+
+      {/* Chat panel */}
+      {open && (
+        <div style={{
+          position: "fixed", bottom: 92, right: 24, width: 360, maxHeight: 480,
+          background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 16,
+          boxShadow: "0 8px 30px rgba(0,0,0,0.12)", zIndex: 100,
+          display: "flex", flexDirection: "column", overflow: "hidden",
+        }}>
+          {/* Header */}
+          <div style={{ padding: "16px 20px", borderBottom: `1px solid ${GRAY_100}`, background: ACCENT, color: WHITE }}>
+            <div style={{ fontWeight: 700, fontSize: 15 }}>MonPermis — Support</div>
+            <div style={{ fontSize: 12, opacity: 0.8 }}>Posez vos questions ici</div>
+          </div>
+
+          {/* Messages */}
+          <div style={{ flex: 1, overflowY: "auto", padding: "16px 16px 8px", maxHeight: 320, minHeight: 200 }}>
+            {messages.length === 0 && (
+              <div style={{ textAlign: "center", color: GRAY_500, fontSize: 13, padding: "40px 20px" }}>
+                Bienvenue ! Posez vos questions concernant votre projet, nous vous répondrons rapidement.
+              </div>
+            )}
+            {messages.map(msg => (
+              <div key={msg.id} style={{
+                display: "flex",
+                justifyContent: msg.sender === "client" ? "flex-end" : "flex-start",
+                marginBottom: 10,
+              }}>
+                <div style={{
+                  maxWidth: "80%", padding: "10px 14px", borderRadius: 12,
+                  background: msg.sender === "client" ? ACCENT : GRAY_100,
+                  color: msg.sender === "client" ? WHITE : GRAY_900,
+                  fontSize: 13, lineHeight: 1.5,
+                  borderBottomRightRadius: msg.sender === "client" ? 4 : 12,
+                  borderBottomLeftRadius: msg.sender === "admin" ? 4 : 12,
+                }}>
+                  {msg.text}
+                  <div style={{ fontSize: 10, opacity: 0.6, marginTop: 4, textAlign: "right" }}>
+                    {new Date(msg.timestamp).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input */}
+          <div style={{ padding: "12px 16px", borderTop: `1px solid ${GRAY_100}`, display: "flex", gap: 8 }}>
+            <input
+              value={text}
+              onChange={e => setText(e.target.value)}
+              onKeyDown={handleKey}
+              placeholder="Votre message..."
+              style={{
+                flex: 1, padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`,
+                fontFamily: FONT, fontSize: 13, outline: "none", background: WHITE,
+              }}
+              onFocus={e => e.target.style.borderColor = ACCENT}
+              onBlur={e => e.target.style.borderColor = GRAY_300}
+            />
+            <button onClick={handleSend}
+              style={{
+                padding: "10px 14px", borderRadius: 8, border: "none",
+                background: text.trim() ? ACCENT : GRAY_300, color: WHITE,
+                fontSize: 14, cursor: text.trim() ? "pointer" : "default",
+                fontFamily: FONT, fontWeight: 600, transition: "background 0.15s",
+              }}>
+              ↑
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
