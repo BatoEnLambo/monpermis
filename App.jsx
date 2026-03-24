@@ -43,14 +43,7 @@ const PRICING = {
   "Autre": { price: null, label: "Projet sur mesure", delay: "Sur devis", includes: ["Analyse personnalisée de votre projet", "Devis sous 24h"] },
 };
 
-const UPLOAD_CATEGORIES = [
-  { id: "photos_terrain", label: "Photos du terrain", desc: "Vue de face, arrière, côtés, environnement", icon: "📸", required: true },
-  { id: "photos_env", label: "Photos environnement", desc: "Vue de la rue, voisinage proche et lointain", icon: "🏘️", required: true },
-  { id: "croquis", label: "Croquis / esquisses", desc: "Vos idées, même sur papier", icon: "✏️", required: false },
-  { id: "cadastre", label: "Plan cadastral", desc: "Si vous l'avez déjà", icon: "🗺️", required: false },
-  { id: "plu", label: "Extrait PLU", desc: "Règlement de votre zone", icon: "📋", required: false },
-  { id: "autres", label: "Autres documents", desc: "Tout document utile au projet", icon: "📎", required: false },
-];
+const UPLOAD_KEY = "documents";
 
 function App() {
   const [view, setView] = useState("landing");
@@ -468,8 +461,7 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
 }
 
 function Dashboard({ project, uploads, onGoUploads }) {
-  const totalFiles = Object.values(uploads).reduce((sum, arr) => sum + arr.length, 0);
-  const requiredDone = UPLOAD_CATEGORIES.filter(c => c.required).every(c => uploads[c.id]?.length > 0);
+  const totalFiles = (uploads[UPLOAD_KEY] || []).length;
 
   return (
     <div>
@@ -531,20 +523,14 @@ function Dashboard({ project, uploads, onGoUploads }) {
           <div style={{ fontSize: 12, color: GRAY_500, marginBottom: 4 }}>Documents uploadés</div>
           <div style={{ fontSize: 24, fontWeight: 700, color: GRAY_900 }}>{totalFiles}</div>
         </div>
-        <div style={{ background: requiredDone ? SUCCESS_BG : WARN_BG, border: `1px solid ${requiredDone ? "#c3e6cb" : "#fce4c0"}`, borderRadius: 12, padding: 18 }}>
-          <div style={{ fontSize: 12, color: requiredDone ? SUCCESS : WARN, marginBottom: 4 }}>Photos obligatoires</div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: requiredDone ? SUCCESS : WARN }}>
-            {requiredDone ? "✓ Complètes" : "⚠ En attente"}
-          </div>
-        </div>
-      </div>
-
-      {!requiredDone && (
         <button onClick={onGoUploads}
-          style={{ width: "100%", padding: "14px", borderRadius: 10, border: `2px dashed ${ACCENT}`, background: ACCENT_LIGHT, color: ACCENT, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: FONT }}>
-          📸 Ajouter vos photos pour démarrer →
+          style={{ background: totalFiles > 0 ? SUCCESS_BG : WARN_BG, border: `1px solid ${totalFiles > 0 ? "#c3e6cb" : "#fce4c0"}`, borderRadius: 12, padding: 18, cursor: "pointer", textAlign: "left", fontFamily: FONT }}>
+          <div style={{ fontSize: 12, color: totalFiles > 0 ? SUCCESS : WARN, marginBottom: 4 }}>Documents</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: totalFiles > 0 ? SUCCESS : WARN }}>
+            {totalFiles > 0 ? "Ajouter d'autres documents" : "Ajouter vos documents →"}
+          </div>
         </button>
-      )}
+      </div>
 
       <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginTop: 20 }}>
         <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 16px", color: GRAY_900 }}>Récapitulatif du projet</h3>
@@ -575,29 +561,14 @@ function Dashboard({ project, uploads, onGoUploads }) {
 }
 
 function Uploads({ uploads, addFiles, removeFile }) {
-  return (
-    <div>
-      <h1 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 6px", letterSpacing: "-0.02em" }}>Documents</h1>
-      <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 28px" }}>Uploadez vos photos et documents pour qu'on puisse avancer sur votre dossier</p>
-
-      <div style={{ display: "grid", gap: 14 }}>
-        {UPLOAD_CATEGORIES.map(cat => (
-          <UploadZone key={cat.id} category={cat} files={uploads[cat.id] || []}
-            onAdd={files => addFiles(cat.id, files)} onRemove={idx => removeFile(cat.id, idx)} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function UploadZone({ category, files, onAdd, onRemove }) {
   const inputRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
+  const files = uploads[UPLOAD_KEY] || [];
 
   const handleDrop = (e) => {
     e.preventDefault();
     setDragOver(false);
-    if (e.dataTransfer.files.length) onAdd(e.dataTransfer.files);
+    if (e.dataTransfer.files.length) addFiles(UPLOAD_KEY, e.dataTransfer.files);
   };
 
   const formatSize = (bytes) => {
@@ -607,62 +578,69 @@ function UploadZone({ category, files, onAdd, onRemove }) {
   };
 
   return (
-    <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 12, overflow: "hidden" }}>
-      <div style={{ padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: files.length ? `1px solid ${GRAY_100}` : "none" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 20 }}>{category.icon}</span>
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: GRAY_900 }}>
-              {category.label}
-              {category.required && <span style={{ color: ACCENT, marginLeft: 4, fontSize: 11 }}>obligatoire</span>}
-            </div>
-            <div style={{ fontSize: 12, color: GRAY_500 }}>{category.desc}</div>
+    <div>
+      <h1 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 6px", letterSpacing: "-0.02em" }}>Vos documents</h1>
+      <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 28px", lineHeight: 1.5 }}>
+        Déposez ici toutes vos photos et documents : terrain, environnement, croquis, cadastre... On s'occupe du tri.
+      </p>
+
+      <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, overflow: "hidden" }}>
+        {/* Drop zone */}
+        <div
+          onClick={() => inputRef.current?.click()}
+          onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={handleDrop}
+          style={{
+            padding: "40px 24px", textAlign: "center", cursor: "pointer",
+            border: `2px dashed ${dragOver ? ACCENT : GRAY_300}`,
+            background: dragOver ? ACCENT_LIGHT : GRAY_50,
+            margin: 16, borderRadius: 12, transition: "all 0.15s",
+          }}>
+          <div style={{ fontSize: 36, marginBottom: 12 }}>📎</div>
+          <div style={{ fontSize: 15, fontWeight: 600, color: GRAY_900, marginBottom: 4 }}>
+            <span style={{ color: ACCENT }}>Cliquez</span> ou glissez-déposez vos fichiers
           </div>
+          <div style={{ fontSize: 13, color: GRAY_500 }}>Photos, plans, croquis, PDF...</div>
+          <input ref={inputRef} type="file" multiple style={{ display: "none" }}
+            onChange={e => { addFiles(UPLOAD_KEY, e.target.files); e.target.value = ""; }} />
         </div>
+
+        {/* File counter */}
         {files.length > 0 && (
-          <span style={{ background: ACCENT_LIGHT, color: ACCENT, fontSize: 12, fontWeight: 600, padding: "2px 10px", borderRadius: 10 }}>
-            {files.length} fichier{files.length > 1 ? "s" : ""}
-          </span>
+          <div style={{ padding: "12px 20px", borderTop: `1px solid ${GRAY_100}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: GRAY_900 }}>Fichiers ajoutés</span>
+            <span style={{ background: ACCENT_LIGHT, color: ACCENT, fontSize: 12, fontWeight: 600, padding: "2px 10px", borderRadius: 10 }}>
+              {files.length} fichier{files.length > 1 ? "s" : ""}
+            </span>
+          </div>
+        )}
+
+        {/* File list */}
+        {files.length > 0 && (
+          <div style={{ padding: "4px 20px 12px" }}>
+            {files.map((f, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 0", borderBottom: i < files.length - 1 ? `1px solid ${GRAY_100}` : "none" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: 11, color: GRAY_500 }}>📄</span>
+                  <span style={{ fontSize: 13, color: GRAY_700 }}>{f.name}</span>
+                  <span style={{ fontSize: 11, color: GRAY_500 }}>{formatSize(f.size)}</span>
+                </div>
+                <button onClick={() => removeFile(UPLOAD_KEY, i)}
+                  style={{ background: "none", border: "none", color: GRAY_500, cursor: "pointer", fontSize: 16, padding: "2px 6px", borderRadius: 4 }}
+                  onMouseOver={e => e.target.style.color = "#c0392b"}
+                  onMouseOut={e => e.target.style.color = GRAY_500}>
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 
-      {files.length > 0 && (
-        <div style={{ padding: "8px 18px" }}>
-          {files.map((f, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 0", borderBottom: i < files.length - 1 ? `1px solid ${GRAY_100}` : "none" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 11, color: GRAY_500 }}>📄</span>
-                <span style={{ fontSize: 13, color: GRAY_700 }}>{f.name}</span>
-                <span style={{ fontSize: 11, color: GRAY_500 }}>{formatSize(f.size)}</span>
-              </div>
-              <button onClick={() => onRemove(i)}
-                style={{ background: "none", border: "none", color: GRAY_500, cursor: "pointer", fontSize: 16, padding: "2px 6px", borderRadius: 4 }}
-                onMouseOver={e => e.target.style.color = "#c0392b"}
-                onMouseOut={e => e.target.style.color = GRAY_500}>
-                ×
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div
-        onClick={() => inputRef.current?.click()}
-        onDragOver={e => { e.preventDefault(); setDragOver(true); }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={handleDrop}
-        style={{
-          margin: "8px 12px 12px", padding: "16px", borderRadius: 8,
-          border: `2px dashed ${dragOver ? ACCENT : GRAY_300}`,
-          background: dragOver ? ACCENT_LIGHT : GRAY_50,
-          textAlign: "center", cursor: "pointer", transition: "all 0.15s",
-        }}>
-        <div style={{ fontSize: 13, color: GRAY_500 }}>
-          <span style={{ color: ACCENT, fontWeight: 600 }}>Cliquez</span> ou glissez-déposez vos fichiers
-        </div>
-        <input ref={inputRef} type="file" multiple style={{ display: "none" }}
-          onChange={e => { onAdd(e.target.files); e.target.value = ""; }} />
-      </div>
+      <p style={{ fontSize: 13, color: GRAY_500, textAlign: "center", marginTop: 16, lineHeight: 1.5 }}>
+        Pas de panique si vous n'avez pas tout — on vous dira ce qui manque via la messagerie.
+      </p>
     </div>
   );
 }
