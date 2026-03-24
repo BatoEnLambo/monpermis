@@ -310,18 +310,20 @@ function PaymentPage({ form, onPay, onBack }) {
 }
 
 function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
-  const steps = ["Vous", "Votre projet", "Détails", "Récapitulatif"];
+  const steps = ["Votre projet", "Détails", "Vous", "Récapitulatif"];
 
   const canNext = () => {
-    if (step === 0) {
+    if (step === 0) return form.projectType && form.address && form.city && form.postalCode;
+    if (step === 1) return form.surface && Number(form.surface) <= 150;
+    if (step === 2) {
       if (!form.email || !form.email.includes("@")) return false;
       if (form.phone && form.phone.replace(/\s/g, "").length !== 10) return false;
       return true;
     }
-    if (step === 1) return form.projectType && form.address && form.city && form.postalCode;
-    if (step === 2) return form.surface && Number(form.surface) <= 150;
     return true;
   };
+
+  const pricing = PRICING[form.projectType] || null;
 
   return (
     <div>
@@ -337,21 +339,6 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
       <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 28 }}>
         {step === 0 && (
           <div>
-            <h2 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Vos coordonnées</h2>
-            <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Pour vous recontacter sur votre projet</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-              <Input label="Prénom" value={form.firstName} onChange={v => updateForm("firstName", v)} placeholder="Jean" />
-              <Input label="Nom" value={form.lastName} onChange={v => updateForm("lastName", v)} placeholder="Dupont" />
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginTop: 14 }}>
-              <Input label="Email" value={form.email} onChange={v => updateForm("email", v)} placeholder="jean@exemple.fr" type="email" />
-              <Input label="Téléphone" value={form.phone} onChange={v => updateForm("phone", v)} placeholder="06 12 34 56 78" />
-            </div>
-          </div>
-        )}
-
-        {step === 1 && (
-          <div>
             <h2 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Votre projet</h2>
             <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Décrivez-nous ce que vous souhaitez réaliser</p>
             <SelectInput label="Type de projet" options={PROJECT_TYPES} value={form.projectType} onChange={v => updateForm("projectType", v)} />
@@ -365,7 +352,7 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
           </div>
         )}
 
-        {step === 2 && (
+        {step === 1 && (
           <div>
             <h2 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Détails du projet</h2>
             <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Plus on en sait, plus on avance vite</p>
@@ -392,20 +379,35 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
           </div>
         )}
 
+        {step === 2 && (
+          <div>
+            <h2 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Vos coordonnées</h2>
+            <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Pour vous recontacter sur votre projet</p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              <Input label="Prénom" value={form.firstName} onChange={v => updateForm("firstName", v)} placeholder="Jean" />
+              <Input label="Nom" value={form.lastName} onChange={v => updateForm("lastName", v)} placeholder="Dupont" />
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginTop: 14 }}>
+              <Input label="Email" value={form.email} onChange={v => updateForm("email", v)} placeholder="jean@exemple.fr" type="email" />
+              <Input label="Téléphone" value={form.phone} onChange={v => updateForm("phone", v)} placeholder="06 12 34 56 78" />
+            </div>
+          </div>
+        )}
+
         {step === 3 && (
           <div>
             <h2 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Récapitulatif</h2>
             <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Vérifiez vos informations avant de valider</p>
             <div style={{ display: "grid", gap: 12 }}>
               {[
-                ["Nom", `${form.firstName} ${form.lastName}`],
-                ["Contact", `${form.email}${form.phone ? ` · ${form.phone}` : ""}`],
                 ["Projet", form.projectType],
                 ["Adresse", `${form.address}, ${form.postalCode} ${form.city}`],
                 ["Surface", `${form.surface} m²`],
                 ["Configuration", `${form.floors} niveau(x) · ${form.rooms} chambres`],
                 ["Toiture", form.roofType || "Non spécifié"],
                 ["Style", form.style || "Non spécifié"],
+                ["Nom", `${form.firstName} ${form.lastName}`.trim() || "Non renseigné"],
+                ["Contact", `${form.email}${form.phone ? ` · ${form.phone}` : ""}`],
               ].map(([label, value], i) => (
                 <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < 7 ? `1px solid ${GRAY_100}` : "none" }}>
                   <span style={{ fontSize: 13, color: GRAY_500 }}>{label}</span>
@@ -419,6 +421,23 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
                 </div>
               )}
             </div>
+
+            {/* Prix estimé */}
+            {pricing && (
+              <div style={{ marginTop: 20, padding: 16, background: ACCENT_LIGHT, borderRadius: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: ACCENT }}>{pricing.label}</div>
+                  <div style={{ fontSize: 12, color: GRAY_500, marginTop: 2 }}>Livraison en {pricing.delay}</div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  {pricing.price ? (
+                    <span style={{ fontSize: 24, fontWeight: 700, color: ACCENT }}>{pricing.price} €<span style={{ fontSize: 12, fontWeight: 400, color: GRAY_500, marginLeft: 2 }}>TTC</span></span>
+                  ) : (
+                    <span style={{ fontSize: 14, fontWeight: 600, color: ACCENT }}>Sur devis</span>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
