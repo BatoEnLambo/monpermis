@@ -180,10 +180,10 @@ function Landing({ onStart }) {
         <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: ACCENT_LIGHT, color: ACCENT, fontSize: 13, fontWeight: 600, padding: "6px 14px", borderRadius: 20, marginBottom: 24 }}>
           <span>⚡</span> Dossier livré en 5 jours
         </div>
-        <h1 style={{ fontSize: 38, fontWeight: 700, lineHeight: 1.2, margin: "0 0 20px", letterSpacing: "-0.03em", color: GRAY_900, maxWidth: 600, marginLeft: "auto", marginRight: "auto" }}>
+        <h1 style={{ fontSize: 40, fontWeight: 800, lineHeight: 1.2, margin: "0 0 20px", letterSpacing: "-0.03em", color: GRAY_900, maxWidth: 600, marginLeft: "auto", marginRight: "auto" }}>
           Plans de maison et permis de construire, on s'occupe de tout.
         </h1>
-        <p style={{ fontSize: 16, color: GRAY_500, lineHeight: 1.7, maxWidth: 540, margin: "0 auto 32px" }}>
+        <p style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, lineHeight: 1.7, maxWidth: 540, margin: "0 auto 32px" }}>
           Arrêtez de galérer avec les plans, le PLU et le CERFA. Décrivez votre projet, on produit le dossier complet prêt à déposer en mairie. En 5 jours, à partir de 390€.
         </p>
         <button onClick={onStart} style={{ background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
@@ -195,7 +195,7 @@ function Landing({ onStart }) {
 
       {/* COMMENT CA MARCHE */}
       <div style={{ background: GRAY_100, borderRadius: 16, padding: "48px 24px", marginTop: 56 }}>
-        <h2 style={{ fontSize: 24, fontWeight: 700, textAlign: "center", margin: "0 0 32px", letterSpacing: "-0.02em", color: GRAY_900 }}>
+        <h2 style={{ fontSize: 28, fontWeight: 700, textAlign: "center", margin: "0 0 32px", letterSpacing: "-0.02em", color: GRAY_900 }}>
           Comment ça marche
         </h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, textAlign: "left" }}>
@@ -224,10 +224,10 @@ function Landing({ onStart }) {
 
       {/* UN VRAI DOSSIER */}
       <div style={{ background: GRAY_100, borderRadius: 16, padding: "48px 24px", marginTop: 56, textAlign: "center" }}>
-        <h2 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 10px", letterSpacing: "-0.02em", color: GRAY_900 }}>
+        <h2 style={{ fontSize: 28, fontWeight: 700, margin: "0 0 10px", letterSpacing: "-0.02em", color: GRAY_900 }}>
           Un vrai dossier, accepté en mairie
         </h2>
-        <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 28px" }}>
+        <p style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, margin: "0 0 28px" }}>
           Voici un exemple réel de dossier que nous avons réalisé et qui a été accepté.
         </p>
         <div style={{ width: "100%", maxWidth: 600, height: 400, background: GRAY_300, borderRadius: 12, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center", color: GRAY_500, fontSize: 15, fontWeight: 500 }}>
@@ -245,7 +245,7 @@ function Landing({ onStart }) {
             Photo
           </div>
           <div style={{ flex: 1 }}>
-            <h2 style={{ fontSize: 22, fontWeight: 700, margin: "0 0 12px", letterSpacing: "-0.02em", color: GRAY_900 }}>
+            <h2 style={{ fontSize: 28, fontWeight: 700, margin: "0 0 12px", letterSpacing: "-0.02em", color: GRAY_900 }}>
               Baptiste, fondateur de MonPermis
             </h2>
             <p style={{ fontSize: 14, color: GRAY_700, lineHeight: 1.7, margin: "0 0 20px" }}>
@@ -268,10 +268,10 @@ function Landing({ onStart }) {
 
       {/* TARIFS */}
       <div style={{ marginTop: 56, paddingTop: 48, borderTop: `1px solid ${GRAY_200}`, textAlign: "center" }}>
-        <h2 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 10px", letterSpacing: "-0.02em", color: GRAY_900 }}>
+        <h2 style={{ fontSize: 28, fontWeight: 700, margin: "0 0 10px", letterSpacing: "-0.02em", color: GRAY_900 }}>
           Des prix clairs, sans surprise
         </h2>
-        <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 32px" }}>
+        <p style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, margin: "0 0 32px" }}>
           Bien moins cher qu'un architecte, avec la même qualité de dossier.
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, textAlign: "left" }}>
@@ -320,10 +320,10 @@ function Landing({ onStart }) {
 
       {/* CTA FINAL */}
       <div style={{ marginTop: 56, background: GRAY_100, borderRadius: 16, padding: "48px 24px", textAlign: "center" }}>
-        <h2 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 10px", letterSpacing: "-0.02em", color: GRAY_900 }}>
+        <h2 style={{ fontSize: 28, fontWeight: 700, margin: "0 0 10px", letterSpacing: "-0.02em", color: GRAY_900 }}>
           Prêt à obtenir votre permis ?
         </h2>
-        <p style={{ fontSize: 15, color: GRAY_500, margin: "0 0 28px" }}>
+        <p style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, margin: "0 0 28px" }}>
           Décrivez votre projet en 5 minutes. On s'occupe du reste.
         </p>
         <button onClick={onStart} style={{ background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
