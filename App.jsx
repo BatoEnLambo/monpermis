@@ -309,6 +309,85 @@ function Landing({ onStart }) {
           </div>
         </div>
       </div>
+
+      {/* FAQ */}
+      <div style={{ marginTop: 56, paddingTop: 48, borderTop: `1px solid ${GRAY_200}`, textAlign: "center" }}>
+        <h2 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 32px", letterSpacing: "-0.02em", color: GRAY_900 }}>
+          Questions fréquentes
+        </h2>
+        <FAQ />
+      </div>
+
+      {/* CTA FINAL */}
+      <div style={{ marginTop: 56, background: GRAY_100, borderRadius: 16, padding: "48px 24px", textAlign: "center" }}>
+        <h2 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 10px", letterSpacing: "-0.02em", color: GRAY_900 }}>
+          Prêt à obtenir votre permis ?
+        </h2>
+        <p style={{ fontSize: 15, color: GRAY_500, margin: "0 0 28px" }}>
+          Décrivez votre projet en 5 minutes. On s'occupe du reste.
+        </p>
+        <button onClick={onStart} style={{ background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
+          onMouseOver={e => e.target.style.background = ACCENT_HOVER}
+          onMouseOut={e => e.target.style.background = ACCENT}>
+          Démarrer mon projet →
+        </button>
+        <p style={{ fontSize: 12, color: GRAY_500, marginTop: 14 }}>
+          Pas d'engagement — vous ne payez qu'après avoir vu votre offre personnalisée.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function FAQ() {
+  const [openIndex, setOpenIndex] = useState(null);
+  const items = [
+    {
+      q: "Est-ce légal de ne pas passer par un architecte ?",
+      a: "Oui. Pour toute construction de moins de 150 m² de surface de plancher, le recours à un architecte n'est pas obligatoire (article R.431-2 du Code de l'urbanisme). Vous pouvez faire appel à un dessinateur ou réaliser vos plans vous-même.",
+    },
+    {
+      q: "Que se passe-t-il si la mairie refuse mon dossier ?",
+      a: "C'est inclus. On analyse le motif de refus, on corrige le dossier et vous redéposez. Sans frais supplémentaires, jusqu'à acceptation.",
+    },
+    {
+      q: "Combien de temps pour recevoir mon dossier ?",
+      a: "En moyenne 5 jours ouvrés après réception de vos informations et photos. Les déclarations préalables simples peuvent être encore plus rapides.",
+    },
+    {
+      q: "Qu'est-ce qui est inclus exactement ?",
+      a: "Tout le dossier : plan de situation (PCMI1), plan de masse coté (PCMI2), plan en coupe (PCMI3), notice descriptive (PCMI4), plans de façades (PCMI5), insertion paysagère (PCMI6), photos (PCMI7/8), CERFA rempli, et le dossier assemblé en PDF prêt à déposer.",
+    },
+    {
+      q: "Qui réalise les plans ?",
+      a: "Les plans sont réalisés sur SketchUp par notre équipe. Chaque dossier est vérifié pour sa conformité au PLU de votre commune avant envoi.",
+    },
+  ];
+
+  return (
+    <div style={{ textAlign: "left" }}>
+      {items.map((item, i) => {
+        const isOpen = openIndex === i;
+        return (
+          <div key={i} style={{ borderBottom: `1px solid ${GRAY_200}` }}>
+            <button
+              onClick={() => setOpenIndex(isOpen ? null : i)}
+              style={{
+                width: "100%", padding: "16px 0", background: "none", border: "none",
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+                cursor: "pointer", fontFamily: FONT,
+              }}>
+              <span style={{ fontSize: 14, fontWeight: 600, color: GRAY_900, textAlign: "left" }}>{item.q}</span>
+              <span style={{ fontSize: 18, color: GRAY_500, transform: isOpen ? "rotate(45deg)" : "none", transition: "transform 0.2s", minWidth: 20 }}>+</span>
+            </button>
+            {isOpen && (
+              <div style={{ padding: "0 0 16px", fontSize: 13, color: GRAY_700, lineHeight: 1.7 }}>
+                {item.a}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
