@@ -174,33 +174,52 @@ function App() {
 
 function Landing({ onStart }) {
   return (
-    <div style={{ textAlign: "center", paddingTop: 40 }}>
-      <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: ACCENT_LIGHT, color: ACCENT, fontSize: 13, fontWeight: 600, padding: "6px 14px", borderRadius: 20, marginBottom: 24 }}>
-        <span>⚡</span> Dossier livré en 5 jours
+    <div>
+      {/* HERO */}
+      <div style={{ textAlign: "center", paddingTop: 48, paddingBottom: 56 }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: ACCENT_LIGHT, color: ACCENT, fontSize: 13, fontWeight: 600, padding: "6px 14px", borderRadius: 20, marginBottom: 24 }}>
+          <span>⚡</span> Dossier livré en 5 jours
+        </div>
+        <h1 style={{ fontSize: 38, fontWeight: 700, lineHeight: 1.2, margin: "0 0 20px", letterSpacing: "-0.03em", color: GRAY_900, maxWidth: 600, marginLeft: "auto", marginRight: "auto" }}>
+          Plans de maison et permis de construire, on s'occupe de tout.
+        </h1>
+        <p style={{ fontSize: 16, color: GRAY_500, lineHeight: 1.7, maxWidth: 540, margin: "0 auto 32px" }}>
+          Arrêtez de galérer avec les plans, le PLU et le CERFA. Décrivez votre projet, on produit le dossier complet prêt à déposer en mairie. En 5 jours, à partir de 390€.
+        </p>
+        <button onClick={onStart} style={{ background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
+          onMouseOver={e => e.target.style.background = ACCENT_HOVER}
+          onMouseOut={e => e.target.style.background = ACCENT}>
+          Obtenir mon permis →
+        </button>
       </div>
-      <h1 style={{ fontSize: 36, fontWeight: 700, lineHeight: 1.2, margin: "0 0 16px", letterSpacing: "-0.03em", color: GRAY_900 }}>
-        Vos plans et votre permis<br />de construire, clé en main.
-      </h1>
-      <p style={{ fontSize: 17, color: GRAY_500, lineHeight: 1.6, maxWidth: 480, margin: "0 auto 32px" }}>
-        Vous nous décrivez votre projet. On s'occupe des plans, du dossier complet et du suivi jusqu'à l'acceptation par la mairie.
-      </p>
-      <button onClick={onStart} style={{ background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
-        onMouseOver={e => e.target.style.background = ACCENT_HOVER}
-        onMouseOut={e => e.target.style.background = ACCENT}>
-        Démarrer mon projet →
-      </button>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginTop: 48, textAlign: "left" }}>
-        {[
-          { icon: "📐", title: "Plans complets", desc: "Plan de masse, façades, coupes — tout le dossier PCMI" },
-          { icon: "🏛️", title: "Dossier prêt à déposer", desc: "CERFA rempli, pièces assemblées, rien à ajouter" },
-          { icon: "✅", title: "Garanti jusqu'à acceptation", desc: "Corrections incluses si la mairie demande des modifs" },
-        ].map((f, i) => (
-          <div key={i} style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 12, padding: 20 }}>
-            <div style={{ fontSize: 24, marginBottom: 10 }}>{f.icon}</div>
-            <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 6, color: GRAY_900 }}>{f.title}</div>
-            <div style={{ fontSize: 13, color: GRAY_500, lineHeight: 1.5 }}>{f.desc}</div>
-          </div>
-        ))}
+
+      {/* COMMENT CA MARCHE */}
+      <div style={{ borderTop: `1px solid ${GRAY_200}`, paddingTop: 48 }}>
+        <h2 style={{ fontSize: 24, fontWeight: 700, textAlign: "center", margin: "0 0 32px", letterSpacing: "-0.02em", color: GRAY_900 }}>
+          Comment ça marche
+        </h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, textAlign: "left" }}>
+          {[
+            { num: "1", title: "Décrivez votre projet", desc: "Remplissez notre formulaire en 5 minutes : type de construction, surface, adresse du terrain." },
+            { num: "2", title: "On produit votre dossier", desc: "Plans de masse, façades, coupes, notice descriptive, insertion paysagère — tout le dossier PCMI assemblé et prêt." },
+            { num: "3", title: "Déposez en mairie", desc: "Vous recevez le dossier complet. On assure le suivi et les corrections jusqu'à l'acceptation." },
+          ].map((s, i) => (
+            <div key={i} style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 12, padding: 24 }}>
+              <div style={{ width: 32, height: 32, borderRadius: "50%", background: ACCENT_LIGHT, color: ACCENT, fontWeight: 700, fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 14 }}>
+                {s.num}
+              </div>
+              <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 8, color: GRAY_900 }}>{s.title}</div>
+              <div style={{ fontSize: 13, color: GRAY_500, lineHeight: 1.6 }}>{s.desc}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ textAlign: "center", marginTop: 36 }}>
+          <button onClick={onStart} style={{ background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
+            onMouseOver={e => e.target.style.background = ACCENT_HOVER}
+            onMouseOut={e => e.target.style.background = ACCENT}>
+            Démarrer mon projet →
+          </button>
+        </div>
       </div>
     </div>
   );
