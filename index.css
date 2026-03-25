@@ -246,46 +246,44 @@ img {
     font-size: 1.3rem !important;
   }
 
-  /* ===== PAGE PAIEMENT — balanced one-screen ===== */
+  /* ===== PAGE PAIEMENT — centered, natural size ===== */
   .payment-page {
     display: flex !important;
     flex-direction: column !important;
-    height: 100% !important;
-  }
-  .payment-card {
-    flex: 1 !important;
-    display: flex !important;
-    flex-direction: column !important;
+    justify-content: center !important;
+    min-height: 100% !important;
+    padding: 0.75rem 0 !important;
+    overflow-y: auto !important;
   }
   .payment-back {
     font-size: 0.85rem !important;
-    margin-bottom: 0.75rem !important;
+    margin-bottom: 0.5rem !important;
   }
   .payment-card-header {
-    padding: 1rem 1.25rem !important;
+    padding: 0.75rem 1.25rem !important;
   }
   .pay-offer-label {
     font-size: 0.7rem !important;
-    margin-bottom: 0.25rem !important;
+    margin-bottom: 0.2rem !important;
   }
   .pay-offer-title {
     font-size: 1.15rem !important;
-    margin-bottom: 0.2rem !important;
+    margin-bottom: 0.15rem !important;
   }
   .pay-offer-address {
     font-size: 0.8rem !important;
   }
   .payment-card-includes {
-    padding: 0.75rem 1.25rem !important;
+    padding: 0.6rem 1.25rem !important;
   }
   .pay-includes-title {
     font-size: 0.9rem !important;
-    margin-bottom: 0.5rem !important;
+    margin-bottom: 0.4rem !important;
   }
   .pay-includes-item {
     font-size: 0.85rem !important;
-    padding: 0.2rem 0 !important;
-    line-height: 1.6 !important;
+    padding: 0.15rem 0 !important;
+    line-height: 1.5 !important;
     gap: 6px !important;
   }
   .pay-check {
@@ -293,29 +291,25 @@ img {
   }
   .pay-delivery {
     font-size: 0.85rem !important;
-    margin-top: 0.5rem !important;
-    padding: 0.2rem 0 !important;
+    margin-top: 0.4rem !important;
+    padding: 0.15rem 0 !important;
   }
   .pay-garantie {
-    padding: 0.75rem 1rem !important;
+    padding: 0.6rem 1rem !important;
     gap: 8px !important;
   }
   .pay-garantie-title {
     font-size: 0.85rem !important;
   }
   .pay-garantie-text {
-    font-size: 0.85rem !important;
+    font-size: 0.8rem !important;
     line-height: 1.4 !important;
   }
   .payment-card-price {
-    padding: 1rem 1.25rem !important;
-    flex: 1 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
+    padding: 0.75rem 1.25rem !important;
   }
   .pay-amount-row {
-    margin-bottom: 0.5rem !important;
+    margin-bottom: 0.3rem !important;
   }
   .pay-amount {
     font-size: 2rem !important;
@@ -324,8 +318,9 @@ img {
     flex-direction: row !important;
     justify-content: center !important;
     align-items: center !important;
-    gap: 1rem !important;
-    margin-top: 0.5rem !important;
+    gap: 0.5rem !important;
+    margin-top: 0.3rem !important;
+    margin-bottom: 0 !important;
   }
   .reassurance-row span {
     font-size: 0.7rem !important;
