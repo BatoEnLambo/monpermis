@@ -194,10 +194,10 @@ function App() {
                 </div>
                 <span style={{ fontWeight: 700, fontSize: 18, color: WHITE, letterSpacing: "-0.02em" }}>PermisClair</span>
               </div>
-              <div style={{ fontSize: 13, color: GRAY_500, lineHeight: 1.6 }}>Plans et permis de construire,<br />clé en main.</div>
+              <div className="footer-baseline" style={{ fontSize: 13, color: GRAY_500, lineHeight: 1.6 }}>Plans et permis de construire,<br />clé en main.</div>
             </div>
             {/* Liens */}
-            <div>
+            <div className="footer-links">
               <div style={{ fontSize: 12, fontWeight: 600, color: WHITE, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 12 }}>Liens</div>
               {[
                 { label: "Accueil", target: "accueil" },
@@ -242,7 +242,7 @@ function Landing({ onStart, onNavigate }) {
     <div>
       {/* HERO */}
       <div className="hero" style={{ textAlign: "center", paddingTop: 48, paddingBottom: 56 }}>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: ACCENT_LIGHT, color: ACCENT, fontSize: 13, fontWeight: 600, padding: "6px 14px", borderRadius: 20, marginBottom: 24 }}>
+        <div className="hero-badge" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: ACCENT_LIGHT, color: ACCENT, fontSize: 13, fontWeight: 600, padding: "6px 14px", borderRadius: 20, marginBottom: 24 }}>
           <span>✓</span> Dossier complet livré en 5 jours ouvrés
         </div>
         <h1 className="hero-title" style={{ fontSize: 40, fontWeight: 800, lineHeight: 1.2, margin: "0 0 20px", letterSpacing: "-0.03em", color: GRAY_900, maxWidth: 600, marginLeft: "auto", marginRight: "auto" }}>
@@ -302,7 +302,7 @@ function Landing({ onStart, onNavigate }) {
       </div>
 
       {/* QUI SUIS-JE */}
-      <div style={{ marginTop: 56, paddingTop: 48, borderTop: `1px solid ${GRAY_200}` }}>
+      <div className="founder-section" style={{ marginTop: 56, paddingTop: 48, borderTop: `1px solid ${GRAY_200}` }}>
         <div className="founder-layout" style={{ display: "flex", gap: 28, alignItems: "flex-start" }}>
           <img className="founder-photo" src="/images/baptiste.png" alt="Baptiste, fondateur de PermisClair" style={{ width: 120, height: 120, minWidth: 120, borderRadius: "50%", objectFit: "cover", objectPosition: "center top" }} />
           <div className="founder-content" style={{ flex: 1 }}>
@@ -328,7 +328,7 @@ function Landing({ onStart, onNavigate }) {
       </div>
 
       {/* TARIFS */}
-      <div id="tarifs" style={{ marginTop: 56, paddingTop: 48, borderTop: `1px solid ${GRAY_200}`, textAlign: "center" }}>
+      <div id="tarifs" className="tarifs-section" style={{ marginTop: 56, paddingTop: 48, borderTop: `1px solid ${GRAY_200}`, textAlign: "center" }}>
         <h2 className="section-title" style={{ fontSize: 28, fontWeight: 700, margin: "0 0 10px", letterSpacing: "-0.02em", color: GRAY_900 }}>
           Des prix clairs, sans surprise
         </h2>
@@ -342,9 +342,9 @@ function Landing({ onStart, onNavigate }) {
             { title: "Maison plain-pied", sub: "Permis de construire", price: "À partir de 990€", detail: "Plans + dossier PC", popular: true },
             { title: "Maison R+1 / complexe", sub: "Permis de construire", price: "À partir de 1 190€", detail: "Plans + dossier PC" },
           ].map((card, i) => (
-            <div key={i} style={{ background: WHITE, border: `1px solid ${card.popular ? ACCENT : GRAY_200}`, borderRadius: 12, padding: 22, position: "relative" }}>
+            <div key={i} style={{ background: card.popular ? "#f0faf4" : WHITE, border: card.popular ? `2px solid ${ACCENT}` : `1px solid ${GRAY_200}`, borderRadius: 12, padding: 22, position: "relative" }}>
               {card.popular && (
-                <div style={{ position: "absolute", top: 12, right: 12, background: ACCENT_LIGHT, color: ACCENT, fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 6 }}>
+                <div style={{ position: "absolute", top: 12, right: 12, background: ACCENT, color: WHITE, fontSize: "0.75rem", fontWeight: 600, padding: "4px 12px", borderRadius: 12 }}>
                   Populaire
                 </div>
               )}

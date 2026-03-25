@@ -10,39 +10,73 @@ body {
   overflow-x: hidden;
 }
 
-@media (max-width: 768px) {
-  /* iOS zoom fix */
-  input, select, textarea {
-    font-size: 16px !important;
-  }
+/* iOS zoom fix — global */
+input, select, textarea {
+  font-size: 16px !important;
+}
 
+/* Images never overflow */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 768px) {
   /* Global container padding */
   .app-main {
-    padding-left: 16px !important;
-    padding-right: 16px !important;
+    padding: 16px 16px !important;
   }
 
-  /* HERO */
+  /* ===== LANDING SECTIONS: reduced spacing ===== */
+  .landing-section {
+    margin-top: 28px !important;
+    padding-top: 2.5rem !important;
+    padding-bottom: 2.5rem !important;
+  }
+
+  /* ===== HERO ===== */
   .hero {
-    padding-top: 28px !important;
-    padding-bottom: 36px !important;
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+  .hero-badge {
+    margin-bottom: 0.75rem !important;
   }
   .hero-title {
-    font-size: 28px !important;
+    font-size: 1.6rem !important;
+    margin-bottom: 12px !important;
   }
   .hero-subtitle {
-    font-size: 15px !important;
+    font-size: 0.95rem !important;
+    line-height: 1.5 !important;
+    margin-bottom: 20px !important;
   }
   .hero-cta, .cta-btn {
     width: 100% !important;
+    min-height: 48px !important;
+    font-size: 1rem !important;
   }
 
-  /* COMMENT CA MARCHE */
+  /* ===== COMMENT CA MARCHE ===== */
+  .steps-section {
+    padding: 2rem 1rem !important;
+    margin-top: 2rem !important;
+  }
   .steps-grid {
     grid-template-columns: 1fr !important;
   }
 
-  /* FONDATEUR */
+  /* ===== DOSSIER section ===== */
+  .dossier-section {
+    padding: 2rem 1rem !important;
+    margin-top: 1.5rem !important;
+  }
+
+  /* ===== FONDATEUR ===== */
+  .founder-section {
+    margin-top: 1.5rem !important;
+    padding-top: 2rem !important;
+  }
   .founder-layout {
     flex-direction: column !important;
     align-items: center !important;
@@ -67,7 +101,11 @@ body {
     font-size: 12px !important;
   }
 
-  /* TARIFS */
+  /* ===== TARIFS ===== */
+  .tarifs-section {
+    margin-top: 1.5rem !important;
+    padding-top: 2rem !important;
+  }
   .pricing-grid {
     grid-template-columns: 1fr !important;
   }
@@ -75,59 +113,90 @@ body {
     font-size: 20px !important;
   }
 
-  /* GARANTIE */
+  /* ===== GARANTIE ===== */
   .garantie-box {
     padding: 16px !important;
+    margin-top: 1.5rem !important;
   }
   .garantie-title {
+    font-size: 18px !important;
+  }
+
+  /* ===== FAQ ===== */
+  .faq-section {
+    padding: 2rem 1rem !important;
+    margin-top: 1.5rem !important;
+  }
+  .faq-question {
     font-size: 15px !important;
   }
 
-  /* FAQ */
-  .faq-question {
-    font-size: 13px !important;
-  }
-  .faq-section {
-    padding: 32px 16px !important;
-  }
-
-  /* CTA FINAL */
-  .cta-final-title {
-    font-size: 22px !important;
-  }
+  /* ===== CTA FINAL ===== */
   .cta-final {
-    padding: 32px 16px !important;
+    padding: 2rem 1rem !important;
+    margin-top: 1.5rem !important;
+  }
+  .cta-final-title {
+    font-size: 1.5rem !important;
   }
 
-  /* SECTION TITLES */
+  /* ===== SECTION TITLES global ===== */
   .section-title {
-    font-size: 22px !important;
+    font-size: 1.4rem !important;
   }
   .section-subtitle {
-    font-size: 14px !important;
+    font-size: 0.95rem !important;
   }
 
-  /* FOOTER */
+  /* ===== FONT SIZES global ===== */
+  h2 {
+    font-size: 1.4rem !important;
+  }
+  h3 {
+    font-size: 1.15rem !important;
+  }
+  p, .body-text {
+    font-size: 0.95rem !important;
+  }
+  small, .caption {
+    font-size: 0.8rem !important;
+  }
+
+  /* ===== FOOTER ===== */
+  .footer-inner {
+    padding: 2rem 1rem !important;
+  }
   .footer-content {
     flex-direction: column !important;
-    gap: 24px !important;
+    gap: 20px !important;
   }
-  .footer-inner {
-    padding: 28px 16px 20px !important;
+  .footer-content .footer-baseline {
+    font-size: 0.9rem !important;
+  }
+  .footer-content a, .footer-content div[style*="padding: 4px"] {
+    font-size: 0.85rem !important;
+  }
+  .footer-links div {
+    font-size: 0.85rem !important;
   }
   .footer-bottom {
     flex-direction: column !important;
     align-items: center !important;
     text-align: center;
   }
+  .footer-bottom span {
+    font-size: 0.75rem !important;
+  }
 
-  /* FORMULAIRE */
+  /* ===== FORMULAIRE ===== */
   .form-actions {
     flex-direction: column-reverse !important;
     gap: 8px !important;
   }
   .form-actions button {
     width: 100% !important;
+    min-height: 48px !important;
+    font-size: 1rem !important;
   }
   .form-card {
     padding: 20px !important;
@@ -136,7 +205,7 @@ body {
     grid-template-columns: 1fr 1fr !important;
   }
 
-  /* PAGE PAIEMENT */
+  /* ===== PAGE PAIEMENT ===== */
   .payment-card-header, .payment-card-includes, .payment-card-price {
     padding-left: 16px !important;
     padding-right: 16px !important;
@@ -145,15 +214,5 @@ body {
     flex-direction: column !important;
     align-items: center !important;
     gap: 8px !important;
-  }
-
-  /* COMMENT CA MARCHE section */
-  .steps-section {
-    padding: 32px 16px !important;
-  }
-
-  /* DOSSIER section */
-  .dossier-section {
-    padding: 32px 16px !important;
   }
 }
