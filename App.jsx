@@ -311,14 +311,14 @@ function Landing({ onStart, onNavigate }) {
           </div>
           <div style={{ flex: 1 }}>
             <h2 style={{ fontSize: 28, fontWeight: 700, margin: "0 0 12px", letterSpacing: "-0.02em", color: GRAY_900 }}>
-              Baptiste, fondateur de MonPermis
+              Baptiste, fondateur de PermisClair
             </h2>
             <p style={{ fontSize: 14, color: GRAY_700, lineHeight: 1.7, margin: "0 0 20px" }}>
-              Je construis ma propre maison en ossature bois en Vendée. J'ai fait mes plans moi-même sur SketchUp et obtenu mon permis de construire du premier coup. Je connais chaque pièce du dossier, chaque exigence de la mairie, chaque galère du parcours. J'ai créé MonPermis pour que vous n'ayez pas à vivre ça seul.
+              Je construis ma propre maison en ossature bois en Vendée. J'ai fait mes plans moi-même sur SketchUp et déposé mon permis de construire. La mairie l'a refusé. J'ai compris pourquoi, corrigé le dossier, et obtenu l'acceptation. Cette expérience m'a appris exactement ce que les mairies attendent, ce qui bloque un dossier et ce qui le fait passer. J'ai créé PermisClair pour que vous n'ayez pas à vivre ces allers-retours seul.
             </p>
             <div style={{ display: "flex", gap: 16 }}>
               {[
-                "1 permis obtenu",
+                "1 refus surmonté",
                 "Plans SketchUp maîtrisés",
                 "Basé en Vendée",
               ].map((stat, i) => (
