@@ -34,14 +34,9 @@ img {
   min-height: 0 !important;
 }
 
-/* Cartes tarifs : contenu centré */
-.page-landing .pricing-card {
-  text-align: center !important;
-}
-.page-landing .pricing-badge {
-  position: static !important;
-  display: inline-block !important;
-  margin-bottom: 0.5rem !important;
+/* Cartes tarifs : bouton hover */
+.page-landing .pricing-card:not(.pricing-card-popular) .pricing-cta:hover {
+  background: #f0faf4 !important;
 }
 
 @media (max-width: 768px) {
@@ -160,36 +155,34 @@ img {
     padding-top: 2rem !important;
   }
   .page-landing .pricing-grid {
-    display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     gap: 0.5rem !important;
   }
   .page-landing .pricing-card {
-    padding: 0.75rem !important;
+    padding: 0.85rem !important;
   }
   .page-landing .pricing-sub {
-    font-size: 0.6rem !important;
-    color: #888 !important;
-    text-transform: uppercase !important;
-    margin-bottom: 0.15rem !important;
+    font-size: 0.55rem !important;
   }
   .page-landing .pricing-name {
     font-size: 0.85rem !important;
-    font-weight: 700 !important;
-    margin-bottom: 0.25rem !important;
+    margin-bottom: 0.35rem !important;
   }
   .page-landing .pricing-price {
-    font-size: 1.1rem !important;
-    font-weight: 700 !important;
-    margin-bottom: 0.15rem !important;
+    font-size: 1.2rem !important;
+    margin-bottom: 0.1rem !important;
   }
   .page-landing .pricing-detail {
-    font-size: 0.7rem !important;
-    color: #888 !important;
+    font-size: 0.65rem !important;
+    margin-bottom: 0.5rem !important;
   }
   .page-landing .pricing-badge {
-    font-size: 0.55rem !important;
-    padding: 2px 6px !important;
+    font-size: 0.5rem !important;
+    padding: 2px 5px !important;
+  }
+  .page-landing .pricing-cta {
+    font-size: 0.7rem !important;
+    padding: 0.4rem !important;
   }
   .page-landing .pricing-compare {
     font-size: 0.8rem !important;

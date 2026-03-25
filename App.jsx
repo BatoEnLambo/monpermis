@@ -344,27 +344,41 @@ function Landing({ onStart, onNavigate }) {
         <p className="section-subtitle" style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, margin: "0 0 32px" }}>
           Jusqu'à 4× moins cher qu'un architecte, et 5× plus rapide. Même dossier, même résultat en mairie.
         </p>
-        <div className="pricing-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+        <div className="pricing-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0.75rem" }}>
           {[
             { title: "Piscine / Garage", sub: "Déclaration préalable", price: "390€", detail: "Dossier DP complet", projectType: "Piscine" },
             { title: "Extension", sub: "Permis de construire", price: "790€", detail: "Plans + dossier PC", projectType: "Extension" },
             { title: "Maison plain-pied", sub: "Permis de construire", price: "990€", detail: "Plans + dossier PC", popular: true, projectType: "Construction neuve" },
             { title: "Maison R+1 / complexe", sub: "Permis de construire", price: "1 190€", detail: "Plans + dossier PC", projectType: "Construction neuve" },
           ].map((card, i) => (
-            <div key={i} className="pricing-card" onClick={() => onStart(card.projectType)}
-              style={{ background: card.popular ? "#f0faf4" : WHITE, border: card.popular ? `2px solid ${ACCENT}` : `1px solid ${GRAY_200}`, borderRadius: 12, padding: 22, position: "relative", cursor: "pointer", transition: "all 0.2s ease" }}
-              onMouseOver={e => e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.1)"}
+            <div key={i} className={`pricing-card${card.popular ? " pricing-card-popular" : ""}`}
+              onClick={() => onStart(card.projectType)}
+              style={{
+                background: card.popular ? ACCENT : WHITE,
+                border: card.popular ? "none" : "1px solid #e5e5e5",
+                borderRadius: 12, padding: "1.25rem", textAlign: "left", cursor: "pointer", transition: "all 0.2s ease",
+                display: "flex", flexDirection: "column",
+              }}
+              onMouseOver={e => e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.12)"}
               onMouseOut={e => e.currentTarget.style.boxShadow = "none"}>
-              {card.popular && (
-                <div className="pricing-badge" style={{ position: "absolute", top: 12, right: 12, background: ACCENT, color: WHITE, fontSize: "0.75rem", fontWeight: 600, padding: "4px 12px", borderRadius: 12 }}>
-                  Populaire
-                </div>
-              )}
-              <div className="pricing-sub" style={{ fontSize: 12, color: GRAY_500, marginBottom: 4 }}>{card.sub}</div>
-              <div className="pricing-name" style={{ fontSize: 16, fontWeight: 700, color: GRAY_900, marginBottom: 10 }}>{card.title}</div>
-              <div className="pricing-price" style={{ fontSize: 22, fontWeight: 700, color: ACCENT, marginBottom: 6 }}>{card.price}</div>
-              <div className="pricing-detail" style={{ fontSize: 13, color: GRAY_500 }}>{card.detail}</div>
-              <div className="pricing-cta" style={{ fontSize: 13, fontWeight: 600, color: ACCENT, marginTop: 10 }}>Choisir →</div>
+              <div className="pricing-sub" style={{ fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.05em", color: card.popular ? "rgba(255,255,255,0.7)" : "#888", marginBottom: "0.25rem", display: "flex", alignItems: "center", gap: 6 }}>
+                {card.sub}
+                {card.popular && (
+                  <span className="pricing-badge" style={{ background: "rgba(255,255,255,0.2)", color: "#fff", fontSize: "0.6rem", fontWeight: 600, padding: "3px 8px", borderRadius: 20 }}>Populaire</span>
+                )}
+              </div>
+              <div className="pricing-name" style={{ fontSize: "1rem", fontWeight: 700, color: card.popular ? "#fff" : "#111", marginBottom: "0.5rem" }}>{card.title}</div>
+              <div className="pricing-price" style={{ fontSize: "1.75rem", fontWeight: 800, color: card.popular ? "#fff" : ACCENT, marginBottom: "0.15rem" }}>{card.price}</div>
+              <div className="pricing-detail" style={{ fontSize: "0.75rem", color: card.popular ? "rgba(255,255,255,0.7)" : "#888", marginBottom: "0.75rem" }}>{card.detail}</div>
+              <button className="pricing-cta" style={{
+                display: "block", width: "100%", textAlign: "center", padding: "0.5rem", borderRadius: 8, fontSize: "0.8rem", fontWeight: card.popular ? 700 : 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s",
+                background: card.popular ? "#fff" : "transparent",
+                color: card.popular ? ACCENT : ACCENT,
+                border: card.popular ? "none" : `1.5px solid ${ACCENT}`,
+              }}
+              >
+                Choisir cette offre
+              </button>
             </div>
           ))}
         </div>
