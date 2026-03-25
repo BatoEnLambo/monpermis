@@ -267,7 +267,7 @@ function Landing({ onStart, onNavigate }) {
           Plans de maison et permis de construire : on s'occupe de tout.
         </h1>
         <p className="hero-subtitle" style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, lineHeight: 1.7, maxWidth: 540, margin: "0 auto 32px" }}>
-          Vous galérez avec les plans, le PLU, le CERFA ? Décrivez votre projet en 5 minutes — on livre le dossier complet en 5 jours. À partir de 390€.
+          Vous galérez avec les plans, le PLU, le CERFA ? Décrivez votre projet en 5 minutes — on livre le dossier complet en 5 jours. Dès 390€.
         </p>
         <button className="cta-btn" onClick={onStart} style={{ background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
           onMouseOver={e => e.target.style.background = ACCENT_HOVER}
@@ -355,10 +355,10 @@ function Landing({ onStart, onNavigate }) {
         </p>
         <div className="pricing-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, textAlign: "left" }}>
           {[
-            { title: "Piscine / Garage", sub: "Déclaration préalable", price: "À partir de 390€", detail: "Dossier DP complet" },
-            { title: "Extension", sub: "Permis de construire", price: "À partir de 790€", detail: "Plans + dossier PC" },
-            { title: "Maison plain-pied", sub: "Permis de construire", price: "À partir de 990€", detail: "Plans + dossier PC", popular: true },
-            { title: "Maison R+1 / complexe", sub: "Permis de construire", price: "À partir de 1 190€", detail: "Plans + dossier PC" },
+            { title: "Piscine / Garage", sub: "Déclaration préalable", price: "390€", detail: "Dossier DP complet" },
+            { title: "Extension", sub: "Permis de construire", price: "790€", detail: "Plans + dossier PC" },
+            { title: "Maison plain-pied", sub: "Permis de construire", price: "990€", detail: "Plans + dossier PC", popular: true },
+            { title: "Maison R+1 / complexe", sub: "Permis de construire", price: "1 190€", detail: "Plans + dossier PC" },
           ].map((card, i) => (
             <div key={i} className="pricing-card" style={{ background: card.popular ? "#f0faf4" : WHITE, border: card.popular ? `2px solid ${ACCENT}` : `1px solid ${GRAY_200}`, borderRadius: 12, padding: 22, position: "relative" }}>
               {card.popular && (
