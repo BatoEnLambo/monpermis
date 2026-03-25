@@ -198,7 +198,7 @@ function App() {
       </nav>
 
       <main className={`app-main ${view !== 'landing' && view !== 'mentions' && view !== 'dashboard' && view !== 'uploads' ? 'app-main-locked' : ''}`} style={{ maxWidth: 720, margin: "0 auto", padding: "32px 20px", flex: 1, width: "100%", boxSizing: "border-box" }}>
-        {view === "landing" && <Landing onStart={() => { setView("form"); window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }} onNavigate={navigateTo} />}
+        {view === "landing" && <Landing onStart={(projectType) => { if (projectType) updateForm("projectType", projectType); setView("form"); window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }} onNavigate={navigateTo} />}
         {view === "mentions" && <MentionsLegales />}
         {view === "form" && <ProjectForm form={form} updateForm={updateForm} step={formStep} setStep={setFormStep} onSubmit={submitProject} />}
         {view === "pricing" && <PaymentPage form={form} onPay={confirmPayment} onBack={() => { setFormStep(3); setView("form"); window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }} />}
@@ -355,12 +355,15 @@ function Landing({ onStart, onNavigate }) {
         </p>
         <div className="pricing-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, textAlign: "left" }}>
           {[
-            { title: "Piscine / Garage", sub: "Déclaration préalable", price: "390€", detail: "Dossier DP complet" },
-            { title: "Extension", sub: "Permis de construire", price: "790€", detail: "Plans + dossier PC" },
-            { title: "Maison plain-pied", sub: "Permis de construire", price: "990€", detail: "Plans + dossier PC", popular: true },
-            { title: "Maison R+1 / complexe", sub: "Permis de construire", price: "1 190€", detail: "Plans + dossier PC" },
+            { title: "Piscine / Garage", sub: "Déclaration préalable", price: "390€", detail: "Dossier DP complet", projectType: "Piscine" },
+            { title: "Extension", sub: "Permis de construire", price: "790€", detail: "Plans + dossier PC", projectType: "Extension" },
+            { title: "Maison plain-pied", sub: "Permis de construire", price: "990€", detail: "Plans + dossier PC", popular: true, projectType: "Construction neuve" },
+            { title: "Maison R+1 / complexe", sub: "Permis de construire", price: "1 190€", detail: "Plans + dossier PC", projectType: "Construction neuve" },
           ].map((card, i) => (
-            <div key={i} className="pricing-card" style={{ background: card.popular ? "#f0faf4" : WHITE, border: card.popular ? `2px solid ${ACCENT}` : `1px solid ${GRAY_200}`, borderRadius: 12, padding: 22, position: "relative" }}>
+            <div key={i} className="pricing-card" onClick={() => onStart(card.projectType)}
+              style={{ background: card.popular ? "#f0faf4" : WHITE, border: card.popular ? `2px solid ${ACCENT}` : `1px solid ${GRAY_200}`, borderRadius: 12, padding: 22, position: "relative", cursor: "pointer", transition: "all 0.2s ease" }}
+              onMouseOver={e => e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.1)"}
+              onMouseOut={e => e.currentTarget.style.boxShadow = "none"}>
               {card.popular && (
                 <div className="pricing-badge" style={{ position: "absolute", top: 12, right: 12, background: ACCENT, color: WHITE, fontSize: "0.75rem", fontWeight: 600, padding: "4px 12px", borderRadius: 12 }}>
                   Populaire
@@ -370,6 +373,7 @@ function Landing({ onStart, onNavigate }) {
               <div className="pricing-name" style={{ fontSize: 16, fontWeight: 700, color: GRAY_900, marginBottom: 10 }}>{card.title}</div>
               <div className="pricing-price" style={{ fontSize: 22, fontWeight: 700, color: ACCENT, marginBottom: 6 }}>{card.price}</div>
               <div className="pricing-detail" style={{ fontSize: 13, color: GRAY_500 }}>{card.detail}</div>
+              <div className="pricing-cta" style={{ fontSize: 13, fontWeight: 600, color: ACCENT, marginTop: 10 }}>Choisir →</div>
             </div>
           ))}
         </div>
