@@ -232,9 +232,17 @@ img {
     height: 46px !important;
   }
 
-  /* Récapitulatif — mêmes tailles que les autres étapes */
+  /* Récapitulatif — typo alignée, padding réduit pour one-screen */
+  .page-form .recap-step .form-title {
+    font-size: 1.2rem !important;
+    margin-bottom: 0.1rem !important;
+  }
+  .page-form .recap-step .form-subtitle {
+    font-size: 0.85rem !important;
+    margin-bottom: 0.4rem !important;
+  }
   .page-form .recap-row {
-    padding: 0.3rem 0 !important;
+    padding: 0.25rem 0 !important;
   }
   .page-form .recap-label {
     font-size: 0.9rem !important;
@@ -243,22 +251,26 @@ img {
     font-size: 0.9rem !important;
   }
   .page-form .recap-desc {
-    padding: 0.3rem 0 !important;
+    padding: 0.25rem 0 !important;
   }
   .page-form .recap-price {
-    margin-top: 0.5rem !important;
-    margin-bottom: 0.5rem !important;
-    padding: 0.5rem 0.75rem !important;
+    margin-top: 0.4rem !important;
+    margin-bottom: 0.4rem !important;
+    padding: 0.4rem 0.75rem !important;
   }
   .page-form .recap-price-label {
-    font-size: 0.85rem !important;
-  }
-  .page-form .recap-price-delay {
     font-size: 0.8rem !important;
   }
+  .page-form .recap-price-delay {
+    font-size: 0.75rem !important;
+  }
   .page-form .recap-price-amount {
-    font-size: 1.3rem !important;
+    font-size: 1.2rem !important;
     white-space: nowrap !important;
+  }
+  .page-form .recap-step .form-actions {
+    margin-top: 0.4rem !important;
+    gap: 0.3rem !important;
   }
 
   /* ============================================================
