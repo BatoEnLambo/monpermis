@@ -257,7 +257,7 @@ function App() {
 
 function Landing({ onStart, onNavigate }) {
   return (
-    <div>
+    <div className="page-landing">
       {/* HERO */}
       <div className="hero" style={{ textAlign: "center", paddingTop: 48, paddingBottom: 56 }}>
         <div className="hero-badge" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: ACCENT_LIGHT, color: ACCENT, fontSize: 13, fontWeight: 600, padding: "6px 14px", borderRadius: 20, marginBottom: 24 }}>
@@ -484,7 +484,7 @@ function PaymentPage({ form, onPay, onBack }) {
   };
 
   return (
-    <div className="payment-page" style={{ maxWidth: 520, margin: "0 auto" }}>
+    <div className="page-payment payment-page" style={{ maxWidth: 520, margin: "0 auto" }}>
       <button className="payment-back" onClick={onBack} style={{ background: "none", border: "none", color: GRAY_500, fontSize: 13, cursor: "pointer", fontFamily: FONT, padding: 0, marginBottom: 20, display: "flex", alignItems: "center", gap: 4 }}>
         ← Modifier mon projet
       </button>
@@ -594,7 +594,7 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
   const pricing = PRICING[form.projectType] || null;
 
   return (
-    <div>
+    <div className="page-form">
       <div className="form-stepper" style={{ display: "flex", gap: 4, marginBottom: 32 }}>
         {steps.map((s, i) => (
           <div key={i} style={{ flex: 1, textAlign: "center" }}>
@@ -754,7 +754,7 @@ function Dashboard({ project, uploads, onGoUploads }) {
   const totalFiles = (uploads[UPLOAD_KEY] || []).length;
 
   return (
-    <div>
+    <div className="page-dashboard">
       <div className="dash-header" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 28 }}>
         <div>
           <h1 className="dash-title" style={{ fontSize: 24, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>
@@ -868,7 +868,7 @@ function Uploads({ uploads, addFiles, removeFile }) {
   };
 
   return (
-    <div>
+    <div className="page-dashboard">
       <h1 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 6px", letterSpacing: "-0.02em" }}>Vos documents</h1>
       <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 28px", lineHeight: 1.5 }}>
         Déposez ici toutes vos photos et documents : terrain, environnement, croquis, cadastre... On s'occupe du tri.
