@@ -89,10 +89,10 @@ function App() {
   const navigateTo = (target) => {
     if (target === "mentions") {
       setView("mentions");
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     } else if (target === "accueil") {
       setView("landing");
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     } else {
       // scroll to section on landing
       if (view !== "landing") setView("landing");
@@ -105,7 +105,7 @@ function App() {
 
   const submitProject = () => {
     setView("pricing");
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   };
 
   const confirmPayment = () => {
@@ -120,7 +120,7 @@ function App() {
     localStorage.setItem("monpermis_project", JSON.stringify(newProject));
     setChatOpen(false);
     setView("dashboard");
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   };
 
   const addFiles = (categoryId, files) => {
@@ -167,7 +167,7 @@ function App() {
               { id: "dashboard", label: "Mon projet" },
               { id: "uploads", label: "Documents" },
             ].map(tab => (
-              <button key={tab.id} onClick={() => { setView(tab.id); window.scrollTo(0, 0); }}
+              <button key={tab.id} onClick={() => { setView(tab.id); window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }}
                 style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: view === tab.id ? ACCENT_LIGHT : "transparent", color: view === tab.id ? ACCENT : GRAY_500, fontWeight: 500, fontSize: 13, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s" }}>
                 {tab.label}
               </button>
@@ -177,10 +177,10 @@ function App() {
       </nav>
 
       <main className="app-main" style={{ maxWidth: 720, margin: "0 auto", padding: "32px 20px", flex: 1, width: "100%", boxSizing: "border-box" }}>
-        {view === "landing" && <Landing onStart={() => { setView("form"); window.scrollTo(0, 0); }} onNavigate={navigateTo} />}
+        {view === "landing" && <Landing onStart={() => { setView("form"); window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }} onNavigate={navigateTo} />}
         {view === "mentions" && <MentionsLegales />}
         {view === "form" && <ProjectForm form={form} updateForm={updateForm} step={formStep} setStep={setFormStep} onSubmit={submitProject} />}
-        {view === "pricing" && <PaymentPage form={form} onPay={confirmPayment} onBack={() => { setFormStep(3); setView("form"); window.scrollTo(0, 0); }} />}
+        {view === "pricing" && <PaymentPage form={form} onPay={confirmPayment} onBack={() => { setFormStep(3); setView("form"); window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }} />}
         {view === "dashboard" && project && <Dashboard project={project} uploads={uploads} onGoUploads={() => setView("uploads")} />}
         {view === "uploads" && project && <Uploads uploads={uploads} addFiles={addFiles} removeFile={removeFile} />}
       </main>
@@ -703,13 +703,13 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
 
         <div className="form-actions" style={{ display: "flex", justifyContent: "space-between", marginTop: 28 }}>
           {step > 0 ? (
-            <button onClick={() => { setStep(step - 1); window.scrollTo(0, 0); }}
+            <button onClick={() => { setStep(step - 1); window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }}
               style={{ padding: "10px 20px", borderRadius: 8, border: `1px solid ${GRAY_300}`, background: WHITE, color: GRAY_700, fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: FONT }}>
               ← Retour
             </button>
           ) : <div />}
           {step < 3 ? (
-            <button onClick={() => { if (canNext()) { setStep(step + 1); window.scrollTo(0, 0); } }}
+            <button onClick={() => { if (canNext()) { setStep(step + 1); window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } }}
               style={{ padding: "10px 24px", borderRadius: 8, border: "none", background: canNext() ? ACCENT : "#d1d5db", color: canNext() ? WHITE : "#9ca3af", fontSize: 14, fontWeight: 600, cursor: canNext() ? "pointer" : "not-allowed", fontFamily: FONT, transition: "all 0.15s" }}>
               Continuer →
             </button>
