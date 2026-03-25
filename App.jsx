@@ -206,57 +206,44 @@ function App() {
         {view === "uploads" && project && <Uploads uploads={uploads} addFiles={addFiles} removeFile={removeFile} />}
       </main>
 
-      {view !== "form" && view !== "pricing" && <footer style={{ background: GRAY_900, color: GRAY_300, marginTop: 64 }}>
-        <div className="footer-inner" style={{ maxWidth: 720, margin: "0 auto", padding: "40px 20px 24px" }}>
-          <div className="footer-content" style={{ display: "flex", justifyContent: "space-between", gap: 40, flexWrap: "wrap", marginBottom: 32 }}>
-            {/* Logo */}
-            <div>
-              <div className="footer-logo-row" style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                <div className="footer-logo-icon" style={{ width: 32, height: 32, borderRadius: 8, background: ACCENT, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ color: WHITE, fontWeight: 700, fontSize: 14 }}>PC</span>
-                </div>
-                <span className="footer-logo-name" style={{ fontWeight: 700, fontSize: 18, color: WHITE, letterSpacing: "-0.02em" }}>PermisClair</span>
-              </div>
-              <div className="footer-baseline" style={{ fontSize: 13, color: GRAY_500, lineHeight: 1.6 }}>Plans et permis de construire,<br />clé en main.</div>
+      {view !== "form" && view !== "pricing" && <footer className="site-footer" style={{ background: "#f5f5f0", borderTop: "1px solid #e5e5e0", marginTop: 64, textAlign: "center" }}>
+        <div style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 2rem 2rem" }}>
+          {/* Logo */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: "0.25rem" }}>
+            <div style={{ width: 28, height: 28, borderRadius: 7, background: ACCENT, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <span style={{ color: WHITE, fontWeight: 700, fontSize: 12 }}>PC</span>
             </div>
-            {/* Liens */}
-            <div className="footer-links">
-              <div className="footer-section-title" style={{ fontSize: 12, fontWeight: 600, color: WHITE, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 12 }}>Liens</div>
-              <div className="footer-links-list">
-                {[
-                  { label: "Accueil", target: "accueil" },
-                  { label: "Tarifs", target: "tarifs" },
-                  { label: "FAQ", target: "faq" },
-                  { label: "Mentions légales", target: "mentions" },
-                ].map((link, i, arr) => (
-                  <span key={link.label}>
-                    <span onClick={() => navigateTo(link.target)} style={{ fontSize: 13, color: GRAY_500, cursor: "pointer" }}
-                      onMouseOver={e => e.target.style.color = WHITE}
-                      onMouseOut={e => e.target.style.color = GRAY_500}>
-                      {link.label}
-                    </span>
-                    {i < arr.length - 1 && <span className="footer-link-sep" style={{ color: GRAY_700, margin: "0 2px", display: "none" }}> · </span>}
-                  </span>
-                ))}
-              </div>
-            </div>
-            {/* Contact */}
-            <div className="footer-contact">
-              <div className="footer-section-title" style={{ fontSize: 12, fontWeight: 600, color: WHITE, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 12 }}>Contact</div>
-              <div className="footer-contact-items">
-                <span className="footer-contact-item" style={{ fontSize: 13, color: GRAY_500 }}>contact@permisclair.fr</span>
-                <span className="footer-contact-sep" style={{ color: GRAY_700, margin: "0 2px", display: "none" }}> · </span>
-                <span className="footer-contact-item" style={{ fontSize: 13, color: GRAY_500 }}>Vendée, France</span>
-              </div>
-            </div>
+            <span style={{ fontWeight: 700, fontSize: "1rem", color: ACCENT, letterSpacing: "-0.02em" }}>PermisClair</span>
           </div>
-          <div className="footer-bottom" style={{ borderTop: `1px solid ${GRAY_700}`, paddingTop: 16, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
-            <span style={{ fontSize: 12, color: GRAY_500 }}>© 2026 PermisClair — Tous droits réservés</span>
-            <span onClick={() => navigateTo("mentions")} style={{ fontSize: 12, color: GRAY_500, cursor: "pointer" }}
-              onMouseOver={e => e.target.style.color = WHITE}
-              onMouseOut={e => e.target.style.color = GRAY_500}>
-              Mentions légales · CGV
-            </span>
+          {/* Baseline */}
+          <div style={{ fontSize: "0.8rem", color: "#888", marginBottom: "1.25rem" }}>Plans et permis de construire, clé en main.</div>
+          {/* Liens */}
+          <div style={{ marginBottom: "1.25rem" }}>
+            {[
+              { label: "Accueil", target: "accueil" },
+              { label: "Tarifs", target: "tarifs" },
+              { label: "FAQ", target: "faq" },
+              { label: "Mentions légales", target: "mentions" },
+            ].map((link, i, arr) => (
+              <span key={link.label}>
+                <span onClick={() => navigateTo(link.target)} style={{ fontSize: "0.8rem", color: "#555", cursor: "pointer", textDecoration: "none" }}
+                  onMouseOver={e => e.target.style.color = ACCENT}
+                  onMouseOut={e => e.target.style.color = "#555"}>
+                  {link.label}
+                </span>
+                {i < arr.length - 1 && <span style={{ color: "#ccc", margin: "0 6px" }}>·</span>}
+              </span>
+            ))}
+          </div>
+          {/* Contact */}
+          <div style={{ marginBottom: "1.25rem" }}>
+            <span style={{ fontSize: "0.8rem", color: ACCENT }}>contact@permisclair.fr</span>
+          </div>
+          {/* Copyright */}
+          <div style={{ fontSize: "0.7rem", color: "#aaa" }}>
+            © 2026 PermisClair — <span onClick={() => navigateTo("mentions")} style={{ cursor: "pointer", color: "#aaa" }}
+              onMouseOver={e => e.target.style.color = "#666"}
+              onMouseOut={e => e.target.style.color = "#aaa"}>Mentions légales · CGV</span>
           </div>
         </div>
       </footer>}
