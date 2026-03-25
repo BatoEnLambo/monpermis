@@ -158,35 +158,93 @@ img {
     font-size: 0.95rem !important;
   }
 
-  /* ===== FOOTER — compact ===== */
+  /* ===== FOOTER — ultra compact ===== */
   .footer-inner {
-    padding: 1.5rem 1rem !important;
+    padding: 1.25rem 1rem 1rem 1rem !important;
   }
   .footer-content {
     flex-direction: column !important;
-    gap: 1rem !important;
-    margin-bottom: 1rem !important;
+    gap: 0 !important;
+    margin-bottom: 0 !important;
   }
-  .footer-baseline {
-    font-size: 0.8rem !important;
-    margin-bottom: 0.75rem !important;
-  }
-  .footer-links div {
-    font-size: 0.8rem !important;
-    line-height: 1.8 !important;
-  }
-  .footer-links div:first-child {
-    font-size: 0.75rem !important;
+
+  /* Logo */
+  .footer-logo-row {
+    gap: 6px !important;
     margin-bottom: 0.25rem !important;
   }
+  .footer-logo-icon {
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    border-radius: 6px !important;
+  }
+  .footer-logo-icon span {
+    font-size: 11px !important;
+  }
+  .footer-logo-name {
+    font-size: 0.9rem !important;
+  }
+
+  /* Baseline */
+  .footer-baseline {
+    font-size: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+    line-height: 1.4 !important;
+  }
+  .footer-baseline br {
+    display: none;
+  }
+
+  /* Section titles (LIENS, CONTACT) */
+  .footer-section-title {
+    font-size: 0.65rem !important;
+    margin-bottom: 0.15rem !important;
+  }
+
+  /* Links — inline with dots */
+  .footer-links-list {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0 !important;
+    margin-bottom: 0.75rem !important;
+  }
+  .footer-links-list span span[style] {
+    font-size: 0.75rem !important;
+    padding: 0 !important;
+    line-height: 1.5 !important;
+  }
+  .footer-link-sep {
+    display: inline !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* Contact — inline */
+  .footer-contact-items {
+    margin-bottom: 0.75rem !important;
+  }
+  .footer-contact-item {
+    font-size: 0.75rem !important;
+  }
+  .footer-contact-sep {
+    display: inline !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* Bottom line */
   .footer-bottom {
-    flex-direction: column !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
     align-items: center !important;
-    text-align: center;
-    margin-top: 0.75rem !important;
+    text-align: left;
+    margin-top: 0 !important;
+    border-top: 1px solid rgba(255,255,255,0.1) !important;
+    padding-top: 0.5rem !important;
+    gap: 4px !important;
   }
   .footer-bottom span {
-    font-size: 0.7rem !important;
+    font-size: 0.65rem !important;
+    color: rgba(255,255,255,0.5) !important;
   }
 
   /* ===== FORMULAIRE — one-screen per step ===== */
