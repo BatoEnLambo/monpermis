@@ -172,32 +172,36 @@ img {
   }
 
   /* ============================================================
-     FORMULAIRE
+     FORMULAIRE — typographie uniforme sur les 4 étapes
      ============================================================ */
   .page-form .form-stepper {
     margin-bottom: 12px !important;
     padding: 0.5rem 0 !important;
   }
   .page-form .form-step-label {
-    font-size: 0.75rem !important;
+    font-size: 0.8rem !important;
   }
   .page-form .form-card {
     padding: 1rem !important;
   }
   .page-form .form-title {
-    font-size: 1.1rem !important;
+    font-size: 1.2rem !important;
+    font-weight: 700 !important;
     margin-bottom: 0.25rem !important;
   }
   .page-form .form-subtitle {
-    font-size: 0.8rem !important;
+    font-size: 0.85rem !important;
+    color: #888 !important;
     margin-bottom: 0.75rem !important;
   }
   .page-form .form-card label {
-    font-size: 0.85rem !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
     margin-bottom: 0.25rem !important;
   }
   .page-form .form-card input,
   .page-form .form-card select {
+    font-size: 0.9rem !important;
     height: 44px !important;
     padding: 0.5rem 0.75rem !important;
   }
@@ -210,33 +214,33 @@ img {
   }
   .page-form .form-textarea {
     min-height: 80px !important;
+    font-size: 0.9rem !important;
   }
   .page-form .form-actions {
     flex-direction: column-reverse !important;
     gap: 6px !important;
     margin-top: 0.75rem !important;
   }
-  .page-form .form-actions button {
+  .page-form .form-actions button:first-child {
     width: 100% !important;
     font-size: 0.9rem !important;
+    height: 42px !important;
+  }
+  .page-form .form-actions button:last-child {
+    width: 100% !important;
+    font-size: 0.95rem !important;
+    height: 46px !important;
   }
 
-  /* Récapitulatif */
-  .page-form .recap-step .form-title {
-    margin-bottom: 0.15rem !important;
-  }
-  .page-form .recap-step .form-subtitle {
-    font-size: 0.75rem !important;
-    margin-bottom: 0.5rem !important;
-  }
+  /* Récapitulatif — mêmes tailles que les autres étapes */
   .page-form .recap-row {
     padding: 0.3rem 0 !important;
   }
   .page-form .recap-label {
-    font-size: 0.75rem !important;
+    font-size: 0.9rem !important;
   }
   .page-form .recap-value {
-    font-size: 0.8rem !important;
+    font-size: 0.9rem !important;
   }
   .page-form .recap-desc {
     padding: 0.3rem 0 !important;
@@ -247,10 +251,10 @@ img {
     padding: 0.5rem 0.75rem !important;
   }
   .page-form .recap-price-label {
-    font-size: 0.8rem !important;
+    font-size: 0.85rem !important;
   }
   .page-form .recap-price-delay {
-    font-size: 0.7rem !important;
+    font-size: 0.8rem !important;
   }
   .page-form .recap-price-amount {
     font-size: 1.3rem !important;
