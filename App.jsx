@@ -81,7 +81,7 @@ function App() {
 
   // Lock body scroll on non-landing pages (mobile)
   useEffect(() => {
-    if (view !== 'landing' && view !== 'mentions') {
+    if (view !== 'landing' && view !== 'mentions' && view !== 'dashboard' && view !== 'uploads') {
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
@@ -172,7 +172,7 @@ function App() {
   };
 
   return (
-    <div className={view !== 'landing' && view !== 'mentions' ? 'app-shell app-shell-locked' : 'app-shell'} style={{ fontFamily: FONT, background: WHITE, minHeight: "100vh", color: GRAY_900, display: "flex", flexDirection: "column" }}>
+    <div className={view !== 'landing' && view !== 'mentions' && view !== 'dashboard' && view !== 'uploads' ? 'app-shell app-shell-locked' : 'app-shell'} style={{ fontFamily: FONT, background: WHITE, minHeight: "100vh", color: GRAY_900, display: "flex", flexDirection: "column" }}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
       <nav style={{ background: WHITE, borderBottom: `1px solid ${GRAY_200}`, padding: "0 24px", display: "flex", alignItems: "center", height: 56, justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 }}>
@@ -197,7 +197,7 @@ function App() {
         )}
       </nav>
 
-      <main className={`app-main ${view !== 'landing' && view !== 'mentions' ? 'app-main-locked' : ''}`} style={{ maxWidth: 720, margin: "0 auto", padding: "32px 20px", flex: 1, width: "100%", boxSizing: "border-box" }}>
+      <main className={`app-main ${view !== 'landing' && view !== 'mentions' && view !== 'dashboard' && view !== 'uploads' ? 'app-main-locked' : ''}`} style={{ maxWidth: 720, margin: "0 auto", padding: "32px 20px", flex: 1, width: "100%", boxSizing: "border-box" }}>
         {view === "landing" && <Landing onStart={() => { setView("form"); window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }} onNavigate={navigateTo} />}
         {view === "mentions" && <MentionsLegales />}
         {view === "form" && <ProjectForm form={form} updateForm={updateForm} step={formStep} setStep={setFormStep} onSubmit={submitProject} />}
