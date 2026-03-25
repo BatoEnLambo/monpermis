@@ -34,7 +34,17 @@ img {
   min-height: 0 !important;
 }
 
-/* Cartes tarifs : bouton hover */
+/* Cartes tarifs */
+.page-landing .pricing-grid {
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.page-landing .pricing-card {
+  display: flex;
+  flex-direction: column;
+}
 .page-landing .pricing-card:not(.pricing-card-popular) .pricing-cta:hover {
   background: #f0faf4 !important;
 }

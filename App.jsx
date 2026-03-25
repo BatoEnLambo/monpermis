@@ -344,7 +344,7 @@ function Landing({ onStart, onNavigate }) {
         <p className="section-subtitle" style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, margin: "0 0 32px" }}>
           Jusqu'à 4× moins cher qu'un architecte, et 5× plus rapide. Même dossier, même résultat en mairie.
         </p>
-        <div className="pricing-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0.75rem" }}>
+        <div className="pricing-grid" style={{ display: "grid" }}>
           {[
             { title: "Piscine / Garage", sub: "Déclaration préalable", price: "390€", detail: "Dossier DP complet", projectType: "Piscine" },
             { title: "Extension", sub: "Permis de construire", price: "790€", detail: "Plans + dossier PC", projectType: "Extension" },
@@ -371,7 +371,7 @@ function Landing({ onStart, onNavigate }) {
               <div className="pricing-price" style={{ fontSize: "1.75rem", fontWeight: 800, color: card.popular ? "#fff" : ACCENT, marginBottom: "0.15rem" }}>{card.price}</div>
               <div className="pricing-detail" style={{ fontSize: "0.75rem", color: card.popular ? "rgba(255,255,255,0.7)" : "#888", marginBottom: "0.75rem" }}>{card.detail}</div>
               <button className="pricing-cta" style={{
-                display: "block", width: "100%", textAlign: "center", padding: "0.5rem", borderRadius: 8, fontSize: "0.8rem", fontWeight: card.popular ? 700 : 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s",
+                display: "block", width: "100%", textAlign: "center", padding: "0.5rem", borderRadius: 8, fontSize: "0.8rem", fontWeight: card.popular ? 700 : 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", marginTop: "auto",
                 background: card.popular ? "#fff" : "transparent",
                 color: card.popular ? ACCENT : ACCENT,
                 border: card.popular ? "none" : `1.5px solid ${ACCENT}`,
