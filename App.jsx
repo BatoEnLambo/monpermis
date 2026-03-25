@@ -491,40 +491,40 @@ function PaymentPage({ form, onPay, onBack }) {
 
       <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, overflow: "hidden" }}>
         <div className="payment-card-header" style={{ padding: "24px 28px", borderBottom: `1px solid ${GRAY_100}` }}>
-          <div style={{ fontSize: 12, color: ACCENT, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Votre offre</div>
-          <h2 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>{pricing.label}</h2>
-          <p style={{ fontSize: 13, color: GRAY_500, margin: 0 }}>
+          <div className="pay-offer-label" style={{ fontSize: 12, color: ACCENT, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Votre offre</div>
+          <h2 className="pay-offer-title" style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>{pricing.label}</h2>
+          <p className="pay-offer-address" style={{ fontSize: 13, color: GRAY_500, margin: 0 }}>
             {form.address}, {form.postalCode} {form.city} — {form.surface} m²
           </p>
         </div>
 
         <div className="payment-card-includes" style={{ padding: "20px 28px", borderBottom: `1px solid ${GRAY_100}` }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: GRAY_700, marginBottom: 12 }}>Ce qui est inclus :</div>
+          <div className="pay-includes-title" style={{ fontSize: 13, fontWeight: 600, color: GRAY_700, marginBottom: 12 }}>Ce qui est inclus :</div>
           {pricing.includes.map((item, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", fontSize: 13, color: GRAY_700 }}>
-              <span style={{ color: ACCENT, fontSize: 14 }}>✓</span>
+            <div key={i} className="pay-includes-item" style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", fontSize: 13, color: GRAY_700 }}>
+              <span className="pay-check" style={{ color: ACCENT, fontSize: 14 }}>✓</span>
               {item}
             </div>
           ))}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", fontSize: 13, color: ACCENT, fontWeight: 500, marginTop: 4 }}>
+          <div className="pay-delivery" style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", fontSize: 13, color: ACCENT, fontWeight: 500, marginTop: 4 }}>
             <span style={{ fontSize: 14 }}>⚡</span>
             Livraison en {pricing.delay}
           </div>
         </div>
 
-        <div style={{ padding: "14px 28px", background: SUCCESS_BG, borderTop: `1px solid #c3e6cb`, borderBottom: `1px solid #c3e6cb`, display: "flex", alignItems: "flex-start", gap: 10 }}>
+        <div className="pay-garantie" style={{ padding: "14px 28px", background: SUCCESS_BG, borderTop: `1px solid #c3e6cb`, borderBottom: `1px solid #c3e6cb`, display: "flex", alignItems: "flex-start", gap: 10 }}>
           <span style={{ color: SUCCESS, fontSize: 16, marginTop: 1 }}>✓</span>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: SUCCESS }}>Garantie acceptation</div>
-            <div style={{ fontSize: 12, color: GRAY_700, lineHeight: 1.5, marginTop: 2 }}>Corrections illimitées si la mairie demande des modifications. Remboursé sous 14 jours si insatisfait.</div>
+            <div className="pay-garantie-title" style={{ fontSize: 13, fontWeight: 700, color: SUCCESS }}>Garantie acceptation</div>
+            <div className="pay-garantie-text" style={{ fontSize: 12, color: GRAY_700, lineHeight: 1.5, marginTop: 2 }}>Corrections illimitées si la mairie demande des modifications. Remboursé sous 14 jours si insatisfait.</div>
           </div>
         </div>
 
         <div className="payment-card-price" style={{ padding: "24px 28px", background: GRAY_50 }}>
           {pricing.price ? (
             <>
-              <div style={{ marginBottom: 20 }}>
-                <span style={{ fontSize: 36, fontWeight: 700, color: GRAY_900, letterSpacing: "-0.03em" }}>{pricing.price} €</span>
+              <div className="pay-amount-row" style={{ marginBottom: 20 }}>
+                <span className="pay-amount" style={{ fontSize: 36, fontWeight: 700, color: GRAY_900, letterSpacing: "-0.03em" }}>{pricing.price} €</span>
                 <span style={{ fontSize: 14, color: GRAY_500, marginLeft: 4 }}>TTC</span>
               </div>
 
