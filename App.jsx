@@ -684,7 +684,7 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
                 ["Toiture", form.roofType || "Non spécifié"],
                 ["Style", form.style || "Non spécifié"],
               ].map(([label, value], i, arr) => (
-                <div key={i} className="recap-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < arr.length - 1 ? `1px solid ${GRAY_100}` : "none", minWidth: 0 }}>
+                <div key={i} className="recap-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: (i < arr.length - 1 || form.description) ? `1px solid ${GRAY_100}` : "none", minWidth: 0 }}>
                   <span className="recap-label" style={{ fontSize: 13, color: GRAY_500, flexShrink: 0 }}>{label}</span>
                   <span className="recap-value" style={{ fontSize: 14, fontWeight: 500, color: GRAY_900, textAlign: "right", maxWidth: "60%", minWidth: 0, wordBreak: "break-word", overflowWrap: "break-word" }}>{value}</span>
                 </div>
@@ -693,7 +693,7 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
                 <div className="recap-desc" onClick={() => setDescOpen(!descOpen)} style={{ borderBottom: `1px solid ${GRAY_100}`, padding: "8px 0", cursor: "pointer", minWidth: 0, overflow: "hidden" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <span style={{ fontSize: 13, color: GRAY_500 }}>Description</span>
-                    <span style={{ fontSize: 11, color: GRAY_500, transition: "transform 0.2s", transform: descOpen ? "rotate(90deg)" : "none", flexShrink: 0 }}>›</span>
+                    <span style={{ fontSize: "0.7rem", color: "#888", flexShrink: 0 }}>{descOpen ? "▴" : "▾"}</span>
                   </div>
                   <div style={{
                     fontSize: 12, color: GRAY_700, marginTop: 2, lineHeight: 1.5,
