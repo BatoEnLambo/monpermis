@@ -287,16 +287,16 @@ function Landing({ onStart, onNavigate }) {
             { num: "2", title: "On produit votre dossier", desc: "Plans de masse, façades, coupes, notice descriptive, insertion paysagère. Tout assemblé, prêt à déposer." },
             { num: "3", title: "Déposez et c'est tout", desc: "Vous déposez le dossier en mairie. Si la mairie demande des corrections, on les fait sans frais." },
           ].map((s, i) => (
-            <div key={i} style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 12, padding: 24 }}>
-              <div style={{ width: 32, height: 32, borderRadius: "50%", background: ACCENT_LIGHT, color: ACCENT, fontWeight: 700, fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 14 }}>
+            <div key={i} className="step-card" style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 12, padding: 24 }}>
+              <div className="step-num" style={{ width: 32, height: 32, borderRadius: "50%", background: ACCENT_LIGHT, color: ACCENT, fontWeight: 700, fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 14 }}>
                 {s.num}
               </div>
-              <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 8, color: GRAY_900 }}>{s.title}</div>
-              <div style={{ fontSize: 13, color: GRAY_500, lineHeight: 1.6 }}>{s.desc}</div>
+              <div className="step-title" style={{ fontWeight: 600, fontSize: 15, marginBottom: 8, color: GRAY_900 }}>{s.title}</div>
+              <div className="step-desc" style={{ fontSize: 13, color: GRAY_500, lineHeight: 1.6 }}>{s.desc}</div>
             </div>
           ))}
         </div>
-        <div style={{ textAlign: "center", marginTop: 36 }}>
+        <div className="steps-cta" style={{ textAlign: "center", marginTop: 36 }}>
           <button className="cta-btn" onClick={onStart} style={{ background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
             onMouseOver={e => e.target.style.background = ACCENT_HOVER}
             onMouseOut={e => e.target.style.background = ACCENT}>

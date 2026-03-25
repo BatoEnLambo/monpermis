@@ -77,11 +77,36 @@ img {
 
   /* Comment ça marche */
   .page-landing .steps-section {
-    padding: 2rem 1rem !important;
+    padding: 1.5rem 1rem !important;
     margin-top: 2rem !important;
+  }
+  .page-landing .steps-section .section-title {
+    margin-bottom: 1rem !important;
   }
   .page-landing .steps-grid {
     grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+  .page-landing .step-card {
+    padding: 0.75rem 1rem !important;
+  }
+  .page-landing .step-num {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 0.8rem !important;
+    margin-bottom: 0 !important;
+  }
+  .page-landing .step-title {
+    font-size: 0.95rem !important;
+    margin-top: 0.4rem !important;
+    margin-bottom: 0.2rem !important;
+  }
+  .page-landing .step-desc {
+    font-size: 0.8rem !important;
+    line-height: 1.4 !important;
+  }
+  .page-landing .steps-cta {
+    margin-top: 1rem !important;
   }
 
   /* Dossier */
