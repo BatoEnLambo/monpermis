@@ -34,6 +34,16 @@ img {
   min-height: 0 !important;
 }
 
+/* Cartes tarifs : contenu centré */
+.page-landing .pricing-card {
+  text-align: center !important;
+}
+.page-landing .pricing-badge {
+  position: static !important;
+  display: inline-block !important;
+  margin-bottom: 0.5rem !important;
+}
+
 @media (max-width: 768px) {
 
   /* ============================================================
