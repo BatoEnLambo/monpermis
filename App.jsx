@@ -110,7 +110,7 @@ function App() {
   const confirmPayment = () => {
     const newProject = {
       ...form,
-      id: "MP-" + Date.now().toString(36).toUpperCase(),
+      id: "PC-" + Date.now().toString(36).toUpperCase(),
       createdAt: new Date().toISOString(),
       phase: 0,
       status: "active",
@@ -155,9 +155,9 @@ function App() {
       <nav style={{ background: WHITE, borderBottom: `1px solid ${GRAY_200}`, padding: "0 24px", display: "flex", alignItems: "center", height: 56, justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => setView(project ? "dashboard" : "landing")}>
           <div style={{ width: 32, height: 32, borderRadius: 8, background: ACCENT, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ color: WHITE, fontWeight: 700, fontSize: 14 }}>MP</span>
+            <span style={{ color: WHITE, fontWeight: 700, fontSize: 14 }}>PC</span>
           </div>
-          <span style={{ fontWeight: 700, fontSize: 18, color: GRAY_900, letterSpacing: "-0.02em" }}>MonPermis</span>
+          <span style={{ fontWeight: 700, fontSize: 18, color: GRAY_900, letterSpacing: "-0.02em" }}>PermisClair</span>
         </div>
         {project && (
           <div style={{ display: "flex", gap: 4 }}>
@@ -190,9 +190,9 @@ function App() {
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                 <div style={{ width: 32, height: 32, borderRadius: 8, background: ACCENT, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ color: WHITE, fontWeight: 700, fontSize: 14 }}>MP</span>
+                  <span style={{ color: WHITE, fontWeight: 700, fontSize: 14 }}>PC</span>
                 </div>
-                <span style={{ fontWeight: 700, fontSize: 18, color: WHITE, letterSpacing: "-0.02em" }}>MonPermis</span>
+                <span style={{ fontWeight: 700, fontSize: 18, color: WHITE, letterSpacing: "-0.02em" }}>PermisClair</span>
               </div>
               <div style={{ fontSize: 13, color: GRAY_500, lineHeight: 1.6 }}>Plans et permis de construire,<br />clé en main.</div>
             </div>
@@ -220,7 +220,7 @@ function App() {
             </div>
           </div>
           <div style={{ borderTop: `1px solid ${GRAY_700}`, paddingTop: 16, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
-            <span style={{ fontSize: 12, color: GRAY_500 }}>© 2026 MonPermis — Tous droits réservés</span>
+            <span style={{ fontSize: 12, color: GRAY_500 }}>© 2026 PermisClair — Tous droits réservés</span>
             <span onClick={() => navigateTo("mentions")} style={{ fontSize: 12, color: GRAY_500, cursor: "pointer" }}
               onMouseOver={e => e.target.style.color = WHITE}
               onMouseOut={e => e.target.style.color = GRAY_500}>
@@ -981,7 +981,7 @@ function ChatWidget({ open, onToggle, messages, onSend }) {
         }}>
           {/* Header */}
           <div style={{ padding: "16px 20px", borderBottom: `1px solid ${GRAY_100}`, background: ACCENT, color: WHITE }}>
-            <div style={{ fontWeight: 700, fontSize: 15 }}>MonPermis — Support</div>
+            <div style={{ fontWeight: 700, fontSize: 15 }}>PermisClair — Support</div>
             <div style={{ fontSize: 12, opacity: 0.8 }}>Posez vos questions ici</div>
           </div>
 
@@ -1082,7 +1082,7 @@ function MentionsLegales() {
       <div style={sectionStyle}>
         <h2 style={h2Style}>Propriété intellectuelle</h2>
         <p style={pStyle}>
-          L'ensemble du contenu du site (textes, images, graphismes, logo, structure) est la propriété exclusive de MonPermis, sauf mention contraire. Toute reproduction, même partielle, est interdite sans autorisation préalable.
+          L'ensemble du contenu du site (textes, images, graphismes, logo, structure) est la propriété exclusive de PermisClair, sauf mention contraire. Toute reproduction, même partielle, est interdite sans autorisation préalable.
         </p>
       </div>
 
@@ -1102,7 +1102,7 @@ function MentionsLegales() {
       <div style={sectionStyle}>
         <h2 style={h2Style}>Article 1 — Objet</h2>
         <p style={pStyle}>
-          Les présentes conditions régissent les relations entre MonPermis (ci-après "le Prestataire") et toute personne physique passant commande sur le site (ci-après "le Client"). Le Prestataire propose un service de réalisation de plans et de constitution de dossiers de permis de construire ou de déclaration préalable de travaux.
+          Les présentes conditions régissent les relations entre PermisClair (ci-après "le Prestataire") et toute personne physique passant commande sur le site (ci-après "le Client"). Le Prestataire propose un service de réalisation de plans et de constitution de dossiers de permis de construire ou de déclaration préalable de travaux.
         </p>
       </div>
 
