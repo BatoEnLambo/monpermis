@@ -206,17 +206,17 @@ function App() {
         {view === "uploads" && project && <Uploads uploads={uploads} addFiles={addFiles} removeFile={removeFile} />}
       </main>
 
-      {view !== "form" && view !== "pricing" && <footer className="site-footer" style={{ background: "#f5f5f0", borderTop: "1px solid #e5e5e0", marginTop: 64, textAlign: "center" }}>
+      {view !== "form" && view !== "pricing" && <footer className="site-footer" style={{ background: "#111111", borderTop: "1px solid rgba(255,255,255,0.1)", marginTop: 64, textAlign: "center" }}>
         <div style={{ maxWidth: 720, margin: "0 auto", padding: "2.5rem 2rem 2rem" }}>
           {/* Logo */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: "0.25rem" }}>
             <div style={{ width: 28, height: 28, borderRadius: 7, background: ACCENT, display: "flex", alignItems: "center", justifyContent: "center" }}>
               <span style={{ color: WHITE, fontWeight: 700, fontSize: 12 }}>PC</span>
             </div>
-            <span style={{ fontWeight: 700, fontSize: "1rem", color: ACCENT, letterSpacing: "-0.02em" }}>PermisClair</span>
+            <span style={{ fontWeight: 700, fontSize: "1rem", color: "#ffffff", letterSpacing: "-0.02em" }}>PermisClair</span>
           </div>
           {/* Baseline */}
-          <div style={{ fontSize: "0.8rem", color: "#888", marginBottom: "1.25rem" }}>Plans et permis de construire, clé en main.</div>
+          <div style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.5)", marginBottom: "1.25rem" }}>Plans et permis de construire, clé en main.</div>
           {/* Liens */}
           <div style={{ marginBottom: "1.25rem" }}>
             {[
@@ -226,24 +226,24 @@ function App() {
               { label: "Mentions légales", target: "mentions" },
             ].map((link, i, arr) => (
               <span key={link.label}>
-                <span onClick={() => navigateTo(link.target)} style={{ fontSize: "0.8rem", color: "#555", cursor: "pointer", textDecoration: "none" }}
-                  onMouseOver={e => e.target.style.color = ACCENT}
-                  onMouseOut={e => e.target.style.color = "#555"}>
+                <span onClick={() => navigateTo(link.target)} style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.7)", cursor: "pointer", textDecoration: "none" }}
+                  onMouseOver={e => e.target.style.color = "#ffffff"}
+                  onMouseOut={e => e.target.style.color = "rgba(255,255,255,0.7)"}>
                   {link.label}
                 </span>
-                {i < arr.length - 1 && <span style={{ color: "#ccc", margin: "0 6px" }}>·</span>}
+                {i < arr.length - 1 && <span style={{ color: "rgba(255,255,255,0.2)", margin: "0 6px" }}>·</span>}
               </span>
             ))}
           </div>
           {/* Contact */}
           <div style={{ marginBottom: "1.25rem" }}>
-            <span style={{ fontSize: "0.8rem", color: ACCENT }}>contact@permisclair.fr</span>
+            <span style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.7)" }}>contact@permisclair.fr</span>
           </div>
           {/* Copyright */}
-          <div style={{ fontSize: "0.7rem", color: "#aaa" }}>
-            © 2026 PermisClair — <span onClick={() => navigateTo("mentions")} style={{ cursor: "pointer", color: "#aaa" }}
-              onMouseOver={e => e.target.style.color = "#666"}
-              onMouseOut={e => e.target.style.color = "#aaa"}>Mentions légales · CGV</span>
+          <div style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.3)" }}>
+            © 2026 PermisClair — <span onClick={() => navigateTo("mentions")} style={{ cursor: "pointer", color: "rgba(255,255,255,0.3)" }}
+              onMouseOver={e => e.target.style.color = "rgba(255,255,255,0.7)"}
+              onMouseOut={e => e.target.style.color = "rgba(255,255,255,0.3)"}>Mentions légales · CGV</span>
           </div>
         </div>
       </footer>}
