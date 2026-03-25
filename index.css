@@ -21,6 +21,18 @@ img {
   height: auto;
 }
 
+/* Locked shell for form/payment/dashboard — full viewport */
+.app-shell-locked {
+  height: 100dvh;
+  overflow: hidden;
+}
+.app-main-locked {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  min-height: 0;
+}
+
 @media (max-width: 768px) {
   /* ===== GLOBAL ===== */
   .app-main {
