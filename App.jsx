@@ -34,12 +34,12 @@ const PHASES = [
 ];
 
 const PRICING = {
-  "Construction neuve": { price: 1190, label: "Permis de construire — Maison individuelle", delay: "5 jours", includes: ["Plans complets (PCMI1 à PCMI8)", "Notice descriptive", "CERFA rempli", "Insertion paysagère", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"] },
-  "Extension": { price: 790, label: "Permis de construire — Extension", delay: "5 jours", includes: ["Plans complets (PCMI1 à PCMI8)", "Notice descriptive", "CERFA rempli", "Insertion paysagère", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"] },
-  "Surélévation": { price: 890, label: "Permis de construire — Surélévation", delay: "5-7 jours", includes: ["Plans complets (PCMI1 à PCMI8)", "Notice descriptive", "CERFA rempli", "Insertion paysagère", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"] },
-  "Rénovation avec modification extérieure": { price: 590, label: "Déclaration préalable — Rénovation", delay: "3-5 jours", includes: ["Plans complets (DP1 à DP8)", "Notice descriptive", "CERFA rempli", "Document graphique", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"] },
-  "Garage / Carport": { price: 490, label: "Déclaration préalable — Garage / Carport", delay: "3-5 jours", includes: ["Plans complets (DP1 à DP8)", "Notice descriptive", "CERFA rempli", "Document graphique", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"] },
-  "Piscine": { price: 390, label: "Déclaration préalable — Piscine", delay: "3 jours", includes: ["Plans complets", "CERFA rempli", "Document graphique", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"] },
+  "Construction neuve": { price: 1190, label: "Permis de construire — Maison individuelle", delay: "5 jours ouvrés", includes: ["Plans complets (PCMI1 à PCMI8)", "Notice descriptive", "CERFA rempli", "Insertion paysagère", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"] },
+  "Extension": { price: 790, label: "Permis de construire — Extension", delay: "5 jours ouvrés", includes: ["Plans complets (PCMI1 à PCMI8)", "Notice descriptive", "CERFA rempli", "Insertion paysagère", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"] },
+  "Surélévation": { price: 890, label: "Permis de construire — Surélévation", delay: "5-7 jours ouvrés", includes: ["Plans complets (PCMI1 à PCMI8)", "Notice descriptive", "CERFA rempli", "Insertion paysagère", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"] },
+  "Rénovation avec modification extérieure": { price: 590, label: "Déclaration préalable — Rénovation", delay: "3-5 jours ouvrés", includes: ["Plans complets (DP1 à DP8)", "Notice descriptive", "CERFA rempli", "Document graphique", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"] },
+  "Garage / Carport": { price: 490, label: "Déclaration préalable — Garage / Carport", delay: "3-5 jours ouvrés", includes: ["Plans complets (DP1 à DP8)", "Notice descriptive", "CERFA rempli", "Document graphique", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"] },
+  "Piscine": { price: 390, label: "Déclaration préalable — Piscine", delay: "3 jours ouvrés", includes: ["Plans complets", "CERFA rempli", "Document graphique", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"] },
   "Autre": { price: null, label: "Projet sur mesure", delay: "Sur devis", includes: ["Analyse personnalisée de votre projet", "Devis sous 24h"] },
 };
 
@@ -520,7 +520,7 @@ function PaymentPage({ form, onPay, onBack }) {
           </div>
         </div>
 
-        <div className="payment-card-price" style={{ padding: "24px 28px", background: GRAY_50 }}>
+        <div className="payment-card-price" style={{ padding: "24px 28px", background: GRAY_50, textAlign: "center" }}>
           {pricing.price ? (
             <>
               <div className="pay-amount-row" style={{ marginBottom: 20 }}>
@@ -544,18 +544,21 @@ function PaymentPage({ form, onPay, onBack }) {
                     Paiement en cours...
                   </>
                 ) : (
-                  <>🔒 Payer {pricing.price} € — dossier livré en 5 jours</>
+                  <>🔒 Payer {pricing.price} € — dossier livré en 5 jours ouvrés</>
                 )}
               </button>
               <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
-              <div className="reassurance-row" style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 16 }}>
+              <div className="payment-badges" style={{ display: "flex", justifyContent: "center", gap: "0.5rem", marginTop: "0.75rem" }}>
                 {[
-                  "🔒 Paiement sécurisé Stripe",
-                  "✓ Satisfait ou remboursé 14j",
-                  "🛡️ Corrections illimitées",
+                  { icon: "🔒", text: "Paiement sécurisé Stripe" },
+                  { icon: "✓", text: "Satisfait ou remboursé 14j" },
+                  { icon: "🛡️", text: "Corrections illimitées" },
                 ].map((item, i) => (
-                  <span key={i} style={{ fontSize: 11, color: GRAY_500 }}>{item}</span>
+                  <div key={i} style={{ flex: 1, textAlign: "center", fontSize: "0.7rem", color: "#888", lineHeight: 1.3 }}>
+                    <div>{item.icon}</div>
+                    <div>{item.text}</div>
+                  </div>
                 ))}
               </div>
             </>
