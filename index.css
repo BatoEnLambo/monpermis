@@ -22,16 +22,9 @@ img {
 }
 
 @media (max-width: 768px) {
-  /* Global container padding */
+  /* ===== GLOBAL ===== */
   .app-main {
-    padding: 16px 16px !important;
-  }
-
-  /* ===== LANDING SECTIONS: reduced spacing ===== */
-  .landing-section {
-    margin-top: 28px !important;
-    padding-top: 2.5rem !important;
-    padding-bottom: 2.5rem !important;
+    padding: 8px 16px !important;
   }
 
   /* ===== HERO ===== */
@@ -140,7 +133,7 @@ img {
     font-size: 1.5rem !important;
   }
 
-  /* ===== SECTION TITLES global ===== */
+  /* ===== SECTION TITLES ===== */
   .section-title {
     font-size: 1.4rem !important;
   }
@@ -148,71 +141,171 @@ img {
     font-size: 0.95rem !important;
   }
 
-  /* ===== FONT SIZES global ===== */
-  h2 {
-    font-size: 1.4rem !important;
-  }
-  h3 {
-    font-size: 1.15rem !important;
-  }
-  p, .body-text {
-    font-size: 0.95rem !important;
-  }
-  small, .caption {
-    font-size: 0.8rem !important;
-  }
-
-  /* ===== FOOTER ===== */
+  /* ===== FOOTER — compact ===== */
   .footer-inner {
-    padding: 2rem 1rem !important;
+    padding: 1.5rem 1rem !important;
   }
   .footer-content {
     flex-direction: column !important;
-    gap: 20px !important;
+    gap: 1rem !important;
+    margin-bottom: 1rem !important;
   }
-  .footer-content .footer-baseline {
-    font-size: 0.9rem !important;
-  }
-  .footer-content a, .footer-content div[style*="padding: 4px"] {
-    font-size: 0.85rem !important;
+  .footer-baseline {
+    font-size: 0.8rem !important;
+    margin-bottom: 0.75rem !important;
   }
   .footer-links div {
-    font-size: 0.85rem !important;
+    font-size: 0.8rem !important;
+    line-height: 1.8 !important;
+  }
+  .footer-links div:first-child {
+    font-size: 0.75rem !important;
+    margin-bottom: 0.25rem !important;
   }
   .footer-bottom {
     flex-direction: column !important;
     align-items: center !important;
     text-align: center;
+    margin-top: 0.75rem !important;
   }
   .footer-bottom span {
-    font-size: 0.75rem !important;
+    font-size: 0.7rem !important;
   }
 
-  /* ===== FORMULAIRE ===== */
+  /* ===== FORMULAIRE — one-screen per step ===== */
+  .form-stepper {
+    margin-bottom: 12px !important;
+    padding: 0.5rem 0 !important;
+  }
+  .form-step-label {
+    font-size: 0.75rem !important;
+  }
+  .form-card {
+    padding: 1rem !important;
+  }
+  .form-title {
+    font-size: 1.1rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+  .form-subtitle {
+    font-size: 0.8rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  .form-card label {
+    font-size: 0.85rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+  .form-card input,
+  .form-card select {
+    height: 44px !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+  .form-grid-3 {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.75rem !important;
+  }
+  .form-card .form-grid-3 + div {
+    margin-top: 0.75rem !important;
+  }
+  .form-textarea {
+    min-height: 80px !important;
+  }
   .form-actions {
     flex-direction: column-reverse !important;
     gap: 8px !important;
+    margin-top: 0.75rem !important;
   }
   .form-actions button {
     width: 100% !important;
     min-height: 48px !important;
     font-size: 1rem !important;
   }
-  .form-card {
-    padding: 20px !important;
-  }
-  .form-grid-3 {
-    grid-template-columns: 1fr 1fr !important;
-  }
 
-  /* ===== PAGE PAIEMENT ===== */
-  .payment-card-header, .payment-card-includes, .payment-card-price {
-    padding-left: 16px !important;
-    padding-right: 16px !important;
+  /* ===== PAGE PAIEMENT — compact ===== */
+  .payment-back {
+    font-size: 0.85rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  .payment-card-header {
+    padding: 16px !important;
+  }
+  .payment-card-header h2 {
+    font-size: 1.1rem !important;
+  }
+  .payment-card-includes {
+    padding: 12px 16px !important;
+  }
+  .payment-card-includes div {
+    font-size: 0.85rem !important;
+    gap: 0.25rem !important;
+  }
+  .payment-card-price {
+    padding: 16px !important;
+  }
+  .payment-card-price span[style*="fontSize: 36"] {
+    font-size: 2rem !important;
   }
   .reassurance-row {
     flex-direction: column !important;
     align-items: center !important;
-    gap: 8px !important;
+    gap: 6px !important;
+  }
+  .reassurance-row span {
+    font-size: 0.7rem !important;
+  }
+
+  /* ===== DASHBOARD ===== */
+  .dash-header {
+    margin-bottom: 16px !important;
+  }
+  .dash-title {
+    font-size: 1.2rem !important;
+  }
+  .dash-address {
+    font-size: 0.85rem !important;
+  }
+  .dash-id {
+    font-size: 0.75rem !important;
+    padding: 3px 8px !important;
+  }
+  .dash-progress {
+    padding: 16px !important;
+    padding-top: 0.75rem !important;
+  }
+  .dash-recap {
+    padding: 16px !important;
+  }
+  .dash-recap-grid {
+    gap: 0.5rem !important;
+  }
+  .dash-recap-grid > div {
+    padding: 0.75rem !important;
+  }
+  .dash-recap-grid > div > div:first-child {
+    font-size: 0.7rem !important;
+  }
+  .dash-recap-grid > div > div:last-child {
+    font-size: 0.9rem !important;
+  }
+
+  /* ===== UPLOADS ===== */
+  .drop-zone {
+    padding: 20px 16px !important;
+    max-height: 120px !important;
+  }
+  .drop-zone div {
+    font-size: 0.9rem !important;
+  }
+  .drop-zone div:first-child {
+    font-size: 24px !important;
+    margin-bottom: 6px !important;
+  }
+
+  /* ===== CHAT WIDGET ===== */
+  .chat-panel {
+    width: calc(100vw - 32px) !important;
+    max-height: 60vh !important;
+    right: 16px !important;
+    bottom: 84px !important;
   }
 }

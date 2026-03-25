@@ -105,6 +105,7 @@ function App() {
 
   const submitProject = () => {
     setView("pricing");
+    window.scrollTo(0, 0);
   };
 
   const confirmPayment = () => {
@@ -117,8 +118,9 @@ function App() {
     };
     setProject(newProject);
     localStorage.setItem("monpermis_project", JSON.stringify(newProject));
-    setChatOpen(true);
+    setChatOpen(false);
     setView("dashboard");
+    window.scrollTo(0, 0);
   };
 
   const addFiles = (categoryId, files) => {
@@ -165,7 +167,7 @@ function App() {
               { id: "dashboard", label: "Mon projet" },
               { id: "uploads", label: "Documents" },
             ].map(tab => (
-              <button key={tab.id} onClick={() => setView(tab.id)}
+              <button key={tab.id} onClick={() => { setView(tab.id); window.scrollTo(0, 0); }}
                 style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: view === tab.id ? ACCENT_LIGHT : "transparent", color: view === tab.id ? ACCENT : GRAY_500, fontWeight: 500, fontSize: 13, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s" }}>
                 {tab.label}
               </button>
@@ -175,15 +177,15 @@ function App() {
       </nav>
 
       <main className="app-main" style={{ maxWidth: 720, margin: "0 auto", padding: "32px 20px", flex: 1, width: "100%", boxSizing: "border-box" }}>
-        {view === "landing" && <Landing onStart={() => setView("form")} onNavigate={navigateTo} />}
+        {view === "landing" && <Landing onStart={() => { setView("form"); window.scrollTo(0, 0); }} onNavigate={navigateTo} />}
         {view === "mentions" && <MentionsLegales />}
         {view === "form" && <ProjectForm form={form} updateForm={updateForm} step={formStep} setStep={setFormStep} onSubmit={submitProject} />}
-        {view === "pricing" && <PaymentPage form={form} onPay={confirmPayment} onBack={() => { setFormStep(3); setView("form"); }} />}
+        {view === "pricing" && <PaymentPage form={form} onPay={confirmPayment} onBack={() => { setFormStep(3); setView("form"); window.scrollTo(0, 0); }} />}
         {view === "dashboard" && project && <Dashboard project={project} uploads={uploads} onGoUploads={() => setView("uploads")} />}
         {view === "uploads" && project && <Uploads uploads={uploads} addFiles={addFiles} removeFile={removeFile} />}
       </main>
 
-      <footer style={{ background: GRAY_900, color: GRAY_300, marginTop: 64 }}>
+      {view !== "form" && view !== "pricing" && <footer style={{ background: GRAY_900, color: GRAY_300, marginTop: 64 }}>
         <div className="footer-inner" style={{ maxWidth: 720, margin: "0 auto", padding: "40px 20px 24px" }}>
           <div className="footer-content" style={{ display: "flex", justifyContent: "space-between", gap: 40, flexWrap: "wrap", marginBottom: 32 }}>
             {/* Logo */}
@@ -228,7 +230,7 @@ function App() {
             </span>
           </div>
         </div>
-      </footer>
+      </footer>}
 
       {project && (
         <ChatWidget open={chatOpen} onToggle={() => setChatOpen(!chatOpen)} messages={messages} onSend={sendMessage} />
@@ -467,7 +469,7 @@ function PaymentPage({ form, onPay, onBack }) {
 
   return (
     <div style={{ maxWidth: 520, margin: "0 auto" }}>
-      <button onClick={onBack} style={{ background: "none", border: "none", color: GRAY_500, fontSize: 13, cursor: "pointer", fontFamily: FONT, padding: 0, marginBottom: 20, display: "flex", alignItems: "center", gap: 4 }}>
+      <button className="payment-back" onClick={onBack} style={{ background: "none", border: "none", color: GRAY_500, fontSize: 13, cursor: "pointer", fontFamily: FONT, padding: 0, marginBottom: 20, display: "flex", alignItems: "center", gap: 4 }}>
         ← Modifier mon projet
       </button>
 
@@ -576,11 +578,11 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
 
   return (
     <div>
-      <div style={{ display: "flex", gap: 4, marginBottom: 32 }}>
+      <div className="form-stepper" style={{ display: "flex", gap: 4, marginBottom: 32 }}>
         {steps.map((s, i) => (
           <div key={i} style={{ flex: 1, textAlign: "center" }}>
             <div style={{ height: 3, borderRadius: 2, background: i <= step ? ACCENT : GRAY_200, transition: "background 0.3s", marginBottom: 8 }} />
-            <span style={{ fontSize: 12, color: i <= step ? ACCENT : GRAY_500, fontWeight: i === step ? 600 : 400 }}>{s}</span>
+            <span className="form-step-label" style={{ fontSize: 12, color: i <= step ? ACCENT : GRAY_500, fontWeight: i === step ? 600 : 400 }}>{s}</span>
           </div>
         ))}
       </div>
@@ -588,8 +590,8 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
       <div className="form-card" style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 28 }}>
         {step === 0 && (
           <div>
-            <h2 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Votre projet</h2>
-            <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Décrivez-nous ce que vous souhaitez réaliser</p>
+            <h2 className="form-title" style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Votre projet</h2>
+            <p className="form-subtitle" style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Décrivez-nous ce que vous souhaitez réaliser</p>
             <SelectInput label="Type de projet" options={PROJECT_TYPES} value={form.projectType} onChange={v => updateForm("projectType", v)} />
             <div style={{ marginTop: 14 }}>
               <Input label="Adresse du terrain" value={form.address} onChange={v => updateForm("address", v)} placeholder="12 rue des Lilas" />
@@ -603,8 +605,8 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
 
         {step === 1 && (
           <div>
-            <h2 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Détails du projet</h2>
-            <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Ces infos nous permettent de produire vos plans sur mesure</p>
+            <h2 className="form-title" style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Détails du projet</h2>
+            <p className="form-subtitle" style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Ces infos nous permettent de produire vos plans sur mesure</p>
             <div className="form-grid-3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
               <div>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
@@ -628,7 +630,7 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
             </div>
             <div style={{ marginTop: 14 }}>
               <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>Description libre du projet</label>
-              <textarea value={form.description} onChange={e => updateForm("description", e.target.value)}
+              <textarea className="form-textarea" value={form.description} onChange={e => updateForm("description", e.target.value)}
                 placeholder="Décrivez votre projet idéal : disposition des pièces, contraintes particulières, inspirations..."
                 style={{ width: "100%", minHeight: 100, padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 14, resize: "vertical", boxSizing: "border-box", outline: "none", transition: "border 0.15s" }}
                 onFocus={e => e.target.style.borderColor = ACCENT}
@@ -639,8 +641,8 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
 
         {step === 2 && (
           <div>
-            <h2 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Vos coordonnées</h2>
-            <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Pour vous envoyer votre devis et votre dossier</p>
+            <h2 className="form-title" style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Vos coordonnées</h2>
+            <p className="form-subtitle" style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Pour vous envoyer votre devis et votre dossier</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               <Input label="Prénom" value={form.firstName} onChange={v => updateForm("firstName", v)} placeholder="Jean" />
               <Input label="Nom" value={form.lastName} onChange={v => updateForm("lastName", v)} placeholder="Dupont" />
@@ -654,8 +656,8 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
 
         {step === 3 && (
           <div>
-            <h2 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Récapitulatif</h2>
-            <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Vérifiez vos informations avant de valider</p>
+            <h2 className="form-title" style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Récapitulatif</h2>
+            <p className="form-subtitle" style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Vérifiez vos informations avant de valider</p>
             <div style={{ display: "grid", gap: 12 }}>
               {[
                 ["Projet", form.projectType],
@@ -701,14 +703,14 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
 
         <div className="form-actions" style={{ display: "flex", justifyContent: "space-between", marginTop: 28 }}>
           {step > 0 ? (
-            <button onClick={() => setStep(step - 1)}
+            <button onClick={() => { setStep(step - 1); window.scrollTo(0, 0); }}
               style={{ padding: "10px 20px", borderRadius: 8, border: `1px solid ${GRAY_300}`, background: WHITE, color: GRAY_700, fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: FONT }}>
               ← Retour
             </button>
           ) : <div />}
           {step < 3 ? (
-            <button onClick={() => canNext() && setStep(step + 1)}
-              style={{ padding: "10px 24px", borderRadius: 8, border: "none", background: canNext() ? ACCENT : GRAY_300, color: WHITE, fontSize: 14, fontWeight: 600, cursor: canNext() ? "pointer" : "default", fontFamily: FONT, transition: "all 0.15s" }}>
+            <button onClick={() => { if (canNext()) { setStep(step + 1); window.scrollTo(0, 0); } }}
+              style={{ padding: "10px 24px", borderRadius: 8, border: "none", background: canNext() ? ACCENT : "#d1d5db", color: canNext() ? WHITE : "#9ca3af", fontSize: 14, fontWeight: 600, cursor: canNext() ? "pointer" : "not-allowed", fontFamily: FONT, transition: "all 0.15s" }}>
               Continuer →
             </button>
           ) : (
@@ -730,21 +732,21 @@ function Dashboard({ project, uploads, onGoUploads }) {
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 28 }}>
+      <div className="dash-header" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 28 }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>
+          <h1 className="dash-title" style={{ fontSize: 24, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>
             {project.projectType}
           </h1>
-          <p style={{ fontSize: 14, color: GRAY_500, margin: 0 }}>
+          <p className="dash-address" style={{ fontSize: 14, color: GRAY_500, margin: 0 }}>
             {project.address}, {project.postalCode} {project.city} · {project.surface} m²
           </p>
         </div>
-        <div style={{ background: ACCENT_LIGHT, color: ACCENT, fontSize: 12, fontWeight: 600, padding: "4px 12px", borderRadius: 6 }}>
+        <div className="dash-id" style={{ background: ACCENT_LIGHT, color: ACCENT, fontSize: 12, fontWeight: 600, padding: "4px 12px", borderRadius: 6 }}>
           {project.id}
         </div>
       </div>
 
-      <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
+      <div className="dash-progress" style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
         <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 20px", color: GRAY_900 }}>Avancement du dossier</h3>
         <div style={{ position: "relative" }}>
           {PHASES.map((phase, i) => {
@@ -797,9 +799,9 @@ function Dashboard({ project, uploads, onGoUploads }) {
         </button>
       </div>
 
-      <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginTop: 20 }}>
+      <div className="dash-recap" style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginTop: 20 }}>
         <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 16px", color: GRAY_900 }}>Récapitulatif du projet</h3>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        <div className="dash-recap-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           {[
             ["Type", project.projectType],
             ["Surface", `${project.surface} m²`],
@@ -856,6 +858,7 @@ function Uploads({ uploads, addFiles, removeFile }) {
           onDragOver={e => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
           onDrop={handleDrop}
+          className="drop-zone"
           style={{
             padding: "40px 24px", textAlign: "center", cursor: "pointer",
             border: `2px dashed ${dragOver ? ACCENT : GRAY_300}`,
@@ -978,7 +981,7 @@ function ChatWidget({ open, onToggle, messages, onSend }) {
 
       {/* Chat panel */}
       {open && (
-        <div style={{
+        <div className="chat-panel" style={{
           position: "fixed", bottom: 92, right: 24, width: 360, maxHeight: 480,
           background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 16,
           boxShadow: "0 8px 30px rgba(0,0,0,0.12)", zIndex: 100,
