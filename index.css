@@ -254,6 +254,7 @@ img {
   }
   .page-form .recap-price-amount {
     font-size: 1.3rem !important;
+    white-space: nowrap !important;
   }
 
   /* ============================================================
