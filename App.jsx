@@ -401,6 +401,24 @@ function Landing({ onStart, onNavigate }) {
         <FAQ />
       </div>
 
+      {/* BANDEAU CONTACT */}
+      <div className="contact-banner" style={{ marginTop: 56, padding: "32px 24px", borderTop: "1px solid #eee", borderBottom: "1px solid #eee", textAlign: "center" }}>
+        <div style={{ fontSize: 20, fontWeight: 700, color: GRAY_900, marginBottom: 6 }}>Une question avant de vous lancer ?</div>
+        <div style={{ fontSize: 14, color: GRAY_500, marginBottom: 20 }}>Écrivez-moi, je vous réponds personnellement en moins de 24h.</div>
+        <div className="contact-links" style={{ display: "flex", justifyContent: "center", gap: 24 }}>
+          <a href="https://wa.me/33612345678" target="_blank" rel="noopener noreferrer" style={{ fontSize: 15, fontWeight: 600, color: ACCENT, textDecoration: "none" }}
+            onMouseOver={e => e.target.style.textDecoration = "underline"}
+            onMouseOut={e => e.target.style.textDecoration = "none"}>
+            💬 WhatsApp
+          </a>
+          <a href="mailto:contact@permisclair.fr" style={{ fontSize: 15, fontWeight: 600, color: ACCENT, textDecoration: "none" }}
+            onMouseOver={e => e.target.style.textDecoration = "underline"}
+            onMouseOut={e => e.target.style.textDecoration = "none"}>
+            📧 contact@permisclair.fr
+          </a>
+        </div>
+      </div>
+
       {/* CTA FINAL */}
       <div className="cta-final" style={{ marginTop: 56, background: GRAY_100, borderRadius: 16, padding: "48px 24px", textAlign: "center" }}>
         <h2 className="cta-final-title" style={{ fontSize: 28, fontWeight: 700, margin: "0 0 10px", letterSpacing: "-0.02em", color: GRAY_900 }}>

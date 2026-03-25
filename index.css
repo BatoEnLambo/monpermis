@@ -204,6 +204,12 @@ img {
     line-height: 1.4 !important;
   }
 
+  /* Bandeau contact */
+  .page-landing .contact-links {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
   /* FAQ */
   .page-landing .faq-section {
     padding: 2rem 1rem !important;
