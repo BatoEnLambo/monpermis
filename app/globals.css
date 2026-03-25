@@ -1,1 +1,22 @@
-/* globals.css — à migrer depuis index.css */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* iOS zoom fix */
+input, select, textarea {
+  font-size: 16px !important;
+}
+
+/* Images never overflow */
+img {
+  max-width: 100%;
+  height: auto;
+}
