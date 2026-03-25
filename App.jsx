@@ -791,6 +791,22 @@ function Dashboard({ project, uploads, onGoUploads }) {
         </div>
       </div>
 
+      {totalFiles < 3 && (
+        <div className="dash-onboarding" style={{ background: "#FFF9E6", border: "1px solid #F0D060", borderRadius: 8, padding: 16, marginBottom: 20 }}>
+          <div style={{ fontWeight: 700, fontSize: 14, color: GRAY_900, marginBottom: 10 }}>Pour démarrer votre dossier, envoyez-nous ces éléments :</div>
+          <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: GRAY_700, lineHeight: 1.8, listStyle: "none" }}>
+            <li>📸 3-4 photos de votre terrain prises depuis la rue (face, gauche, droite)</li>
+            <li>📸 1-2 photos de l'environnement proche (maisons voisines, rue)</li>
+            <li>📐 Plan cadastral de votre parcelle (disponible sur cadastre.gouv.fr)</li>
+            <li>✏️ Un croquis ou schéma de votre projet (même à main levée)</li>
+            <li>📍 L'emplacement souhaité de la construction sur le terrain</li>
+            <li>🎨 Matériaux et couleurs souhaitées (enduit, bois, tuile, ardoise...)</li>
+          </ul>
+          <div style={{ fontSize: 13, color: GRAY_500, marginTop: 10 }}>Déposez vos fichiers ci-dessous. Pas de panique si vous n'avez pas tout — on vous guidera via la messagerie.</div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: "#B8860B", marginTop: 8 }}>{totalFiles}/3 documents minimum déposés</div>
+        </div>
+      )}
+
       <div className="dash-progress" style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
         <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 20px", color: GRAY_900 }}>Avancement du dossier</h3>
         <div style={{ position: "relative" }}>
