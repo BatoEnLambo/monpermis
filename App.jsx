@@ -610,7 +610,16 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
             <h2 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Détails du projet</h2>
             <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Ces infos nous permettent de produire vos plans sur mesure</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
-              <Input label="Surface (m²)" value={form.surface} onChange={v => { if (v === "" || Number(v) <= 150) updateForm("surface", v); }} placeholder="120" type="number" max={150} />
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                  <label style={{ fontSize: 13, fontWeight: 500, color: GRAY_700 }}>Surface (m²)</label>
+                  <InfoTooltip text="Au-delà de 150 m² de surface de plancher, le recours à un architecte est obligatoire (article R.431-2 du Code de l'urbanisme). Notre service concerne les projets de moins de 150 m²." />
+                </div>
+                <input type="number" value={form.surface} onChange={e => { const v = e.target.value; if (v === "" || Number(v) <= 150) updateForm("surface", v); }} placeholder="120" max={150}
+                  style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 14, boxSizing: "border-box", outline: "none", transition: "border 0.15s", background: WHITE }}
+                  onFocus={e => e.target.style.borderColor = ACCENT}
+                  onBlur={e => e.target.style.borderColor = GRAY_300} />
+              </div>
               {form.surface && Number(form.surface) > 150 && (
                 <div style={{ gridColumn: "1 / -1", fontSize: 12, color: "#c0392b", marginTop: -8 }}>Surface maximale : 150 m²</div>
               )}
@@ -1043,6 +1052,48 @@ function ChatWidget({ open, onToggle, messages, onSend }) {
         </div>
       )}
     </>
+  );
+}
+
+function InfoTooltip({ text }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleClick = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, [open]);
+
+  return (
+    <div ref={ref} style={{ position: "relative", display: "inline-flex" }}>
+      <div
+        onClick={(e) => { e.stopPropagation(); setOpen(!open); }}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        style={{
+          width: 16, height: 16, borderRadius: "50%", background: GRAY_200,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 10, fontWeight: 700, color: GRAY_500, cursor: "pointer",
+          userSelect: "none",
+        }}>
+        i
+      </div>
+      {open && (
+        <div style={{
+          position: "absolute", top: 24, left: "50%", transform: "translateX(-50%)",
+          background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 8,
+          padding: 12, maxWidth: 300, width: "max-content",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.08)", zIndex: 10,
+          fontSize: 13, color: GRAY_700, lineHeight: 1.6,
+        }}>
+          {text}
+        </div>
+      )}
+    </div>
   );
 }
 
