@@ -1108,7 +1108,7 @@ function InfoTooltip({ text }) {
         i
       </div>
       {open && (
-        <div style={{
+        <div className="info-tooltip-popup" style={{
           position: "absolute", top: 24, left: "50%", transform: "translateX(-50%)",
           background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 8,
           padding: 12, maxWidth: 300, width: "max-content",

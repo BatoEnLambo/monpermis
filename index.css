@@ -273,6 +273,15 @@ img {
     gap: 0.3rem !important;
   }
 
+  /* Tooltip info — ne déborde plus sur mobile */
+  .page-form .info-tooltip-popup {
+    left: 0 !important;
+    transform: none !important;
+    max-width: calc(100vw - 2rem) !important;
+    width: auto !important;
+    word-wrap: break-word !important;
+  }
+
   /* ============================================================
      PAIEMENT
      ============================================================ */
