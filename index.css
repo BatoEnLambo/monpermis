@@ -144,31 +144,70 @@ img {
     font-size: 12px !important;
   }
 
-  /* Tarifs */
+  /* Tarifs — grille 2x2 */
   .page-landing .tarifs-section {
     margin-top: 1.5rem !important;
     padding-top: 2rem !important;
   }
   .page-landing .pricing-grid {
-    grid-template-columns: 1fr !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.5rem !important;
+  }
+  .page-landing .pricing-card {
+    padding: 0.75rem !important;
+  }
+  .page-landing .pricing-sub {
+    font-size: 0.6rem !important;
+    color: #888 !important;
+    text-transform: uppercase !important;
+    margin-bottom: 0.15rem !important;
+  }
+  .page-landing .pricing-name {
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 0.25rem !important;
   }
   .page-landing .pricing-price {
-    font-size: 20px !important;
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 0.15rem !important;
+  }
+  .page-landing .pricing-detail {
+    font-size: 0.7rem !important;
+    color: #888 !important;
+  }
+  .page-landing .pricing-badge {
+    font-size: 0.55rem !important;
+    padding: 2px 6px !important;
+  }
+  .page-landing .pricing-compare {
+    font-size: 0.8rem !important;
+    margin-top: 0.75rem !important;
+    text-align: center !important;
   }
 
-  /* Garantie */
+  /* Garantie — compacte */
   .page-landing .garantie-box {
-    padding: 16px !important;
-    margin-top: 1.5rem !important;
+    padding: 1rem !important;
+    margin-top: 1rem !important;
+  }
+  .page-landing .garantie-icon {
+    min-width: 32px !important;
+    font-size: 24px !important;
   }
   .page-landing .garantie-title {
-    font-size: 18px !important;
+    font-size: 1rem !important;
+  }
+  .page-landing .garantie-text {
+    font-size: 0.85rem !important;
+    line-height: 1.4 !important;
   }
 
   /* FAQ */
   .page-landing .faq-section {
     padding: 2rem 1rem !important;
-    margin-top: 1.5rem !important;
+    margin-top: 1rem !important;
   }
   .page-landing .faq-question {
     font-size: 15px !important;
@@ -177,7 +216,7 @@ img {
   /* CTA Final */
   .page-landing .cta-final {
     padding: 2rem 1rem !important;
-    margin-top: 1.5rem !important;
+    margin-top: 1rem !important;
   }
   .page-landing .cta-final-title {
     font-size: 1.5rem !important;

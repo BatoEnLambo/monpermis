@@ -360,30 +360,30 @@ function Landing({ onStart, onNavigate }) {
             { title: "Maison plain-pied", sub: "Permis de construire", price: "À partir de 990€", detail: "Plans + dossier PC", popular: true },
             { title: "Maison R+1 / complexe", sub: "Permis de construire", price: "À partir de 1 190€", detail: "Plans + dossier PC" },
           ].map((card, i) => (
-            <div key={i} style={{ background: card.popular ? "#f0faf4" : WHITE, border: card.popular ? `2px solid ${ACCENT}` : `1px solid ${GRAY_200}`, borderRadius: 12, padding: 22, position: "relative" }}>
+            <div key={i} className="pricing-card" style={{ background: card.popular ? "#f0faf4" : WHITE, border: card.popular ? `2px solid ${ACCENT}` : `1px solid ${GRAY_200}`, borderRadius: 12, padding: 22, position: "relative" }}>
               {card.popular && (
-                <div style={{ position: "absolute", top: 12, right: 12, background: ACCENT, color: WHITE, fontSize: "0.75rem", fontWeight: 600, padding: "4px 12px", borderRadius: 12 }}>
+                <div className="pricing-badge" style={{ position: "absolute", top: 12, right: 12, background: ACCENT, color: WHITE, fontSize: "0.75rem", fontWeight: 600, padding: "4px 12px", borderRadius: 12 }}>
                   Populaire
                 </div>
               )}
-              <div style={{ fontSize: 12, color: GRAY_500, marginBottom: 4 }}>{card.sub}</div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: GRAY_900, marginBottom: 10 }}>{card.title}</div>
+              <div className="pricing-sub" style={{ fontSize: 12, color: GRAY_500, marginBottom: 4 }}>{card.sub}</div>
+              <div className="pricing-name" style={{ fontSize: 16, fontWeight: 700, color: GRAY_900, marginBottom: 10 }}>{card.title}</div>
               <div className="pricing-price" style={{ fontSize: 22, fontWeight: 700, color: ACCENT, marginBottom: 6 }}>{card.price}</div>
-              <div style={{ fontSize: 13, color: GRAY_500 }}>{card.detail}</div>
+              <div className="pricing-detail" style={{ fontSize: 13, color: GRAY_500 }}>{card.detail}</div>
             </div>
           ))}
         </div>
-        <p style={{ fontSize: 13, color: GRAY_500, marginTop: 20 }}>
+        <p className="pricing-compare" style={{ fontSize: 13, color: GRAY_500, marginTop: 20 }}>
           Un architecte facture entre 1 500€ et 4 000€ pour le même service.
         </p>
       </div>
 
       {/* GARANTIE */}
       <div className="garantie-box" style={{ marginTop: 48, background: ACCENT_LIGHT, border: `1px solid ${ACCENT}44`, borderRadius: 12, padding: "24px 28px", display: "flex", alignItems: "flex-start", gap: 16 }}>
-        <div style={{ fontSize: 28, minWidth: 36 }}>🛡️</div>
+        <div className="garantie-icon" style={{ fontSize: 28, minWidth: 36 }}>🛡️</div>
         <div>
           <div className="garantie-title" style={{ fontSize: 16, fontWeight: 700, color: GRAY_900, marginBottom: 6 }}>Votre dossier accepté, ou on corrige gratuitement.</div>
-          <div style={{ fontSize: 14, color: GRAY_700, lineHeight: 1.6 }}>
+          <div className="garantie-text" style={{ fontSize: 14, color: GRAY_700, lineHeight: 1.6 }}>
             Si la mairie demande des modifications, on corrige et on vous renvoie le dossier. Sans frais, sans limite. Et si notre service ne vous convient pas : remboursé sous 14 jours, sans condition.
           </div>
         </div>
