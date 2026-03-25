@@ -684,23 +684,23 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
                 ["Toiture", form.roofType || "Non spécifié"],
                 ["Style", form.style || "Non spécifié"],
               ].map(([label, value], i, arr) => (
-                <div key={i} className="recap-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < arr.length - 1 ? `1px solid ${GRAY_100}` : "none" }}>
-                  <span className="recap-label" style={{ fontSize: 13, color: GRAY_500 }}>{label}</span>
-                  <span className="recap-value" style={{ fontSize: 14, fontWeight: 500, color: GRAY_900, textAlign: "right", maxWidth: "60%" }}>{value}</span>
+                <div key={i} className="recap-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < arr.length - 1 ? `1px solid ${GRAY_100}` : "none", minWidth: 0 }}>
+                  <span className="recap-label" style={{ fontSize: 13, color: GRAY_500, flexShrink: 0 }}>{label}</span>
+                  <span className="recap-value" style={{ fontSize: 14, fontWeight: 500, color: GRAY_900, textAlign: "right", maxWidth: "60%", minWidth: 0, wordBreak: "break-word", overflowWrap: "break-word" }}>{value}</span>
                 </div>
               ))}
               {form.description && (
-                <div className="recap-desc" style={{ borderBottom: `1px solid ${GRAY_100}`, padding: "8px 0" }}>
-                  <div onClick={() => setDescOpen(!descOpen)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}>
-                    <span className="recap-label" style={{ fontSize: 13, color: GRAY_500 }}>Description</span>
-                    <span style={{ fontSize: 12, color: GRAY_500, transition: "transform 0.2s", transform: descOpen ? "rotate(90deg)" : "none" }}>▶</span>
+                <div className="recap-desc" onClick={() => setDescOpen(!descOpen)} style={{ borderBottom: `1px solid ${GRAY_100}`, padding: "8px 0", cursor: "pointer", minWidth: 0, overflow: "hidden" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: 13, color: GRAY_500 }}>Description</span>
+                    <span style={{ fontSize: 11, color: GRAY_500, transition: "transform 0.2s", transform: descOpen ? "rotate(90deg)" : "none", flexShrink: 0 }}>›</span>
                   </div>
-                  {!descOpen && (
-                    <div style={{ fontSize: 12, color: GRAY_700, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{form.description}</div>
-                  )}
-                  {descOpen && (
-                    <div style={{ fontSize: 12, color: GRAY_700, marginTop: 4, lineHeight: 1.5, maxHeight: 150, overflowY: "auto" }}>{form.description}</div>
-                  )}
+                  <div style={{
+                    fontSize: 12, color: GRAY_700, marginTop: 2, lineHeight: 1.5,
+                    ...(descOpen
+                      ? { whiteSpace: "normal", maxHeight: 120, overflowY: "auto", wordBreak: "break-word", overflowWrap: "break-word" }
+                      : { whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%" }),
+                  }}>{form.description}</div>
                 </div>
               )}
             </div>
