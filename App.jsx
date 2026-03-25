@@ -23,14 +23,11 @@ const ROOF_TYPES = ["Toit plat", "Toit 2 pans", "Toit 4 pans", "Toit monopente",
 const STYLES = ["Moderne / Contemporain", "Traditionnel", "Ossature bois", "Cubique / Toit plat", "Autre"];
 
 const PHASES = [
-  { id: "brief", label: "Brief projet", desc: "Vos informations sont en cours d'analyse" },
-  { id: "feasibility", label: "Étude de faisabilité", desc: "Vérification PLU et contraintes" },
-  { id: "sketch", label: "Avant-projet", desc: "Esquisse et validation avec vous" },
-  { id: "plans", label: "Production des plans", desc: "Réalisation du dossier complet" },
-  { id: "review", label: "Relecture finale", desc: "Contrôle qualité avant livraison" },
-  { id: "delivered", label: "Dossier livré", desc: "Prêt à déposer en mairie" },
-  { id: "submitted", label: "Déposé en mairie", desc: "Suivi jusqu'à acceptation" },
-  { id: "accepted", label: "Permis accepté", desc: "Mission terminée" },
+  { id: "brief", label: "Brief reçu", desc: "Vos informations sont en cours d'analyse" },
+  { id: "plu", label: "Étude du PLU", desc: "On vérifie les règles d'urbanisme de votre commune" },
+  { id: "plans", label: "Production des plans", desc: "Vos plans et votre dossier sont en cours de réalisation" },
+  { id: "review", label: "Votre relecture", desc: "Vérifiez le dossier, demandez des ajustements si besoin" },
+  { id: "delivered", label: "Dossier livré ✓", desc: "Votre dossier complet est prêt à déposer en mairie" },
 ];
 
 const PRICING = {
@@ -831,6 +828,7 @@ function Dashboard({ project, uploads, onGoUploads }) {
             );
           })}
         </div>
+        <p style={{ fontSize: 13, color: GRAY_500, fontStyle: "italic", margin: "16px 0 0" }}>Si la mairie demande des modifications après votre dépôt, on corrige et on vous renvoie le dossier gratuitement.</p>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 20 }}>
