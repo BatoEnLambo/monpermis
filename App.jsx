@@ -150,7 +150,7 @@ function App() {
 
   return (
     <div style={{ fontFamily: FONT, background: WHITE, minHeight: "100vh", color: GRAY_900, display: "flex", flexDirection: "column" }}>
-      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
       <nav style={{ background: WHITE, borderBottom: `1px solid ${GRAY_200}`, padding: "0 24px", display: "flex", alignItems: "center", height: 56, justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => setView(project ? "dashboard" : "landing")}>
@@ -174,7 +174,7 @@ function App() {
         )}
       </nav>
 
-      <main style={{ maxWidth: 720, margin: "0 auto", padding: "32px 20px", flex: 1, width: "100%", boxSizing: "border-box" }}>
+      <main className="app-main" style={{ maxWidth: 720, margin: "0 auto", padding: "32px 20px", flex: 1, width: "100%", boxSizing: "border-box" }}>
         {view === "landing" && <Landing onStart={() => setView("form")} onNavigate={navigateTo} />}
         {view === "mentions" && <MentionsLegales />}
         {view === "form" && <ProjectForm form={form} updateForm={updateForm} step={formStep} setStep={setFormStep} onSubmit={submitProject} />}
@@ -184,8 +184,8 @@ function App() {
       </main>
 
       <footer style={{ background: GRAY_900, color: GRAY_300, marginTop: 64 }}>
-        <div style={{ maxWidth: 720, margin: "0 auto", padding: "40px 20px 24px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", gap: 40, flexWrap: "wrap", marginBottom: 32 }}>
+        <div className="footer-inner" style={{ maxWidth: 720, margin: "0 auto", padding: "40px 20px 24px" }}>
+          <div className="footer-content" style={{ display: "flex", justifyContent: "space-between", gap: 40, flexWrap: "wrap", marginBottom: 32 }}>
             {/* Logo */}
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
@@ -219,7 +219,7 @@ function App() {
               <div style={{ fontSize: 13, color: GRAY_500, padding: "4px 0" }}>Vendée, France</div>
             </div>
           </div>
-          <div style={{ borderTop: `1px solid ${GRAY_700}`, paddingTop: 16, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+          <div className="footer-bottom" style={{ borderTop: `1px solid ${GRAY_700}`, paddingTop: 16, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
             <span style={{ fontSize: 12, color: GRAY_500 }}>© 2026 PermisClair — Tous droits réservés</span>
             <span onClick={() => navigateTo("mentions")} style={{ fontSize: 12, color: GRAY_500, cursor: "pointer" }}
               onMouseOver={e => e.target.style.color = WHITE}
@@ -241,17 +241,17 @@ function Landing({ onStart, onNavigate }) {
   return (
     <div>
       {/* HERO */}
-      <div style={{ textAlign: "center", paddingTop: 48, paddingBottom: 56 }}>
+      <div className="hero" style={{ textAlign: "center", paddingTop: 48, paddingBottom: 56 }}>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: ACCENT_LIGHT, color: ACCENT, fontSize: 13, fontWeight: 600, padding: "6px 14px", borderRadius: 20, marginBottom: 24 }}>
           <span>✓</span> Dossier complet livré en 5 jours ouvrés
         </div>
-        <h1 style={{ fontSize: 40, fontWeight: 800, lineHeight: 1.2, margin: "0 0 20px", letterSpacing: "-0.03em", color: GRAY_900, maxWidth: 600, marginLeft: "auto", marginRight: "auto" }}>
+        <h1 className="hero-title" style={{ fontSize: 40, fontWeight: 800, lineHeight: 1.2, margin: "0 0 20px", letterSpacing: "-0.03em", color: GRAY_900, maxWidth: 600, marginLeft: "auto", marginRight: "auto" }}>
           Plans de maison et permis de construire : on s'occupe de tout.
         </h1>
-        <p style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, lineHeight: 1.7, maxWidth: 540, margin: "0 auto 32px" }}>
+        <p className="hero-subtitle" style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, lineHeight: 1.7, maxWidth: 540, margin: "0 auto 32px" }}>
           Vous galérez avec les plans, le PLU, le CERFA ? Décrivez votre projet en 5 minutes — on livre le dossier complet en 5 jours. À partir de 390€.
         </p>
-        <button onClick={onStart} style={{ background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
+        <button className="cta-btn" onClick={onStart} style={{ background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
           onMouseOver={e => e.target.style.background = ACCENT_HOVER}
           onMouseOut={e => e.target.style.background = ACCENT}>
           Décrire mon projet →
@@ -259,11 +259,11 @@ function Landing({ onStart, onNavigate }) {
       </div>
 
       {/* COMMENT CA MARCHE */}
-      <div style={{ background: GRAY_100, borderRadius: 16, padding: "48px 24px", marginTop: 56 }}>
-        <h2 style={{ fontSize: 28, fontWeight: 700, textAlign: "center", margin: "0 0 32px", letterSpacing: "-0.02em", color: GRAY_900 }}>
+      <div className="steps-section" style={{ background: GRAY_100, borderRadius: 16, padding: "48px 24px", marginTop: 56 }}>
+        <h2 className="section-title" style={{ fontSize: 28, fontWeight: 700, textAlign: "center", margin: "0 0 32px", letterSpacing: "-0.02em", color: GRAY_900 }}>
           Comment ça marche
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, textAlign: "left" }}>
+        <div className="steps-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, textAlign: "left" }}>
           {[
             { num: "1", title: "Décrivez votre projet", desc: "Type de construction, surface, adresse du terrain. 5 minutes chrono, pas de jargon." },
             { num: "2", title: "On produit votre dossier", desc: "Plans de masse, façades, coupes, notice descriptive, insertion paysagère. Tout assemblé, prêt à déposer." },
@@ -279,7 +279,7 @@ function Landing({ onStart, onNavigate }) {
           ))}
         </div>
         <div style={{ textAlign: "center", marginTop: 36 }}>
-          <button onClick={onStart} style={{ background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
+          <button className="cta-btn" onClick={onStart} style={{ background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
             onMouseOver={e => e.target.style.background = ACCENT_HOVER}
             onMouseOut={e => e.target.style.background = ACCENT}>
             Décrire mon projet →
@@ -288,11 +288,11 @@ function Landing({ onStart, onNavigate }) {
       </div>
 
       {/* UN VRAI DOSSIER */}
-      <div style={{ background: GRAY_100, borderRadius: 16, padding: "48px 24px", marginTop: 56, textAlign: "center" }}>
-        <h2 style={{ fontSize: 28, fontWeight: 700, margin: "0 0 10px", letterSpacing: "-0.02em", color: GRAY_900 }}>
+      <div className="dossier-section" style={{ background: GRAY_100, borderRadius: 16, padding: "48px 24px", marginTop: 56, textAlign: "center" }}>
+        <h2 className="section-title" style={{ fontSize: 28, fontWeight: 700, margin: "0 0 10px", letterSpacing: "-0.02em", color: GRAY_900 }}>
           Un vrai dossier, accepté en mairie
         </h2>
-        <p style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, margin: "0 0 28px" }}>
+        <p className="section-subtitle" style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, margin: "0 0 28px" }}>
           Mon propre dossier : refusé, puis corrigé, puis accepté par la mairie.
         </p>
         <img src="/images/dossier-accepte.png" alt="Dossier de permis de construire accepté" style={{ maxWidth: 500, width: "100%", borderRadius: 8, border: "1px solid #e5e5e5", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", display: "block", margin: "0 auto" }} />
@@ -303,16 +303,16 @@ function Landing({ onStart, onNavigate }) {
 
       {/* QUI SUIS-JE */}
       <div style={{ marginTop: 56, paddingTop: 48, borderTop: `1px solid ${GRAY_200}` }}>
-        <div style={{ display: "flex", gap: 28, alignItems: "flex-start" }}>
-          <img src="/images/baptiste.png" alt="Baptiste, fondateur de PermisClair" style={{ width: 120, height: 120, minWidth: 120, borderRadius: "50%", objectFit: "cover", objectPosition: "center top" }} />
-          <div style={{ flex: 1 }}>
-            <h2 style={{ fontSize: 28, fontWeight: 700, margin: "0 0 12px", letterSpacing: "-0.02em", color: GRAY_900 }}>
+        <div className="founder-layout" style={{ display: "flex", gap: 28, alignItems: "flex-start" }}>
+          <img className="founder-photo" src="/images/baptiste.png" alt="Baptiste, fondateur de PermisClair" style={{ width: 120, height: 120, minWidth: 120, borderRadius: "50%", objectFit: "cover", objectPosition: "center top" }} />
+          <div className="founder-content" style={{ flex: 1 }}>
+            <h2 className="founder-name section-title" style={{ fontSize: 28, fontWeight: 700, margin: "0 0 12px", letterSpacing: "-0.02em", color: GRAY_900 }}>
               Baptiste, fondateur de PermisClair
             </h2>
             <p style={{ fontSize: 14, color: GRAY_700, lineHeight: 1.7, margin: "0 0 20px" }}>
               Je construis ma propre maison en ossature bois en Vendée. J'ai fait mes plans moi-même sur SketchUp et déposé mon permis de construire. La mairie l'a refusé. J'ai compris pourquoi, corrigé le dossier, et obtenu l'acceptation. Cette expérience m'a appris exactement ce que les mairies attendent, ce qui bloque un dossier et ce qui le fait passer. J'ai créé PermisClair pour vous éviter ces allers-retours.
             </p>
-            <div style={{ display: "flex", gap: 16 }}>
+            <div className="founder-badges" style={{ display: "flex", gap: 16 }}>
               {[
                 "Permis refusé puis accepté",
                 "Plans réalisés sur SketchUp",
@@ -329,13 +329,13 @@ function Landing({ onStart, onNavigate }) {
 
       {/* TARIFS */}
       <div id="tarifs" style={{ marginTop: 56, paddingTop: 48, borderTop: `1px solid ${GRAY_200}`, textAlign: "center" }}>
-        <h2 style={{ fontSize: 28, fontWeight: 700, margin: "0 0 10px", letterSpacing: "-0.02em", color: GRAY_900 }}>
+        <h2 className="section-title" style={{ fontSize: 28, fontWeight: 700, margin: "0 0 10px", letterSpacing: "-0.02em", color: GRAY_900 }}>
           Des prix clairs, sans surprise
         </h2>
-        <p style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, margin: "0 0 32px" }}>
+        <p className="section-subtitle" style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, margin: "0 0 32px" }}>
           Jusqu'à 4× moins cher qu'un architecte, et 5× plus rapide. Même dossier, même résultat en mairie.
         </p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, textAlign: "left" }}>
+        <div className="pricing-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, textAlign: "left" }}>
           {[
             { title: "Piscine / Garage", sub: "Déclaration préalable", price: "À partir de 390€", detail: "Dossier DP complet" },
             { title: "Extension", sub: "Permis de construire", price: "À partir de 790€", detail: "Plans + dossier PC" },
@@ -350,7 +350,7 @@ function Landing({ onStart, onNavigate }) {
               )}
               <div style={{ fontSize: 12, color: GRAY_500, marginBottom: 4 }}>{card.sub}</div>
               <div style={{ fontSize: 16, fontWeight: 700, color: GRAY_900, marginBottom: 10 }}>{card.title}</div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: ACCENT, marginBottom: 6 }}>{card.price}</div>
+              <div className="pricing-price" style={{ fontSize: 22, fontWeight: 700, color: ACCENT, marginBottom: 6 }}>{card.price}</div>
               <div style={{ fontSize: 13, color: GRAY_500 }}>{card.detail}</div>
             </div>
           ))}
@@ -361,10 +361,10 @@ function Landing({ onStart, onNavigate }) {
       </div>
 
       {/* GARANTIE */}
-      <div style={{ marginTop: 48, background: ACCENT_LIGHT, border: `1px solid ${ACCENT}44`, borderRadius: 12, padding: "24px 28px", display: "flex", alignItems: "flex-start", gap: 16 }}>
+      <div className="garantie-box" style={{ marginTop: 48, background: ACCENT_LIGHT, border: `1px solid ${ACCENT}44`, borderRadius: 12, padding: "24px 28px", display: "flex", alignItems: "flex-start", gap: 16 }}>
         <div style={{ fontSize: 28, minWidth: 36 }}>🛡️</div>
         <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: GRAY_900, marginBottom: 6 }}>Votre dossier accepté, ou on corrige gratuitement.</div>
+          <div className="garantie-title" style={{ fontSize: 16, fontWeight: 700, color: GRAY_900, marginBottom: 6 }}>Votre dossier accepté, ou on corrige gratuitement.</div>
           <div style={{ fontSize: 14, color: GRAY_700, lineHeight: 1.6 }}>
             Si la mairie demande des modifications, on corrige et on vous renvoie le dossier. Sans frais, sans limite. Et si notre service ne vous convient pas : remboursé sous 14 jours, sans condition.
           </div>
@@ -372,22 +372,22 @@ function Landing({ onStart, onNavigate }) {
       </div>
 
       {/* FAQ */}
-      <div id="faq" style={{ marginTop: 56, background: GRAY_100, borderRadius: 16, padding: "48px 24px", textAlign: "center" }}>
-        <h2 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 32px", letterSpacing: "-0.02em", color: GRAY_900 }}>
+      <div id="faq" className="faq-section" style={{ marginTop: 56, background: GRAY_100, borderRadius: 16, padding: "48px 24px", textAlign: "center" }}>
+        <h2 className="section-title" style={{ fontSize: 24, fontWeight: 700, margin: "0 0 32px", letterSpacing: "-0.02em", color: GRAY_900 }}>
           Questions fréquentes
         </h2>
         <FAQ />
       </div>
 
       {/* CTA FINAL */}
-      <div style={{ marginTop: 56, background: GRAY_100, borderRadius: 16, padding: "48px 24px", textAlign: "center" }}>
-        <h2 style={{ fontSize: 28, fontWeight: 700, margin: "0 0 10px", letterSpacing: "-0.02em", color: GRAY_900 }}>
+      <div className="cta-final" style={{ marginTop: 56, background: GRAY_100, borderRadius: 16, padding: "48px 24px", textAlign: "center" }}>
+        <h2 className="cta-final-title" style={{ fontSize: 28, fontWeight: 700, margin: "0 0 10px", letterSpacing: "-0.02em", color: GRAY_900 }}>
           Votre dossier prêt dans 5 jours.
         </h2>
-        <p style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, margin: "0 0 28px" }}>
+        <p className="section-subtitle" style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, margin: "0 0 28px" }}>
           Décrivez votre projet en 5 minutes. On fait le reste.
         </p>
-        <button onClick={onStart} style={{ background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
+        <button className="cta-btn" onClick={onStart} style={{ background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
           onMouseOver={e => e.target.style.background = ACCENT_HOVER}
           onMouseOut={e => e.target.style.background = ACCENT}>
           Décrire mon projet →
@@ -438,7 +438,7 @@ function FAQ() {
                 display: "flex", justifyContent: "space-between", alignItems: "center",
                 cursor: "pointer", fontFamily: FONT,
               }}>
-              <span style={{ fontSize: 14, fontWeight: 600, color: GRAY_900, textAlign: "left" }}>{item.q}</span>
+              <span className="faq-question" style={{ fontSize: 14, fontWeight: 600, color: GRAY_900, textAlign: "left" }}>{item.q}</span>
               <span style={{ fontSize: 18, color: GRAY_500, transform: isOpen ? "rotate(45deg)" : "none", transition: "transform 0.2s", minWidth: 20 }}>+</span>
             </button>
             {isOpen && (
@@ -472,7 +472,7 @@ function PaymentPage({ form, onPay, onBack }) {
       </button>
 
       <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, overflow: "hidden" }}>
-        <div style={{ padding: "24px 28px", borderBottom: `1px solid ${GRAY_100}` }}>
+        <div className="payment-card-header" style={{ padding: "24px 28px", borderBottom: `1px solid ${GRAY_100}` }}>
           <div style={{ fontSize: 12, color: ACCENT, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Votre offre</div>
           <h2 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>{pricing.label}</h2>
           <p style={{ fontSize: 13, color: GRAY_500, margin: 0 }}>
@@ -480,7 +480,7 @@ function PaymentPage({ form, onPay, onBack }) {
           </p>
         </div>
 
-        <div style={{ padding: "20px 28px", borderBottom: `1px solid ${GRAY_100}` }}>
+        <div className="payment-card-includes" style={{ padding: "20px 28px", borderBottom: `1px solid ${GRAY_100}` }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: GRAY_700, marginBottom: 12 }}>Ce qui est inclus :</div>
           {pricing.includes.map((item, i) => (
             <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", fontSize: 13, color: GRAY_700 }}>
@@ -502,7 +502,7 @@ function PaymentPage({ form, onPay, onBack }) {
           </div>
         </div>
 
-        <div style={{ padding: "24px 28px", background: GRAY_50 }}>
+        <div className="payment-card-price" style={{ padding: "24px 28px", background: GRAY_50 }}>
           {pricing.price ? (
             <>
               <div style={{ marginBottom: 20 }}>
@@ -531,7 +531,7 @@ function PaymentPage({ form, onPay, onBack }) {
               </button>
               <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
-              <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 16 }}>
+              <div className="reassurance-row" style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 16 }}>
                 {[
                   "🔒 Paiement sécurisé Stripe",
                   "✓ Satisfait ou remboursé 14j",
@@ -585,7 +585,7 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
         ))}
       </div>
 
-      <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 28 }}>
+      <div className="form-card" style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 28 }}>
         {step === 0 && (
           <div>
             <h2 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Votre projet</h2>
@@ -605,7 +605,7 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
           <div>
             <h2 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Détails du projet</h2>
             <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Ces infos nous permettent de produire vos plans sur mesure</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
+            <div className="form-grid-3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
               <div>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
                   <label style={{ fontSize: 13, fontWeight: 500, color: GRAY_700 }}>Surface (m²)</label>
@@ -699,7 +699,7 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
           </div>
         )}
 
-        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 28 }}>
+        <div className="form-actions" style={{ display: "flex", justifyContent: "space-between", marginTop: 28 }}>
           {step > 0 ? (
             <button onClick={() => setStep(step - 1)}
               style={{ padding: "10px 20px", borderRadius: 8, border: `1px solid ${GRAY_300}`, background: WHITE, color: GRAY_700, fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: FONT }}>

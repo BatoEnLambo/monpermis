@@ -7,4 +7,153 @@ body {
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  /* iOS zoom fix */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  /* Global container padding */
+  .app-main {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* HERO */
+  .hero {
+    padding-top: 28px !important;
+    padding-bottom: 36px !important;
+  }
+  .hero-title {
+    font-size: 28px !important;
+  }
+  .hero-subtitle {
+    font-size: 15px !important;
+  }
+  .hero-cta, .cta-btn {
+    width: 100% !important;
+  }
+
+  /* COMMENT CA MARCHE */
+  .steps-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* FONDATEUR */
+  .founder-layout {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  .founder-photo {
+    width: 100px !important;
+    height: 100px !important;
+    min-width: 100px !important;
+  }
+  .founder-content {
+    text-align: left;
+  }
+  .founder-name {
+    text-align: center !important;
+  }
+  .founder-badges {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 8px !important;
+  }
+  .founder-badges > div {
+    font-size: 12px !important;
+  }
+
+  /* TARIFS */
+  .pricing-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .pricing-price {
+    font-size: 20px !important;
+  }
+
+  /* GARANTIE */
+  .garantie-box {
+    padding: 16px !important;
+  }
+  .garantie-title {
+    font-size: 15px !important;
+  }
+
+  /* FAQ */
+  .faq-question {
+    font-size: 13px !important;
+  }
+  .faq-section {
+    padding: 32px 16px !important;
+  }
+
+  /* CTA FINAL */
+  .cta-final-title {
+    font-size: 22px !important;
+  }
+  .cta-final {
+    padding: 32px 16px !important;
+  }
+
+  /* SECTION TITLES */
+  .section-title {
+    font-size: 22px !important;
+  }
+  .section-subtitle {
+    font-size: 14px !important;
+  }
+
+  /* FOOTER */
+  .footer-content {
+    flex-direction: column !important;
+    gap: 24px !important;
+  }
+  .footer-inner {
+    padding: 28px 16px 20px !important;
+  }
+  .footer-bottom {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center;
+  }
+
+  /* FORMULAIRE */
+  .form-actions {
+    flex-direction: column-reverse !important;
+    gap: 8px !important;
+  }
+  .form-actions button {
+    width: 100% !important;
+  }
+  .form-card {
+    padding: 20px !important;
+  }
+  .form-grid-3 {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* PAGE PAIEMENT */
+  .payment-card-header, .payment-card-includes, .payment-card-price {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  .reassurance-row {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  /* COMMENT CA MARCHE section */
+  .steps-section {
+    padding: 32px 16px !important;
+  }
+
+  /* DOSSIER section */
+  .dossier-section {
+    padding: 32px 16px !important;
+  }
 }
