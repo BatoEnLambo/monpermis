@@ -1,4 +1,6 @@
 import './globals.css'
+import Header from '../components/Header'
+import Footer from '../components/Footer'
 
 export const metadata = {
   title: 'PermisClair — Plans et permis de construire, clé en main',
@@ -8,7 +10,16 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
-      <body>{children}</body>
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+      </head>
+      <body style={{ fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif" }}>
+        <Header />
+        <main style={{ maxWidth: 720, margin: "0 auto", padding: "32px 20px", flex: 1, width: "100%", boxSizing: "border-box" }}>
+          {children}
+        </main>
+        <Footer />
+      </body>
     </html>
   )
 }

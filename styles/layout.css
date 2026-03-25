@@ -1,0 +1,133 @@
+/* Header */
+.site-header {
+  background: #ffffff;
+  border-bottom: 1px solid #e8e7e4;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.site-header-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.site-header-logo-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #1a5c3a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.site-header-logo-text {
+  font-weight: 700;
+  font-size: 18px;
+  color: #1c1c1a;
+  letter-spacing: -0.02em;
+}
+
+/* Footer */
+.site-footer {
+  background: #111111;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 64px;
+  text-align: center;
+}
+
+.site-footer-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem 2rem 2rem;
+}
+
+.site-footer-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 0.25rem;
+}
+
+.site-footer-logo-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: #1a5c3a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.site-footer-logo-text {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.site-footer-baseline {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 1.25rem;
+}
+
+.site-footer-links {
+  margin-bottom: 1.25rem;
+}
+
+.site-footer-link {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+}
+
+.site-footer-link:hover {
+  color: #ffffff;
+}
+
+.site-footer-separator {
+  color: rgba(255, 255, 255, 0.2);
+  margin: 0 6px;
+}
+
+.site-footer-contact {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 1.25rem;
+}
+
+.site-footer-copyright {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.site-footer-copyright a {
+  color: rgba(255, 255, 255, 0.3);
+  text-decoration: none;
+}
+
+.site-footer-copyright a:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 768px) {
+  .site-footer-inner {
+    padding: 2rem 1.5rem 1.5rem !important;
+  }
+}
