@@ -215,7 +215,7 @@ function App() {
             {/* Contact */}
             <div>
               <div style={{ fontSize: 12, fontWeight: 600, color: WHITE, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 12 }}>Contact</div>
-              <div style={{ fontSize: 13, color: GRAY_500, padding: "4px 0" }}>contact@monpermis.fr</div>
+              <div style={{ fontSize: 13, color: GRAY_500, padding: "4px 0" }}>contact@permisclair.fr</div>
               <div style={{ fontSize: 13, color: GRAY_500, padding: "4px 0" }}>Vendée, France</div>
             </div>
           </div>
@@ -243,18 +243,18 @@ function Landing({ onStart, onNavigate }) {
       {/* HERO */}
       <div style={{ textAlign: "center", paddingTop: 48, paddingBottom: 56 }}>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: ACCENT_LIGHT, color: ACCENT, fontSize: 13, fontWeight: 600, padding: "6px 14px", borderRadius: 20, marginBottom: 24 }}>
-          <span>⚡</span> Dossier livré en 5 jours
+          <span>✓</span> Dossier complet livré en 5 jours ouvrés
         </div>
         <h1 style={{ fontSize: 40, fontWeight: 800, lineHeight: 1.2, margin: "0 0 20px", letterSpacing: "-0.03em", color: GRAY_900, maxWidth: 600, marginLeft: "auto", marginRight: "auto" }}>
-          Plans de maison et permis de construire, on s'occupe de tout.
+          Plans de maison et permis de construire : on s'occupe de tout.
         </h1>
         <p style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, lineHeight: 1.7, maxWidth: 540, margin: "0 auto 32px" }}>
-          Arrêtez de galérer avec les plans, le PLU et le CERFA. Décrivez votre projet, on produit le dossier complet prêt à déposer en mairie. En 5 jours, à partir de 390€.
+          Vous galérez avec les plans, le PLU, le CERFA ? Décrivez votre projet en 5 minutes — on livre le dossier complet en 5 jours. À partir de 390€.
         </p>
         <button onClick={onStart} style={{ background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
           onMouseOver={e => e.target.style.background = ACCENT_HOVER}
           onMouseOut={e => e.target.style.background = ACCENT}>
-          Obtenir mon permis →
+          Décrire mon projet →
         </button>
       </div>
 
@@ -265,9 +265,9 @@ function Landing({ onStart, onNavigate }) {
         </h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, textAlign: "left" }}>
           {[
-            { num: "1", title: "Décrivez votre projet", desc: "Remplissez notre formulaire en 5 minutes : type de construction, surface, adresse du terrain." },
-            { num: "2", title: "On produit votre dossier", desc: "Plans de masse, façades, coupes, notice descriptive, insertion paysagère — tout le dossier PCMI assemblé et prêt." },
-            { num: "3", title: "Déposez en mairie", desc: "Vous recevez le dossier complet. On assure le suivi et les corrections jusqu'à l'acceptation." },
+            { num: "1", title: "Décrivez votre projet", desc: "Type de construction, surface, adresse du terrain. 5 minutes chrono, pas de jargon." },
+            { num: "2", title: "On produit votre dossier", desc: "Plans de masse, façades, coupes, notice descriptive, insertion paysagère. Tout assemblé, prêt à déposer." },
+            { num: "3", title: "Déposez et c'est tout", desc: "Vous déposez le dossier en mairie. Si la mairie demande des corrections, on les fait sans frais." },
           ].map((s, i) => (
             <div key={i} style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 12, padding: 24 }}>
               <div style={{ width: 32, height: 32, borderRadius: "50%", background: ACCENT_LIGHT, color: ACCENT, fontWeight: 700, fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 14 }}>
@@ -282,7 +282,7 @@ function Landing({ onStart, onNavigate }) {
           <button onClick={onStart} style={{ background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
             onMouseOver={e => e.target.style.background = ACCENT_HOVER}
             onMouseOut={e => e.target.style.background = ACCENT}>
-            Démarrer mon projet →
+            Décrire mon projet →
           </button>
         </div>
       </div>
@@ -293,7 +293,7 @@ function Landing({ onStart, onNavigate }) {
           Un vrai dossier, accepté en mairie
         </h2>
         <p style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, margin: "0 0 28px" }}>
-          Voici un exemple réel de dossier que nous avons réalisé et qui a été accepté.
+          Mon propre dossier : refusé, puis corrigé, puis accepté par la mairie.
         </p>
         <div style={{ width: "100%", maxWidth: 600, height: 400, background: GRAY_300, borderRadius: 12, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center", color: GRAY_500, fontSize: 15, fontWeight: 500 }}>
           Photo dossier accepté
@@ -314,13 +314,13 @@ function Landing({ onStart, onNavigate }) {
               Baptiste, fondateur de PermisClair
             </h2>
             <p style={{ fontSize: 14, color: GRAY_700, lineHeight: 1.7, margin: "0 0 20px" }}>
-              Je construis ma propre maison en ossature bois en Vendée. J'ai fait mes plans moi-même sur SketchUp et déposé mon permis de construire. La mairie l'a refusé. J'ai compris pourquoi, corrigé le dossier, et obtenu l'acceptation. Cette expérience m'a appris exactement ce que les mairies attendent, ce qui bloque un dossier et ce qui le fait passer. J'ai créé PermisClair pour que vous n'ayez pas à vivre ces allers-retours seul.
+              Je construis ma propre maison en ossature bois en Vendée. J'ai fait mes plans moi-même sur SketchUp et déposé mon permis de construire. La mairie l'a refusé. J'ai compris pourquoi, corrigé le dossier, et obtenu l'acceptation. Cette expérience m'a appris exactement ce que les mairies attendent, ce qui bloque un dossier et ce qui le fait passer. J'ai créé PermisClair pour vous éviter ces allers-retours.
             </p>
             <div style={{ display: "flex", gap: 16 }}>
               {[
-                "1 refus surmonté",
-                "Plans SketchUp maîtrisés",
-                "Basé en Vendée",
+                "Permis refusé puis accepté",
+                "Plans réalisés sur SketchUp",
+                "Basé en Vendée (85)",
               ].map((stat, i) => (
                 <div key={i} style={{ background: GRAY_50, border: `1px solid ${GRAY_200}`, borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 600, color: GRAY_700 }}>
                   {stat}
@@ -337,7 +337,7 @@ function Landing({ onStart, onNavigate }) {
           Des prix clairs, sans surprise
         </h2>
         <p style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, margin: "0 0 32px" }}>
-          Bien moins cher qu'un architecte, avec la même qualité de dossier.
+          Jusqu'à 4× moins cher qu'un architecte, et 5× plus rapide. Même dossier, même résultat en mairie.
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, textAlign: "left" }}>
           {[
@@ -368,9 +368,9 @@ function Landing({ onStart, onNavigate }) {
       <div style={{ marginTop: 48, background: ACCENT_LIGHT, border: `1px solid ${ACCENT}44`, borderRadius: 12, padding: "24px 28px", display: "flex", alignItems: "flex-start", gap: 16 }}>
         <div style={{ fontSize: 28, minWidth: 36 }}>🛡️</div>
         <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: GRAY_900, marginBottom: 6 }}>Garantie acceptation</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: GRAY_900, marginBottom: 6 }}>Votre dossier accepté, ou on corrige gratuitement.</div>
           <div style={{ fontSize: 14, color: GRAY_700, lineHeight: 1.6 }}>
-            Si la mairie demande des modifications ou des pièces complémentaires, on corrige et on redépose sans frais. Satisfait ou remboursé sous 14 jours.
+            Si la mairie demande des modifications, on corrige et on vous renvoie le dossier. Sans frais, sans limite. Et si notre service ne vous convient pas : remboursé sous 14 jours, sans condition.
           </div>
         </div>
       </div>
@@ -386,18 +386,18 @@ function Landing({ onStart, onNavigate }) {
       {/* CTA FINAL */}
       <div style={{ marginTop: 56, background: GRAY_100, borderRadius: 16, padding: "48px 24px", textAlign: "center" }}>
         <h2 style={{ fontSize: 28, fontWeight: 700, margin: "0 0 10px", letterSpacing: "-0.02em", color: GRAY_900 }}>
-          Prêt à obtenir votre permis ?
+          Votre dossier prêt dans 5 jours.
         </h2>
         <p style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, margin: "0 0 28px" }}>
-          Décrivez votre projet en 5 minutes. On s'occupe du reste.
+          Décrivez votre projet en 5 minutes. On fait le reste.
         </p>
         <button onClick={onStart} style={{ background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
           onMouseOver={e => e.target.style.background = ACCENT_HOVER}
           onMouseOut={e => e.target.style.background = ACCENT}>
-          Démarrer mon projet →
+          Décrire mon projet →
         </button>
         <p style={{ fontSize: 12, color: GRAY_500, marginTop: 14 }}>
-          Pas d'engagement — vous ne payez qu'après avoir vu votre offre personnalisée.
+          Sans engagement — vous ne payez qu'après avoir vu le devis exact de votre projet.
         </p>
       </div>
     </div>
@@ -421,11 +421,11 @@ function FAQ() {
     },
     {
       q: "Qu'est-ce qui est inclus exactement ?",
-      a: "Tout le dossier : plan de situation (PCMI1), plan de masse coté (PCMI2), plan en coupe (PCMI3), notice descriptive (PCMI4), plans de façades (PCMI5), insertion paysagère (PCMI6), photos (PCMI7/8), CERFA rempli, et le dossier assemblé en PDF prêt à déposer.",
+      a: "Tout ce dont la mairie a besoin : plan de situation, plan de masse coté, plan en coupe, notice descriptive, plans de façades, insertion paysagère, photos, CERFA rempli, et le dossier complet assemblé en PDF prêt à déposer.",
     },
     {
       q: "Qui réalise les plans ?",
-      a: "Les plans sont réalisés sur SketchUp par notre équipe. Chaque dossier est vérifié pour sa conformité au PLU de votre commune avant envoi.",
+      a: "Les plans sont réalisés sur SketchUp par Baptiste, fondateur de PermisClair. Chaque dossier est vérifié pour sa conformité au PLU de votre commune avant envoi.",
     },
   ];
 
@@ -530,7 +530,7 @@ function PaymentPage({ form, onPay, onBack }) {
                     Paiement en cours...
                   </>
                 ) : (
-                  <>🔒 Payer {pricing.price} € et démarrer</>
+                  <>🔒 Payer {pricing.price} € — dossier livré en 5 jours</>
                 )}
               </button>
               <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
@@ -608,7 +608,7 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
         {step === 1 && (
           <div>
             <h2 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Détails du projet</h2>
-            <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Plus on en sait, plus on avance vite</p>
+            <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Ces infos nous permettent de produire vos plans sur mesure</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
               <Input label="Surface (m²)" value={form.surface} onChange={v => { if (v === "" || Number(v) <= 150) updateForm("surface", v); }} placeholder="120" type="number" max={150} />
               {form.surface && Number(form.surface) > 150 && (
@@ -635,7 +635,7 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
         {step === 2 && (
           <div>
             <h2 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Vos coordonnées</h2>
-            <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Pour vous recontacter sur votre projet</p>
+            <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Pour vous envoyer votre devis et votre dossier</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               <Input label="Prénom" value={form.firstName} onChange={v => updateForm("firstName", v)} placeholder="Jean" />
               <Input label="Nom" value={form.lastName} onChange={v => updateForm("lastName", v)} placeholder="Dupont" />
@@ -1063,7 +1063,7 @@ function MentionsLegales() {
           Le site monpermis.vercel.app est édité par :<br />
           Baptiste — Entrepreneur individuel<br />
           Siège : Vendée (85), France<br />
-          Email : contact@monpermis.fr<br />
+          Email : contact@permisclair.fr<br />
           Directeur de la publication : Baptiste
         </p>
       </div>
@@ -1089,7 +1089,7 @@ function MentionsLegales() {
       <div style={sectionStyle}>
         <h2 style={h2Style}>Données personnelles</h2>
         <p style={pStyle}>
-          Les informations recueillies via le formulaire de projet sont destinées exclusivement à la réalisation de la prestation commandée. Elles ne sont ni vendues, ni cédées à des tiers. Conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour exercer ce droit, contactez : contact@monpermis.fr.
+          Les informations recueillies via le formulaire de projet sont destinées exclusivement à la réalisation de la prestation commandée. Elles ne sont ni vendues, ni cédées à des tiers. Conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour exercer ce droit, contactez : contact@permisclair.fr.
         </p>
       </div>
 
@@ -1137,7 +1137,7 @@ function MentionsLegales() {
       <div style={sectionStyle}>
         <h2 style={h2Style}>Article 6 — Droit de rétractation</h2>
         <p style={pStyle}>
-          Conformément à l'article L.221-18 du Code de la consommation, le Client dispose d'un délai de 14 jours à compter de la date de commande pour exercer son droit de rétractation, sans avoir à justifier de motif. Si la prestation a déjà été commencée avec l'accord du Client avant l'expiration de ce délai, le montant correspondant au travail déjà effectué pourra être retenu. Pour exercer ce droit, le Client envoie sa demande à : contact@monpermis.fr.
+          Conformément à l'article L.221-18 du Code de la consommation, le Client dispose d'un délai de 14 jours à compter de la date de commande pour exercer son droit de rétractation, sans avoir à justifier de motif. Si la prestation a déjà été commencée avec l'accord du Client avant l'expiration de ce délai, le montant correspondant au travail déjà effectué pourra être retenu. Pour exercer ce droit, le Client envoie sa demande à : contact@permisclair.fr.
         </p>
       </div>
 
@@ -1158,7 +1158,7 @@ function MentionsLegales() {
       <div style={sectionStyle}>
         <h2 style={h2Style}>Article 9 — Contact</h2>
         <p style={pStyle}>
-          Pour toute question relative aux présentes conditions : contact@monpermis.fr.
+          Pour toute question relative aux présentes conditions : contact@permisclair.fr.
         </p>
       </div>
     </div>
