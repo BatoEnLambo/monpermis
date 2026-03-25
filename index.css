@@ -203,13 +203,47 @@ img {
   }
   .form-actions {
     flex-direction: column-reverse !important;
-    gap: 8px !important;
+    gap: 6px !important;
     margin-top: 0.75rem !important;
   }
   .form-actions button {
     width: 100% !important;
-    min-height: 48px !important;
-    font-size: 1rem !important;
+    font-size: 0.9rem !important;
+  }
+
+  /* ===== RECAP — one-screen ===== */
+  .recap-step .form-title {
+    margin-bottom: 0.15rem !important;
+  }
+  .recap-step .form-subtitle {
+    font-size: 0.75rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  .recap-row {
+    padding: 0.3rem 0 !important;
+  }
+  .recap-label {
+    font-size: 0.75rem !important;
+  }
+  .recap-value {
+    font-size: 0.8rem !important;
+  }
+  .recap-desc {
+    padding: 0.3rem 0 !important;
+  }
+  .recap-price {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+  .recap-price-label {
+    font-size: 0.8rem !important;
+  }
+  .recap-price-delay {
+    font-size: 0.7rem !important;
+  }
+  .recap-price-amount {
+    font-size: 1.3rem !important;
   }
 
   /* ===== PAGE PAIEMENT — compact ===== */

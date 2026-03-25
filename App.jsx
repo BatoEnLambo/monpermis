@@ -578,6 +578,7 @@ function PaymentPage({ form, onPay, onBack }) {
 
 function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
   const steps = ["Votre projet", "Détails", "Vous", "Récapitulatif"];
+  const [descOpen, setDescOpen] = useState(false);
 
   const canNext = () => {
     if (step === 0) return form.projectType && form.address && form.city && form.postalCode;
@@ -671,10 +672,10 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
         )}
 
         {step === 3 && (
-          <div>
+          <div className="recap-step">
             <h2 className="form-title" style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Récapitulatif</h2>
             <p className="form-subtitle" style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Vérifiez vos informations avant de valider</p>
-            <div style={{ display: "grid", gap: 12 }}>
+            <div className="recap-lines" style={{ display: "grid", gap: 0 }}>
               {[
                 ["Projet", form.projectType],
                 ["Adresse", `${form.address}, ${form.postalCode} ${form.city}`],
@@ -682,32 +683,38 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
                 ["Configuration", `${form.floors} niveau(x) · ${form.rooms} chambres`],
                 ["Toiture", form.roofType || "Non spécifié"],
                 ["Style", form.style || "Non spécifié"],
-                ["Nom", `${form.firstName} ${form.lastName}`.trim() || "Non renseigné"],
-                ["Contact", `${form.email}${form.phone ? ` · ${form.phone}` : ""}`],
-              ].map(([label, value], i) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < 7 ? `1px solid ${GRAY_100}` : "none" }}>
-                  <span style={{ fontSize: 13, color: GRAY_500 }}>{label}</span>
-                  <span style={{ fontSize: 14, fontWeight: 500, color: GRAY_900 }}>{value}</span>
+              ].map(([label, value], i, arr) => (
+                <div key={i} className="recap-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < arr.length - 1 ? `1px solid ${GRAY_100}` : "none" }}>
+                  <span className="recap-label" style={{ fontSize: 13, color: GRAY_500 }}>{label}</span>
+                  <span className="recap-value" style={{ fontSize: 14, fontWeight: 500, color: GRAY_900, textAlign: "right", maxWidth: "60%" }}>{value}</span>
                 </div>
               ))}
               {form.description && (
-                <div style={{ background: GRAY_50, borderRadius: 8, padding: 12, marginTop: 4 }}>
-                  <div style={{ fontSize: 12, color: GRAY_500, marginBottom: 4 }}>Description</div>
-                  <div style={{ fontSize: 13, color: GRAY_700, lineHeight: 1.5 }}>{form.description}</div>
+                <div className="recap-desc" style={{ borderBottom: `1px solid ${GRAY_100}`, padding: "8px 0" }}>
+                  <div onClick={() => setDescOpen(!descOpen)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}>
+                    <span className="recap-label" style={{ fontSize: 13, color: GRAY_500 }}>Description</span>
+                    <span style={{ fontSize: 12, color: GRAY_500, transition: "transform 0.2s", transform: descOpen ? "rotate(90deg)" : "none" }}>▶</span>
+                  </div>
+                  {!descOpen && (
+                    <div style={{ fontSize: 12, color: GRAY_700, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{form.description}</div>
+                  )}
+                  {descOpen && (
+                    <div style={{ fontSize: 12, color: GRAY_700, marginTop: 4, lineHeight: 1.5, maxHeight: 150, overflowY: "auto" }}>{form.description}</div>
+                  )}
                 </div>
               )}
             </div>
 
             {/* Prix estimé */}
             {pricing && (
-              <div style={{ marginTop: 20, padding: 16, background: ACCENT_LIGHT, borderRadius: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div className="recap-price" style={{ marginTop: 20, padding: 16, background: ACCENT_LIGHT, borderRadius: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: ACCENT }}>{pricing.label}</div>
-                  <div style={{ fontSize: 12, color: GRAY_500, marginTop: 2 }}>Livraison en {pricing.delay}</div>
+                  <div className="recap-price-label" style={{ fontSize: 13, fontWeight: 600, color: ACCENT }}>{pricing.label}</div>
+                  <div className="recap-price-delay" style={{ fontSize: 12, color: GRAY_500, marginTop: 2 }}>Livraison en {pricing.delay}</div>
                 </div>
                 <div style={{ textAlign: "right" }}>
                   {pricing.price ? (
-                    <span style={{ fontSize: 24, fontWeight: 700, color: ACCENT }}>{pricing.price} €<span style={{ fontSize: 12, fontWeight: 400, color: GRAY_500, marginLeft: 2 }}>TTC</span></span>
+                    <span className="recap-price-amount" style={{ fontSize: 24, fontWeight: 700, color: ACCENT }}>{pricing.price} €<span style={{ fontSize: 12, fontWeight: 400, color: GRAY_500, marginLeft: 2 }}>TTC</span></span>
                   ) : (
                     <span style={{ fontSize: 14, fontWeight: 600, color: ACCENT }}>Sur devis</span>
                   )}
