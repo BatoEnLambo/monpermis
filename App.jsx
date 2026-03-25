@@ -484,12 +484,12 @@ function PaymentPage({ form, onPay, onBack }) {
   };
 
   return (
-    <div style={{ maxWidth: 520, margin: "0 auto" }}>
+    <div className="payment-page" style={{ maxWidth: 520, margin: "0 auto" }}>
       <button className="payment-back" onClick={onBack} style={{ background: "none", border: "none", color: GRAY_500, fontSize: 13, cursor: "pointer", fontFamily: FONT, padding: 0, marginBottom: 20, display: "flex", alignItems: "center", gap: 4 }}>
         ← Modifier mon projet
       </button>
 
-      <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, overflow: "hidden" }}>
+      <div className="payment-card" style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, overflow: "hidden" }}>
         <div className="payment-card-header" style={{ padding: "24px 28px", borderBottom: `1px solid ${GRAY_100}` }}>
           <div className="pay-offer-label" style={{ fontSize: 12, color: ACCENT, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Votre offre</div>
           <h2 className="pay-offer-title" style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>{pricing.label}</h2>
