@@ -78,7 +78,7 @@ function App() {
 
   // Lock body scroll on non-landing pages (mobile)
   useEffect(() => {
-    if (view !== 'landing' && view !== 'mentions' && view !== 'dashboard' && view !== 'uploads') {
+    if (view !== 'landing' && view !== 'mentions' && view !== 'dashboard') {
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
@@ -169,7 +169,7 @@ function App() {
   };
 
   return (
-    <div className={view !== 'landing' && view !== 'mentions' && view !== 'dashboard' && view !== 'uploads' ? 'app-shell app-shell-locked' : 'app-shell'} style={{ fontFamily: FONT, background: WHITE, minHeight: "100vh", color: GRAY_900, display: "flex", flexDirection: "column" }}>
+    <div className={view !== 'landing' && view !== 'mentions' && view !== 'dashboard' ? 'app-shell app-shell-locked' : 'app-shell'} style={{ fontFamily: FONT, background: WHITE, minHeight: "100vh", color: GRAY_900, display: "flex", flexDirection: "column" }}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
       <nav style={{ background: WHITE, borderBottom: `1px solid ${GRAY_200}`, padding: "0 24px", display: "flex", alignItems: "center", height: 56, justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 }}>
@@ -181,26 +181,20 @@ function App() {
         </div>
         {project && (
           <div style={{ display: "flex", gap: 4 }}>
-            {[
-              { id: "dashboard", label: "Mon projet" },
-              { id: "uploads", label: "Documents" },
-            ].map(tab => (
-              <button key={tab.id} onClick={() => { setView(tab.id); window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }}
-                style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: view === tab.id ? ACCENT_LIGHT : "transparent", color: view === tab.id ? ACCENT : GRAY_500, fontWeight: 500, fontSize: 13, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s" }}>
-                {tab.label}
-              </button>
-            ))}
+            <button onClick={() => { setView("dashboard"); window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }}
+              style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: view === "dashboard" ? ACCENT_LIGHT : "transparent", color: view === "dashboard" ? ACCENT : GRAY_500, fontWeight: 500, fontSize: 13, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s" }}>
+              Mon projet
+            </button>
           </div>
         )}
       </nav>
 
-      <main className={`app-main ${view !== 'landing' && view !== 'mentions' && view !== 'dashboard' && view !== 'uploads' ? 'app-main-locked' : ''}`} style={{ maxWidth: 720, margin: "0 auto", padding: "32px 20px", flex: 1, width: "100%", boxSizing: "border-box" }}>
+      <main className={`app-main ${view !== 'landing' && view !== 'mentions' && view !== 'dashboard' ? 'app-main-locked' : ''}`} style={{ maxWidth: 720, margin: "0 auto", padding: "32px 20px", flex: 1, width: "100%", boxSizing: "border-box" }}>
         {view === "landing" && <Landing onStart={(projectType) => { if (projectType) updateForm("projectType", projectType); setView("form"); window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }} onNavigate={navigateTo} />}
         {view === "mentions" && <MentionsLegales />}
         {view === "form" && <ProjectForm form={form} updateForm={updateForm} step={formStep} setStep={setFormStep} onSubmit={submitProject} />}
         {view === "pricing" && <PaymentPage form={form} onPay={confirmPayment} onBack={() => { setFormStep(3); setView("form"); window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }} />}
-        {view === "dashboard" && project && <Dashboard project={project} uploads={uploads} onGoUploads={() => setView("uploads")} />}
-        {view === "uploads" && project && <Uploads uploads={uploads} addFiles={addFiles} removeFile={removeFile} />}
+        {view === "dashboard" && project && <Dashboard project={project} uploads={uploads} addFiles={addFiles} removeFile={removeFile} />}
       </main>
 
       {view !== "form" && view !== "pricing" && <footer className="site-footer" style={{ background: "#111111", borderTop: "1px solid rgba(255,255,255,0.1)", marginTop: 64, textAlign: "center" }}>
@@ -772,11 +766,27 @@ function ProjectForm({ form, updateForm, step, setStep, onSubmit }) {
   );
 }
 
-function Dashboard({ project, uploads, onGoUploads }) {
-  const totalFiles = (uploads[UPLOAD_KEY] || []).length;
+function Dashboard({ project, uploads, addFiles, removeFile }) {
+  const inputRef = useRef(null);
+  const [dragOver, setDragOver] = useState(false);
+  const files = uploads[UPLOAD_KEY] || [];
+  const totalFiles = files.length;
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    if (e.dataTransfer.files.length) addFiles(UPLOAD_KEY, e.dataTransfer.files);
+  };
+
+  const formatSize = (bytes) => {
+    if (bytes < 1024) return bytes + " o";
+    if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + " Ko";
+    return (bytes / (1024 * 1024)).toFixed(1) + " Mo";
+  };
 
   return (
     <div className="page-dashboard">
+      {/* 1. Titre + référence */}
       <div className="dash-header" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 28 }}>
         <div>
           <h1 className="dash-title" style={{ fontSize: 24, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>
@@ -791,22 +801,7 @@ function Dashboard({ project, uploads, onGoUploads }) {
         </div>
       </div>
 
-      {totalFiles < 3 && (
-        <div className="dash-onboarding" style={{ background: "#FFF9E6", border: "1px solid #F0D060", borderRadius: 8, padding: 16, marginBottom: 20 }}>
-          <div style={{ fontWeight: 700, fontSize: 14, color: GRAY_900, marginBottom: 10 }}>Pour démarrer votre dossier, envoyez-nous ces éléments :</div>
-          <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: GRAY_700, lineHeight: 1.8, listStyle: "none" }}>
-            <li>📸 3-4 photos de votre terrain prises depuis la rue (face, gauche, droite)</li>
-            <li>📸 1-2 photos de l'environnement proche (maisons voisines, rue)</li>
-            <li>📐 Plan cadastral de votre parcelle (disponible sur cadastre.gouv.fr)</li>
-            <li>✏️ Un croquis ou schéma de votre projet (même à main levée)</li>
-            <li>📍 L'emplacement souhaité de la construction sur le terrain</li>
-            <li>🎨 Matériaux et couleurs souhaitées (enduit, bois, tuile, ardoise...)</li>
-          </ul>
-          <div style={{ fontSize: 13, color: GRAY_500, marginTop: 10 }}>Déposez vos fichiers ci-dessous. Pas de panique si vous n'avez pas tout — on vous guidera via la messagerie.</div>
-          <div style={{ fontSize: 12, fontWeight: 600, color: "#B8860B", marginTop: 8 }}>{totalFiles}/3 documents minimum déposés</div>
-        </div>
-      )}
-
+      {/* 2. Timeline avancement */}
       <div className="dash-progress" style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
         <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 20px", color: GRAY_900 }}>Avancement du dossier</h3>
         <div style={{ position: "relative" }}>
@@ -815,7 +810,7 @@ function Dashboard({ project, uploads, onGoUploads }) {
             const isDone = i < project.phase;
             const isFuture = i > project.phase;
             return (
-              <div key={phase.id} style={{ display: "flex", gap: 14, alignItems: "flex-start", marginBottom: i < PHASES.length - 1 ? 0 : 0 }}>
+              <div key={phase.id} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: 24 }}>
                   <div style={{
                     width: 24, height: 24, borderRadius: "50%",
@@ -844,23 +839,80 @@ function Dashboard({ project, uploads, onGoUploads }) {
             );
           })}
         </div>
+        {/* 3. Note garantie */}
         <p style={{ fontSize: 13, color: GRAY_500, fontStyle: "italic", margin: "16px 0 0" }}>Si la mairie demande des modifications après votre dépôt, on corrige et on vous renvoie le dossier gratuitement.</p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 20 }}>
-        <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 12, padding: 18 }}>
-          <div style={{ fontSize: 12, color: GRAY_500, marginBottom: 4 }}>Documents uploadés</div>
-          <div style={{ fontSize: 24, fontWeight: 700, color: GRAY_900 }}>{totalFiles}</div>
+      {/* 4. Checklist documents + zone upload */}
+      {totalFiles < 3 && (
+        <div className="dash-onboarding" style={{ background: "#FFF9E6", border: "1px solid #F0D060", borderRadius: 8, padding: 16, marginBottom: 20 }}>
+          <div style={{ fontWeight: 700, fontSize: 14, color: GRAY_900, marginBottom: 10 }}>Pour démarrer votre dossier, envoyez-nous ces éléments :</div>
+          <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: GRAY_700, lineHeight: 1.8, listStyle: "none" }}>
+            <li>📸 3-4 photos de votre terrain prises depuis la rue (face, gauche, droite)</li>
+            <li>📸 1-2 photos de l'environnement proche (maisons voisines, rue)</li>
+            <li>📐 Plan cadastral de votre parcelle (disponible sur cadastre.gouv.fr)</li>
+            <li>✏️ Un croquis ou schéma de votre projet (même à main levée)</li>
+            <li>📍 L'emplacement souhaité de la construction sur le terrain</li>
+            <li>🎨 Matériaux et couleurs souhaitées (enduit, bois, tuile, ardoise...)</li>
+          </ul>
+          <div style={{ fontSize: 13, color: GRAY_500, marginTop: 10 }}>Déposez vos fichiers ci-dessous. Pas de panique si vous n'avez pas tout — on vous guidera via la messagerie.</div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: "#B8860B", marginTop: 8 }}>{totalFiles}/3 documents minimum déposés</div>
         </div>
-        <button onClick={onGoUploads}
-          style={{ background: totalFiles > 0 ? SUCCESS_BG : WARN_BG, border: `1px solid ${totalFiles > 0 ? "#c3e6cb" : "#fce4c0"}`, borderRadius: 12, padding: 18, cursor: "pointer", textAlign: "left", fontFamily: FONT }}>
-          <div style={{ fontSize: 12, color: totalFiles > 0 ? SUCCESS : WARN, marginBottom: 4 }}>Documents</div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: totalFiles > 0 ? SUCCESS : WARN }}>
-            {totalFiles > 0 ? "Ajouter d'autres documents" : "Ajouter vos documents →"}
+      )}
+
+      <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, overflow: "hidden", marginBottom: 20 }}>
+        <div
+          onClick={() => inputRef.current?.click()}
+          onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={handleDrop}
+          className="drop-zone"
+          style={{
+            padding: "32px 24px", textAlign: "center", cursor: "pointer",
+            border: `2px dashed ${dragOver ? ACCENT : GRAY_300}`,
+            background: dragOver ? ACCENT_LIGHT : GRAY_50,
+            margin: 16, borderRadius: 12, transition: "all 0.15s",
+          }}>
+          <div style={{ fontSize: 32, marginBottom: 8 }}>📎</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: GRAY_900, marginBottom: 4 }}>
+            <span style={{ color: ACCENT }}>Cliquez</span> ou glissez-déposez vos fichiers
           </div>
-        </button>
+          <div style={{ fontSize: 13, color: GRAY_500 }}>Photos, plans, croquis, PDF...</div>
+          <input ref={inputRef} type="file" multiple style={{ display: "none" }}
+            onChange={e => { addFiles(UPLOAD_KEY, e.target.files); e.target.value = ""; }} />
+        </div>
+
+        {files.length > 0 && (
+          <div style={{ padding: "12px 20px", borderTop: `1px solid ${GRAY_100}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: GRAY_900 }}>Fichiers ajoutés</span>
+            <span style={{ background: ACCENT_LIGHT, color: ACCENT, fontSize: 12, fontWeight: 600, padding: "2px 10px", borderRadius: 10 }}>
+              {files.length} fichier{files.length > 1 ? "s" : ""}
+            </span>
+          </div>
+        )}
+
+        {files.length > 0 && (
+          <div style={{ padding: "4px 20px 12px" }}>
+            {files.map((f, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 0", borderBottom: i < files.length - 1 ? `1px solid ${GRAY_100}` : "none" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: 11, color: GRAY_500 }}>📄</span>
+                  <span style={{ fontSize: 13, color: GRAY_700 }}>{f.name}</span>
+                  <span style={{ fontSize: 11, color: GRAY_500 }}>{formatSize(f.size)}</span>
+                </div>
+                <button onClick={() => removeFile(UPLOAD_KEY, i)}
+                  style={{ background: "none", border: "none", color: GRAY_500, cursor: "pointer", fontSize: 16, padding: "2px 6px", borderRadius: 4 }}
+                  onMouseOver={e => e.target.style.color = "#c0392b"}
+                  onMouseOut={e => e.target.style.color = GRAY_500}>
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
+      {/* 5. Récapitulatif du projet */}
       <div className="dash-recap" style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginTop: 20 }}>
         <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 16px", color: GRAY_900 }}>Récapitulatif du projet</h3>
         <div className="dash-recap-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
@@ -885,92 +937,6 @@ function Dashboard({ project, uploads, onGoUploads }) {
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-function Uploads({ uploads, addFiles, removeFile }) {
-  const inputRef = useRef(null);
-  const [dragOver, setDragOver] = useState(false);
-  const files = uploads[UPLOAD_KEY] || [];
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setDragOver(false);
-    if (e.dataTransfer.files.length) addFiles(UPLOAD_KEY, e.dataTransfer.files);
-  };
-
-  const formatSize = (bytes) => {
-    if (bytes < 1024) return bytes + " o";
-    if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + " Ko";
-    return (bytes / (1024 * 1024)).toFixed(1) + " Mo";
-  };
-
-  return (
-    <div className="page-dashboard">
-      <h1 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 6px", letterSpacing: "-0.02em" }}>Vos documents</h1>
-      <p style={{ fontSize: 14, color: GRAY_500, margin: "0 0 28px", lineHeight: 1.5 }}>
-        Déposez ici toutes vos photos et documents : terrain, environnement, croquis, cadastre... On s'occupe du tri.
-      </p>
-
-      <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, overflow: "hidden" }}>
-        {/* Drop zone */}
-        <div
-          onClick={() => inputRef.current?.click()}
-          onDragOver={e => { e.preventDefault(); setDragOver(true); }}
-          onDragLeave={() => setDragOver(false)}
-          onDrop={handleDrop}
-          className="drop-zone"
-          style={{
-            padding: "40px 24px", textAlign: "center", cursor: "pointer",
-            border: `2px dashed ${dragOver ? ACCENT : GRAY_300}`,
-            background: dragOver ? ACCENT_LIGHT : GRAY_50,
-            margin: 16, borderRadius: 12, transition: "all 0.15s",
-          }}>
-          <div style={{ fontSize: 36, marginBottom: 12 }}>📎</div>
-          <div style={{ fontSize: 15, fontWeight: 600, color: GRAY_900, marginBottom: 4 }}>
-            <span style={{ color: ACCENT }}>Cliquez</span> ou glissez-déposez vos fichiers
-          </div>
-          <div style={{ fontSize: 13, color: GRAY_500 }}>Photos, plans, croquis, PDF...</div>
-          <input ref={inputRef} type="file" multiple style={{ display: "none" }}
-            onChange={e => { addFiles(UPLOAD_KEY, e.target.files); e.target.value = ""; }} />
-        </div>
-
-        {/* File counter */}
-        {files.length > 0 && (
-          <div style={{ padding: "12px 20px", borderTop: `1px solid ${GRAY_100}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: GRAY_900 }}>Fichiers ajoutés</span>
-            <span style={{ background: ACCENT_LIGHT, color: ACCENT, fontSize: 12, fontWeight: 600, padding: "2px 10px", borderRadius: 10 }}>
-              {files.length} fichier{files.length > 1 ? "s" : ""}
-            </span>
-          </div>
-        )}
-
-        {/* File list */}
-        {files.length > 0 && (
-          <div style={{ padding: "4px 20px 12px" }}>
-            {files.map((f, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 0", borderBottom: i < files.length - 1 ? `1px solid ${GRAY_100}` : "none" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontSize: 11, color: GRAY_500 }}>📄</span>
-                  <span style={{ fontSize: 13, color: GRAY_700 }}>{f.name}</span>
-                  <span style={{ fontSize: 11, color: GRAY_500 }}>{formatSize(f.size)}</span>
-                </div>
-                <button onClick={() => removeFile(UPLOAD_KEY, i)}
-                  style={{ background: "none", border: "none", color: GRAY_500, cursor: "pointer", fontSize: 16, padding: "2px 6px", borderRadius: 4 }}
-                  onMouseOver={e => e.target.style.color = "#c0392b"}
-                  onMouseOut={e => e.target.style.color = GRAY_500}>
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <p style={{ fontSize: 13, color: GRAY_500, textAlign: "center", marginTop: 16, lineHeight: 1.5 }}>
-        Pas de panique si vous n'avez pas tout — on vous dira ce qui manque via la messagerie.
-      </p>
     </div>
   );
 }
