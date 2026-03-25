@@ -369,6 +369,16 @@ img {
   /* ============================================================
      DASHBOARD & UPLOADS
      ============================================================ */
+  .app-shell-locked:has(.page-dashboard) {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 100dvh !important;
+    overflow-y: auto !important;
+  }
+  .app-shell-locked:has(.page-dashboard) .app-main-locked {
+    flex: 1 1 auto !important;
+    overflow-y: visible !important;
+  }
   .page-dashboard .dash-header {
     margin-bottom: 16px !important;
   }
