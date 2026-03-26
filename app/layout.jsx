@@ -1,6 +1,6 @@
 import './globals.css'
 import Header from '../components/Header'
-import Footer from '../components/Footer'
+import ConditionalFooter from '../components/ConditionalFooter'
 
 export const metadata = {
   title: 'PermisClair — Plans et permis de construire, clé en main',
@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
         <main style={{ maxWidth: 720, margin: "0 auto", padding: "32px 20px", flex: 1, width: "100%", boxSizing: "border-box" }}>
           {children}
         </main>
-        <Footer />
+        <ConditionalFooter />
       </body>
     </html>
   )
