@@ -35,7 +35,7 @@ function Input({ label, value, onChange, placeholder, type = "text", max }) {
     <div>
       <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>{label}</label>
       <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} max={max}
-        style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 14, boxSizing: "border-box", outline: "none", transition: "border 0.15s", background: WHITE }}
+        style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 16, boxSizing: "border-box", outline: "none", transition: "border 0.15s", background: WHITE }}
         onFocus={e => e.target.style.borderColor = ACCENT}
         onBlur={e => e.target.style.borderColor = GRAY_300} />
     </div>
@@ -47,7 +47,7 @@ function SelectInput({ label, options, value, onChange }) {
     <div>
       <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>{label}</label>
       <select value={value} onChange={e => onChange(e.target.value)}
-        style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 14, boxSizing: "border-box", outline: "none", background: WHITE, cursor: "pointer", appearance: "auto" }}
+        style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 16, boxSizing: "border-box", outline: "none", background: WHITE, cursor: "pointer", appearance: "auto" }}
         onFocus={e => e.target.style.borderColor = ACCENT}
         onBlur={e => e.target.style.borderColor = GRAY_300}>
         <option value="">Sélectionner...</option>
@@ -180,7 +180,7 @@ function FormulaireContent() {
                   <InfoTooltip text="Au-delà de 150 m² de surface de plancher, le recours à un architecte est obligatoire (article R.431-2 du Code de l'urbanisme). Notre service concerne les projets de moins de 150 m²." />
                 </div>
                 <input type="number" value={form.surface} onChange={e => { const v = e.target.value; if (v === "" || Number(v) <= 150) updateForm("surface", v) }} placeholder="120" max={150}
-                  style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 14, boxSizing: "border-box", outline: "none", transition: "border 0.15s", background: WHITE }}
+                  style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 16, boxSizing: "border-box", outline: "none", transition: "border 0.15s", background: WHITE }}
                   onFocus={e => e.target.style.borderColor = ACCENT}
                   onBlur={e => e.target.style.borderColor = GRAY_300} />
               </div>
@@ -198,7 +198,7 @@ function FormulaireContent() {
               <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>Description libre du projet</label>
               <textarea className="form-textarea" value={form.description} onChange={e => updateForm("description", e.target.value)}
                 placeholder="Décrivez votre projet idéal : disposition des pièces, contraintes particulières, inspirations..."
-                style={{ width: "100%", minHeight: 100, padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 14, resize: "vertical", boxSizing: "border-box", outline: "none", transition: "border 0.15s" }}
+                style={{ width: "100%", minHeight: 100, padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 16, resize: "vertical", boxSizing: "border-box", outline: "none", transition: "border 0.15s" }}
                 onFocus={e => e.target.style.borderColor = ACCENT}
                 onBlur={e => e.target.style.borderColor = GRAY_300} />
             </div>
