@@ -159,7 +159,6 @@ function ProjetContent() {
   }
 
   const handleDelete = async (doc) => {
-    if (!confirm('Supprimer ce fichier ?')) return
     try {
       await deleteDocument(doc.id, doc.file_url)
       const docs = await getDocuments(project.id)
@@ -321,10 +320,12 @@ function ProjetContent() {
                   </a>
                   <span
                     onClick={(e) => { e.stopPropagation(); handleDelete(doc) }}
-                    style={{ color: '#c0392b', cursor: 'pointer', fontSize: 16, fontWeight: 600 }}
+                    style={{ color: '#bbb', cursor: 'pointer', fontSize: 13 }}
                     title="Supprimer"
+                    onMouseOver={e => e.target.style.color = '#c0392b'}
+                    onMouseOut={e => e.target.style.color = '#bbb'}
                   >
-                    ✕
+                    🗑
                   </span>
                 </div>
               </div>
