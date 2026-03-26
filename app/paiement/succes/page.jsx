@@ -9,41 +9,52 @@ import { Suspense } from 'react'
 function SuccesContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [done, setDone] = useState(false)
-  const [magicLink, setMagicLink] = useState(null)
+  const [projectInfo, setProjectInfo] = useState(null)
 
   useEffect(() => {
     const init = async () => {
       const projectId = searchParams.get('project_id')
 
       if (projectId) {
+        // Met à jour le statut en base
         await supabase
           .from('projects')
           .update({ status: 'paid', paid_at: new Date().toISOString() })
           .eq('id', projectId)
-      }
 
-      // Try localStorage first
-      const projectData = JSON.parse(localStorage.getItem('projectData'))
-      if (projectData?.reference && projectData?.token) {
-        setMagicLink(`/projet/${projectData.reference}?token=${projectData.token}`)
-        setDone(true)
-        return
-      }
-
-      // Fallback: fetch from Supabase
-      if (projectId) {
-        const { data } = await supabase
+        // Récupère les données complètes du projet
+        const { data: projectData } = await supabase
           .from('projects')
-          .select('reference, token')
+          .select('*')
           .eq('id', projectId)
           .single()
-        if (data?.reference && data?.token) {
-          setMagicLink(`/projet/${data.reference}?token=${data.token}`)
+
+        if (projectData) {
+          // Envoie l'email de bienvenue
+          await fetch('/api/send-welcome-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: projectData.email,
+              firstName: projectData.first_name,
+              reference: projectData.reference,
+              token: projectData.token,
+              projectType: projectData.project_type,
+              price: projectData.price,
+            }),
+          })
+
+          // Stocke les infos pour le bouton
+          setProjectInfo({ reference: projectData.reference, token: projectData.token })
+          return
         }
       }
 
-      setDone(true)
+      // Fallback: essaie localStorage
+      const localData = JSON.parse(localStorage.getItem('projectData'))
+      if (localData?.reference && localData?.token) {
+        setProjectInfo({ reference: localData.reference, token: localData.token })
+      }
     }
 
     init()
@@ -58,20 +69,21 @@ function SuccesContent() {
         Vous recevrez un email de confirmation sous peu.
       </p>
       <button
-        onClick={() => router.push(magicLink || '/dashboard')}
+        onClick={() => projectInfo && router.push(`/projet/${projectInfo.reference}?token=${projectInfo.token}`)}
+        disabled={!projectInfo}
         style={{
           padding: '12px 32px',
           borderRadius: 10,
           border: 'none',
-          background: '#1a5c3a',
-          color: '#fff',
+          background: projectInfo ? '#1a5c3a' : '#d1d5db',
+          color: projectInfo ? '#fff' : '#9ca3af',
           fontSize: 15,
           fontWeight: 600,
-          cursor: 'pointer',
+          cursor: projectInfo ? 'pointer' : 'default',
           fontFamily: "'DM Sans', system-ui, sans-serif",
         }}
       >
-        Accéder à mon espace client →
+        {projectInfo ? 'Accéder à mon espace client →' : 'Chargement...'}
       </button>
     </div>
   )
