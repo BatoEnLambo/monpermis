@@ -50,39 +50,31 @@ export default function PaiementPage() {
 
   const handlePay = async () => {
     setProcessing(true)
-    setTimeout(async () => {
+    try {
       const projectData = JSON.parse(localStorage.getItem('projectData'))
-      if (projectData?.id) {
-        await supabase
-          .from('projects')
-          .update({ status: 'paid', paid_at: new Date().toISOString() })
-          .eq('id', projectData.id)
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId: projectData?.id,
+          reference: projectData?.reference,
+          price: pricing.price,
+          label: pricing.label,
+          email: form?.email || projectData?.email,
+        }),
+      })
+      const data = await response.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        alert('Erreur lors de la création du paiement. Veuillez réessayer.')
+        setProcessing(false)
       }
-
-      const newProject = {
-        ...form,
-        id: projectData?.id || 'PC-' + Date.now().toString(36).toUpperCase(),
-        reference: projectData?.reference,
-        createdAt: new Date().toISOString(),
-        phase: 0,
-        status: 'paid',
-      }
-      localStorage.setItem('monpermis_project', JSON.stringify(newProject))
+    } catch (error) {
+      console.error('Erreur:', error)
+      alert('Erreur lors de la création du paiement. Veuillez réessayer.')
       setProcessing(false)
-      router.push('/dashboard')
-    }, 1800)
-  }
-
-  const handleDevis = () => {
-    const newProject = {
-      ...form,
-      id: "PC-" + Date.now().toString(36).toUpperCase(),
-      createdAt: new Date().toISOString(),
-      phase: 0,
-      status: "active",
     }
-    localStorage.setItem("monpermis_project", JSON.stringify(newProject))
-    router.push('/dashboard')
   }
 
   return (
@@ -168,10 +160,10 @@ export default function PaiementPage() {
               <p style={{ fontSize: 14, color: GRAY_700, marginBottom: 16, lineHeight: 1.5 }}>
                 Votre projet nécessite une analyse personnalisée. On vous envoie un devis sous 24h.
               </p>
-              <button onClick={handleDevis}
-                style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: ACCENT, color: WHITE, fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: FONT }}>
-                Recevoir mon devis gratuit →
-              </button>
+              <a href="mailto:contact@permisclair.fr?subject=Demande de devis — Projet sur mesure"
+                style={{ display: 'block', width: '100%', padding: '14px', borderRadius: 10, border: 'none', background: ACCENT, color: WHITE, fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: FONT, textAlign: 'center', textDecoration: 'none', boxSizing: 'border-box' }}>
+                Nous contacter pour un devis →
+              </a>
             </>
           )}
         </div>
