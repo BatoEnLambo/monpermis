@@ -1,1 +1,47 @@
-/* dashboard.css — à migrer depuis index.css (.page-dashboard) */
+@media (max-width: 768px) {
+  .page-dashboard .dash-header {
+    margin-bottom: 16px !important;
+  }
+  .page-dashboard .dash-title {
+    font-size: 1.2rem !important;
+  }
+  .page-dashboard .dash-address {
+    font-size: 0.85rem !important;
+  }
+  .page-dashboard .dash-id {
+    font-size: 0.75rem !important;
+    padding: 3px 8px !important;
+  }
+  .page-dashboard .dash-progress {
+    padding: 16px !important;
+    padding-top: 0.75rem !important;
+  }
+  .page-dashboard .dash-recap {
+    padding: 16px !important;
+  }
+  .page-dashboard .dash-recap-grid {
+    gap: 0.5rem !important;
+  }
+  .page-dashboard .dash-recap-grid > div {
+    padding: 0.75rem !important;
+  }
+  .page-dashboard .dash-recap-grid > div > div:first-child {
+    font-size: 0.7rem !important;
+  }
+  .page-dashboard .dash-recap-grid > div > div:last-child {
+    font-size: 0.9rem !important;
+  }
+
+  /* Uploads */
+  .page-dashboard .drop-zone {
+    padding: 20px 16px !important;
+    max-height: 120px !important;
+  }
+  .page-dashboard .drop-zone div {
+    font-size: 0.9rem !important;
+  }
+  .page-dashboard .drop-zone div:first-child {
+    font-size: 24px !important;
+    margin-bottom: 6px !important;
+  }
+}

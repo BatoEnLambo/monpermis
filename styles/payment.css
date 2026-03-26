@@ -1,1 +1,84 @@
-/* payment.css — à migrer depuis index.css (.page-payment) */
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 768px) {
+  .page-payment.payment-page {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    min-height: 100% !important;
+    padding: 0.5rem 0 0 0 !important;
+    overflow-y: auto !important;
+  }
+  .page-payment .payment-back {
+    font-size: 0.85rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  .page-payment .payment-card-header {
+    padding: 0.75rem 1.25rem !important;
+  }
+  .page-payment .pay-offer-label {
+    font-size: 0.7rem !important;
+    margin-bottom: 0.2rem !important;
+  }
+  .page-payment .pay-offer-title {
+    font-size: 1.15rem !important;
+    margin-bottom: 0.15rem !important;
+  }
+  .page-payment .pay-offer-address {
+    font-size: 0.8rem !important;
+  }
+  .page-payment .payment-card-includes {
+    padding: 0.6rem 1.25rem !important;
+  }
+  .page-payment .pay-includes-title {
+    font-size: 0.9rem !important;
+    margin-bottom: 0.4rem !important;
+  }
+  .page-payment .pay-includes-item {
+    font-size: 0.85rem !important;
+    padding: 0.15rem 0 !important;
+    line-height: 1.5 !important;
+    gap: 6px !important;
+  }
+  .page-payment .pay-check {
+    font-size: 0.85rem !important;
+  }
+  .page-payment .pay-delivery {
+    font-size: 0.85rem !important;
+    margin-top: 0.4rem !important;
+    padding: 0.15rem 0 !important;
+  }
+  .page-payment .pay-garantie {
+    padding: 0.6rem 1rem !important;
+    gap: 8px !important;
+  }
+  .page-payment .pay-garantie-title {
+    font-size: 0.85rem !important;
+  }
+  .page-payment .pay-garantie-text {
+    font-size: 0.8rem !important;
+    line-height: 1.4 !important;
+  }
+  .page-payment .payment-card-price {
+    padding: 0.75rem 1.25rem !important;
+  }
+  .page-payment .pay-amount-row {
+    margin-bottom: 0.3rem !important;
+  }
+  .page-payment .pay-amount {
+    font-size: 2rem !important;
+  }
+  .page-payment .payment-badges {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    margin-top: 0.75rem !important;
+  }
+  .page-payment .payment-badges > div {
+    flex: 1 !important;
+    text-align: center !important;
+    font-size: 0.7rem !important;
+    color: #888 !important;
+    line-height: 1.3 !important;
+  }
+}
