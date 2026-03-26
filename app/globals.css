@@ -1,16 +1,10 @@
-/* Empêche le zoom auto sur les inputs — tous navigateurs mobiles */
-input, select, textarea, button {
-  font-size: 16px !important;
-  touch-action: manipulation;
-}
-
-/* Empêche le zoom au double-tap */
-* {
-  touch-action: manipulation;
-}
-
 *, *::before, *::after {
   box-sizing: border-box;
+}
+
+* {
+  touch-action: manipulation;
+  -ms-touch-action: manipulation;
 }
 
 body {
@@ -19,9 +13,22 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
-/* Images never overflow */
+input, select, textarea, button {
+  font-size: 16px !important;
+  touch-action: manipulation;
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+
+select {
+  -webkit-appearance: menulist;
+  appearance: menulist;
+}
+
 img {
   max-width: 100%;
   height: auto;

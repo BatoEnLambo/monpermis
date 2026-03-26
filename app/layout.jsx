@@ -7,11 +7,17 @@ export const metadata = {
   description: 'Plans de maison et permis de construire : on s\'occupe de tout. Dossier complet livré en 5 jours ouvrés.',
 }
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+}
+
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </head>
       <body style={{ fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif" }}>

@@ -120,6 +120,16 @@ function FormulaireContent() {
     }
   }, [searchParams])
 
+  useEffect(() => {
+    const preventZoom = (e) => {
+      if (e.touches.length > 1) {
+        e.preventDefault()
+      }
+    }
+    document.addEventListener('touchmove', preventZoom, { passive: false })
+    return () => document.removeEventListener('touchmove', preventZoom)
+  }, [])
+
   const updateForm = (key, val) => setForm(prev => ({ ...prev, [key]: val }))
 
   const canNext = () => {
