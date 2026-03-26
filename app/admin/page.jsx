@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
-import { uploadFile, getDocuments } from '../../lib/storage'
+import { uploadFile, getDocuments, deleteDocument } from '../../lib/storage'
 import { getMessages, sendMessage, markAsRead } from '../../lib/messages'
 
 const ADMIN_PASSWORD = 'permisclair2026'
@@ -321,10 +321,20 @@ export default function AdminPage() {
                                 <span style={{ fontSize: 13 }}>{doc.file_name}</span>
                                 <span style={{ fontSize: 11, color: '#888' }}>{new Date(doc.created_at).toLocaleDateString('fr-FR')}</span>
                               </div>
-                              <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
-                                style={{ fontSize: 12, color: '#1a5c3a', fontWeight: 600, textDecoration: 'none' }}>
-                                Voir
-                              </a>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+                                <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
+                                  style={{ fontSize: 12, color: '#1a5c3a', fontWeight: 600, textDecoration: 'none' }}>
+                                  Voir
+                                </a>
+                                <span onClick={async (e) => {
+                                  e.stopPropagation()
+                                  await deleteDocument(doc.id, doc.file_url)
+                                  const docs = await getDocuments(p.id)
+                                  setProjectDocs(prev => ({ ...prev, [p.id]: docs }))
+                                }} style={{ color: '#c0392b', cursor: 'pointer', fontSize: 13, marginLeft: 12 }}>
+                                  Supprimer
+                                </span>
+                              </div>
                             </div>
                           ))}
                         </div>
