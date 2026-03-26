@@ -23,12 +23,12 @@ const ROOF_TYPES = ["Toit plat", "Toit 2 pans", "Toit 4 pans", "Toit monopente",
 const STYLES = ["Moderne / Contemporain", "Traditionnel", "Ossature bois", "Cubique / Toit plat", "Autre"]
 
 const PRICING = {
-  "Construction neuve": { price: 1, label: "Permis de construire — Maison individuelle", delay: "5 jours ouvrés" },
-  "Extension": { price: 1, label: "Permis de construire — Extension", delay: "5 jours ouvrés" },
-  "Surélévation": { price: 1, label: "Permis de construire — Surélévation", delay: "5-7 jours ouvrés" },
-  "Rénovation avec modification extérieure": { price: 1, label: "Déclaration préalable — Rénovation", delay: "3-5 jours ouvrés" },
-  "Garage / Carport": { price: 1, label: "Déclaration préalable — Garage / Carport", delay: "3-5 jours ouvrés" },
-  "Piscine": { price: 1, label: "Déclaration préalable — Piscine", delay: "3 jours ouvrés" },
+  "Construction neuve": { price: 1190, label: "Permis de construire — Maison individuelle", delay: "5 jours ouvrés" },
+  "Extension": { price: 790, label: "Permis de construire — Extension", delay: "5 jours ouvrés" },
+  "Surélévation": { price: 890, label: "Permis de construire — Surélévation", delay: "5-7 jours ouvrés" },
+  "Rénovation avec modification extérieure": { price: 590, label: "Déclaration préalable — Rénovation", delay: "3-5 jours ouvrés" },
+  "Garage / Carport": { price: 490, label: "Déclaration préalable — Garage / Carport", delay: "3-5 jours ouvrés" },
+  "Piscine": { price: 390, label: "Déclaration préalable — Piscine", delay: "3 jours ouvrés" },
   "Autre": { price: null, label: "Projet sur mesure", delay: "Sur devis" },
 }
 
