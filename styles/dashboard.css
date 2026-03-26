@@ -44,4 +44,11 @@
     font-size: 24px !important;
     margin-bottom: 6px !important;
   }
+
+  /* Chat popup mobile */
+  .chat-popup {
+    width: calc(100vw - 32px) !important;
+    right: 16px !important;
+    bottom: 80px !important;
+  }
 }

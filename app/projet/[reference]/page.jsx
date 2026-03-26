@@ -45,6 +45,7 @@ function ProjetContent() {
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
   const [sendingMessage, setSendingMessage] = useState(false)
+  const [chatOpen, setChatOpen] = useState(false)
 
   useEffect(() => {
     const loadProject = async () => {
@@ -364,65 +365,86 @@ function ProjetContent() {
         )}
       </div>
 
-      {/* 7. Messagerie */}
-      <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24 }}>
-        <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 16px", color: GRAY_900 }}>Messagerie</h3>
-
-        <div style={{ maxHeight: 400, overflowY: 'auto', marginBottom: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {messages.length === 0 ? (
-            <p style={{ fontSize: 14, color: GRAY_500, textAlign: 'center', padding: '20px 0' }}>
-              Une question sur votre dossier ? Écrivez-nous ici.
-            </p>
-          ) : (
-            messages.map(msg => (
-              <div key={msg.id} style={{
-                alignSelf: msg.sender === 'client' ? 'flex-end' : 'flex-start',
-                maxWidth: '80%',
-              }}>
-                <div style={{
-                  padding: '10px 14px', borderRadius: 12, fontSize: 14, lineHeight: 1.5,
-                  background: msg.sender === 'client' ? ACCENT : GRAY_100,
-                  color: msg.sender === 'client' ? WHITE : GRAY_900,
-                }}>
-                  {msg.content}
-                </div>
-                <div style={{
-                  fontSize: 11, color: GRAY_500, marginTop: 4,
-                  textAlign: msg.sender === 'client' ? 'right' : 'left',
-                }}>
-                  {msg.sender === 'admin' ? 'PermisClair' : 'Vous'} · {new Date(msg.created_at).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        <div style={{ display: 'flex', gap: 8 }}>
-          <input
-            type="text"
-            value={newMessage}
-            onChange={e => setNewMessage(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage() } }}
-            placeholder="Écrivez votre message..."
-            style={{
-              flex: 1, padding: '10px 14px', borderRadius: 10, border: `1px solid ${GRAY_200}`,
-              fontSize: 16, outline: 'none', fontFamily: "'DM Sans', system-ui, sans-serif",
-            }}
-          />
-          <button
-            onClick={handleSendMessage}
-            disabled={sendingMessage || !newMessage.trim()}
-            style={{
-              padding: '10px 20px', borderRadius: 10, border: 'none',
-              background: newMessage.trim() ? ACCENT : '#d1d5db', color: WHITE,
-              fontSize: 14, fontWeight: 600, cursor: newMessage.trim() ? 'pointer' : 'default',
-              fontFamily: "'DM Sans', system-ui, sans-serif", whiteSpace: 'nowrap',
-            }}
-          >
-            Envoyer
-          </button>
-        </div>
+      {/* 7. Chat flottant */}
+      <div
+        onClick={() => setChatOpen(!chatOpen)}
+        style={{
+          position: 'fixed', bottom: 24, right: 24, width: 56, height: 56,
+          borderRadius: '50%', background: ACCENT, color: WHITE,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer', boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+          zIndex: 1000, fontSize: 24, transition: 'transform 0.2s',
+          transform: chatOpen ? 'rotate(45deg)' : 'none',
+        }}
+      >
+        {chatOpen ? '✕' : '💬'}
       </div>
+
+      {chatOpen && (
+        <div className="chat-popup" style={{
+          position: 'fixed', bottom: 92, right: 24, width: 360, maxHeight: 480,
+          background: WHITE, borderRadius: 16,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 999,
+          display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          border: `1px solid ${GRAY_200}`,
+        }}>
+          <div style={{ padding: '16px 20px', borderBottom: `1px solid ${GRAY_200}`, background: ACCENT }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: WHITE }}>PermisClair</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>On répond en quelques heures</div>
+          </div>
+
+          <div style={{ flex: 1, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 320 }}>
+            {messages.length === 0 ? (
+              <p style={{ fontSize: 14, color: GRAY_500, textAlign: 'center', padding: '20px 0' }}>
+                Une question sur votre dossier ? Écrivez-nous ici.
+              </p>
+            ) : (
+              messages.map(msg => (
+                <div key={msg.id} style={{ alignSelf: msg.sender === 'client' ? 'flex-end' : 'flex-start', maxWidth: '80%' }}>
+                  <div style={{
+                    padding: '10px 14px', borderRadius: 12, fontSize: 14, lineHeight: 1.5,
+                    background: msg.sender === 'client' ? ACCENT : GRAY_100,
+                    color: msg.sender === 'client' ? WHITE : GRAY_900,
+                  }}>
+                    {msg.content}
+                  </div>
+                  <div style={{ fontSize: 11, color: GRAY_500, marginTop: 4, textAlign: msg.sender === 'client' ? 'right' : 'left' }}>
+                    {msg.sender === 'admin' ? 'PermisClair' : 'Vous'} · {new Date(msg.created_at).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div style={{ padding: '12px 16px', borderTop: `1px solid ${GRAY_200}`, display: 'flex', gap: 8 }}>
+            <input
+              type="text"
+              value={newMessage}
+              onChange={e => setNewMessage(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage() } }}
+              placeholder="Votre message..."
+              style={{
+                flex: 1, padding: '10px 14px', borderRadius: 10,
+                border: `1px solid ${GRAY_200}`, fontSize: 16, outline: 'none',
+                fontFamily: "'DM Sans', system-ui, sans-serif",
+              }}
+            />
+            <button
+              onClick={handleSendMessage}
+              disabled={sendingMessage || !newMessage.trim()}
+              style={{
+                padding: '10px 16px', borderRadius: 10, border: 'none',
+                background: newMessage.trim() ? ACCENT : '#d1d5db',
+                color: WHITE, fontSize: 14, fontWeight: 600,
+                cursor: newMessage.trim() ? 'pointer' : 'default',
+                fontFamily: "'DM Sans', system-ui, sans-serif",
+              }}
+            >
+              →
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
