@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, Suspense } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { supabase } from '../../../lib/supabase'
+import { uploadFile, getDocuments } from '../../../lib/storage'
 import '../../../styles/dashboard.css'
 
 const ACCENT = "#1a5c3a"
@@ -25,8 +26,6 @@ const PHASES = [
   { id: "accepted", label: "Permis accepté ✓", desc: "Félicitations, votre permis est accepté !" },
 ]
 
-const UPLOAD_KEY = "documents"
-
 function getPhaseIndex(status) {
   const idx = PHASES.findIndex(p => p.id === status)
   return idx >= 0 ? idx : 0
@@ -39,7 +38,8 @@ function ProjetContent() {
   const [project, setProject] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [uploads, setUploads] = useState({})
+  const [documents, setDocuments] = useState([])
+  const [uploading, setUploading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
 
   useEffect(() => {
@@ -85,17 +85,14 @@ function ProjetContent() {
     }
 
     loadProject()
-
-    // Charge les uploads depuis localStorage
-    const savedUploads = localStorage.getItem('monpermis_uploads')
-    if (savedUploads) setUploads(JSON.parse(savedUploads))
   }, [params.reference, searchParams])
 
+  // Charge les documents quand le projet est chargé
   useEffect(() => {
-    if (Object.keys(uploads).length > 0) {
-      localStorage.setItem("monpermis_uploads", JSON.stringify(uploads))
+    if (project?.id) {
+      getDocuments(project.id).then(docs => setDocuments(docs))
     }
-  }, [uploads])
+  }, [project])
 
   if (loading) {
     return <div style={{ padding: '60px 20px', textAlign: 'center', color: '#888' }}>Chargement de votre espace...</div>
@@ -112,45 +109,44 @@ function ProjetContent() {
   }
 
   const currentPhase = getPhaseIndex(project.status)
-  const files = uploads[UPLOAD_KEY] || []
-  const totalFiles = files.length
+  const clientDocs = documents.filter(d => d.uploaded_by === 'client')
+  const adminDocs = documents.filter(d => d.uploaded_by === 'admin')
 
-  const addFiles = (categoryId, newFileList) => {
-    const newFiles = Array.from(newFileList).map(f => {
-      const reader = new FileReader()
-      reader.readAsDataURL(f)
-      const fileData = { name: f.name, size: f.size, type: f.type, addedAt: new Date().toISOString() }
-      reader.onload = () => {
-        const stored = JSON.parse(localStorage.getItem("monpermis_files_data") || "{}")
-        if (!stored[categoryId]) stored[categoryId] = []
-        stored[categoryId].push({ ...fileData, data: reader.result })
-        localStorage.setItem("monpermis_files_data", JSON.stringify(stored))
+  const handleUpload = async (e) => {
+    const files = Array.from(e.target.files)
+    if (!files.length) return
+    setUploading(true)
+    try {
+      for (const file of files) {
+        await uploadFile(file, project.id, 'client')
       }
-      return fileData
-    })
-    setUploads(prev => ({
-      ...prev,
-      [categoryId]: [...(prev[categoryId] || []), ...newFiles],
-    }))
+      const docs = await getDocuments(project.id)
+      setDocuments(docs)
+    } catch (err) {
+      console.error('Upload error:', err)
+      alert('Erreur lors de l\'upload. Veuillez réessayer.')
+    }
+    setUploading(false)
+    e.target.value = ''
   }
 
-  const removeFile = (categoryId, idx) => {
-    setUploads(prev => ({
-      ...prev,
-      [categoryId]: prev[categoryId].filter((_, i) => i !== idx),
-    }))
-  }
-
-  const handleDrop = (e) => {
+  const handleDrop = async (e) => {
     e.preventDefault()
     setDragOver(false)
-    if (e.dataTransfer.files.length) addFiles(UPLOAD_KEY, e.dataTransfer.files)
-  }
-
-  const formatSize = (bytes) => {
-    if (bytes < 1024) return bytes + " o"
-    if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + " Ko"
-    return (bytes / (1024 * 1024)).toFixed(1) + " Mo"
+    const files = Array.from(e.dataTransfer.files)
+    if (!files.length) return
+    setUploading(true)
+    try {
+      for (const file of files) {
+        await uploadFile(file, project.id, 'client')
+      }
+      const docs = await getDocuments(project.id)
+      setDocuments(docs)
+    } catch (err) {
+      console.error('Upload error:', err)
+      alert('Erreur lors de l\'upload. Veuillez réessayer.')
+    }
+    setUploading(false)
   }
 
   return (
@@ -211,8 +207,8 @@ function ProjetContent() {
         <p style={{ fontSize: 13, color: GRAY_500, fontStyle: "italic", margin: "16px 0 0" }}>Si la mairie demande des modifications après votre dépôt, on corrige et on vous renvoie le dossier gratuitement.</p>
       </div>
 
-      {/* 3. Checklist documents + zone upload */}
-      {totalFiles < 3 && (
+      {/* 3. Checklist documents */}
+      {clientDocs.length < 3 && (
         <div className="dash-onboarding" style={{ background: "#FFF9E6", border: "1px solid #F0D060", borderRadius: 8, padding: 16, marginBottom: 20 }}>
           <div style={{ fontWeight: 700, fontSize: 14, color: GRAY_900, marginBottom: 10 }}>Pour démarrer votre dossier, envoyez-nous ces éléments :</div>
           <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: GRAY_700, lineHeight: 1.8, listStyle: "none" }}>
@@ -223,12 +219,18 @@ function ProjetContent() {
             <li>📍 L'emplacement souhaité de la construction sur le terrain</li>
             <li>🎨 Matériaux et couleurs souhaitées (enduit, bois, tuile, ardoise...)</li>
           </ul>
-          <div style={{ fontSize: 13, color: GRAY_500, marginTop: 10 }}>Déposez vos fichiers ci-dessous. Pas de panique si vous n'avez pas tout — on vous guidera via la messagerie.</div>
-          <div style={{ fontSize: 12, fontWeight: 600, color: "#B8860B", marginTop: 8 }}>{totalFiles}/3 documents minimum déposés</div>
+          <div style={{ fontSize: 13, color: GRAY_500, marginTop: 10 }}>Déposez vos fichiers ci-dessous. Pas de panique si vous n'avez pas tout — on vous guidera.</div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: "#B8860B", marginTop: 8 }}>{clientDocs.length}/3 documents minimum déposés</div>
         </div>
       )}
 
-      <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, overflow: "hidden", marginBottom: 20 }}>
+      {/* 4. Vos documents (upload client) */}
+      <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
+        <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 8px", color: GRAY_900 }}>Vos documents</h3>
+        <p style={{ fontSize: 13, color: GRAY_500, margin: "0 0 16px", lineHeight: 1.5 }}>
+          Envoyez-nous les documents nécessaires : photos du terrain, plan cadastral, extrait du PLU...
+        </p>
+
         <div
           onClick={() => inputRef.current?.click()}
           onDragOver={e => { e.preventDefault(); setDragOver(true) }}
@@ -236,52 +238,81 @@ function ProjetContent() {
           onDrop={handleDrop}
           className="drop-zone"
           style={{
-            padding: "32px 24px", textAlign: "center", cursor: "pointer",
+            padding: "24px 20px", textAlign: "center", cursor: uploading ? "default" : "pointer",
             border: `2px dashed ${dragOver ? ACCENT : GRAY_300}`,
             background: dragOver ? ACCENT_LIGHT : GRAY_50,
-            margin: 16, borderRadius: 12, transition: "all 0.15s",
+            borderRadius: 12, transition: "all 0.15s", marginBottom: clientDocs.length > 0 ? 16 : 0,
+            opacity: uploading ? 0.6 : 1,
           }}>
-          <div style={{ fontSize: 32, marginBottom: 8 }}>📎</div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: GRAY_900, marginBottom: 4 }}>
-            <span style={{ color: ACCENT }}>Cliquez</span> ou glissez-déposez vos fichiers
-          </div>
-          <div style={{ fontSize: 13, color: GRAY_500 }}>Photos, plans, croquis, PDF...</div>
+          {uploading ? (
+            <div style={{ fontSize: 14, color: GRAY_500 }}>Envoi en cours...</div>
+          ) : (
+            <>
+              <div style={{ fontSize: 28, marginBottom: 6 }}>📎</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: GRAY_900, marginBottom: 4 }}>
+                <span style={{ color: ACCENT }}>Cliquez</span> ou glissez-déposez vos fichiers
+              </div>
+              <div style={{ fontSize: 13, color: GRAY_500 }}>Photos, plans, croquis, PDF...</div>
+            </>
+          )}
           <input ref={inputRef} type="file" multiple style={{ display: "none" }}
-            onChange={e => { addFiles(UPLOAD_KEY, e.target.files); e.target.value = "" }} />
+            onChange={handleUpload} disabled={uploading} />
         </div>
 
-        {files.length > 0 && (
-          <div style={{ padding: "12px 20px", borderTop: `1px solid ${GRAY_100}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: GRAY_900 }}>Fichiers ajoutés</span>
-            <span style={{ background: ACCENT_LIGHT, color: ACCENT, fontSize: 12, fontWeight: 600, padding: "2px 10px", borderRadius: 10 }}>
-              {files.length} fichier{files.length > 1 ? "s" : ""}
-            </span>
-          </div>
-        )}
-
-        {files.length > 0 && (
-          <div style={{ padding: "4px 20px 12px" }}>
-            {files.map((f, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 0", borderBottom: i < files.length - 1 ? `1px solid ${GRAY_100}` : "none" }}>
+        {clientDocs.length > 0 && (
+          <div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: GRAY_900 }}>Fichiers envoyés</span>
+              <span style={{ background: ACCENT_LIGHT, color: ACCENT, fontSize: 12, fontWeight: 600, padding: "2px 10px", borderRadius: 10 }}>
+                {clientDocs.length} fichier{clientDocs.length > 1 ? "s" : ""}
+              </span>
+            </div>
+            {clientDocs.map((doc) => (
+              <div key={doc.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 0", borderBottom: `1px solid ${GRAY_100}` }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ fontSize: 11, color: GRAY_500 }}>📄</span>
-                  <span style={{ fontSize: 13, color: GRAY_700 }}>{f.name}</span>
-                  <span style={{ fontSize: 11, color: GRAY_500 }}>{formatSize(f.size)}</span>
+                  <span style={{ fontSize: 13, color: GRAY_700 }}>{doc.file_name}</span>
+                  <span style={{ fontSize: 11, color: GRAY_500 }}>{new Date(doc.created_at).toLocaleDateString('fr-FR')}</span>
                 </div>
-                <button onClick={() => removeFile(UPLOAD_KEY, i)}
-                  style={{ background: "none", border: "none", color: GRAY_500, cursor: "pointer", fontSize: 16, padding: "2px 6px", borderRadius: 4 }}
-                  onMouseOver={e => e.target.style.color = "#c0392b"}
-                  onMouseOut={e => e.target.style.color = GRAY_500}>
-                  ×
-                </button>
+                <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
+                  style={{ fontSize: 12, color: ACCENT, fontWeight: 600, textDecoration: "none" }}>
+                  Télécharger
+                </a>
               </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* 4. Récapitulatif du projet */}
-      <div className="dash-recap" style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginTop: 20 }}>
+      {/* 5. Votre dossier (fichiers admin) */}
+      <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
+        <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 12px", color: GRAY_900 }}>Votre dossier</h3>
+        {adminDocs.length > 0 ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {adminDocs.map((doc) => (
+              <a key={doc.id} href={doc.file_url} target="_blank" rel="noopener noreferrer"
+                style={{
+                  display: "flex", alignItems: "center", gap: 12, padding: "14px 16px",
+                  background: ACCENT_LIGHT, borderRadius: 10, textDecoration: "none", transition: "all 0.15s",
+                }}>
+                <span style={{ fontSize: 24 }}>📦</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: GRAY_900 }}>{doc.file_name}</div>
+                  <div style={{ fontSize: 12, color: GRAY_500 }}>Ajouté le {new Date(doc.created_at).toLocaleDateString('fr-FR')}</div>
+                </div>
+                <span style={{ fontSize: 13, fontWeight: 600, color: ACCENT }}>Télécharger ↓</span>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <p style={{ fontSize: 14, color: GRAY_500, margin: 0, lineHeight: 1.6 }}>
+            Votre dossier est en cours de préparation. Vous pourrez le télécharger ici dès qu'il sera prêt.
+          </p>
+        )}
+      </div>
+
+      {/* 6. Récapitulatif du projet */}
+      <div className="dash-recap" style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
         <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 16px", color: GRAY_900 }}>Récapitulatif du projet</h3>
         <div className="dash-recap-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           {[
@@ -306,8 +337,8 @@ function ProjetContent() {
         )}
       </div>
 
-      {/* 5. Contact */}
-      <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginTop: 20 }}>
+      {/* 7. Contact */}
+      <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24 }}>
         <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 8px", color: GRAY_900 }}>Une question ?</h3>
         <p style={{ fontSize: 14, color: GRAY_500, margin: 0, lineHeight: 1.6 }}>
           Contactez-nous à <a href="mailto:contact@permisclair.fr" style={{ color: ACCENT, fontWeight: 600 }}>contact@permisclair.fr</a> en précisant votre référence {project.reference}.

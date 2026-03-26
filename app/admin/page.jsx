@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
+import { uploadFile, getDocuments } from '../../lib/storage'
 
 const ADMIN_PASSWORD = 'permisclair2026'
 
@@ -23,6 +24,8 @@ export default function AdminPage() {
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(false)
   const [selected, setSelected] = useState(null)
+  const [projectDocs, setProjectDocs] = useState({})
+  const [adminUploading, setAdminUploading] = useState(null)
 
   const login = (e) => {
     e.preventDefault()
@@ -50,6 +53,41 @@ export default function AdminPage() {
       .update({ status: newStatus })
       .eq('id', id)
     fetchProjects()
+  }
+
+  const handleSelectProject = async (projectId) => {
+    if (selected === projectId) {
+      setSelected(null)
+      return
+    }
+    setSelected(projectId)
+    if (!projectDocs[projectId]) {
+      try {
+        const docs = await getDocuments(projectId)
+        setProjectDocs(prev => ({ ...prev, [projectId]: docs }))
+      } catch (err) {
+        console.error('Error loading docs:', err)
+      }
+    }
+  }
+
+  const handleAdminUpload = async (e, projectId) => {
+    e.stopPropagation()
+    const files = Array.from(e.target.files)
+    if (!files.length) return
+    setAdminUploading(projectId)
+    try {
+      for (const file of files) {
+        await uploadFile(file, projectId, 'admin')
+      }
+      const docs = await getDocuments(projectId)
+      setProjectDocs(prev => ({ ...prev, [projectId]: docs }))
+    } catch (err) {
+      console.error('Upload error:', err)
+      alert('Erreur lors de l\'upload.')
+    }
+    setAdminUploading(null)
+    e.target.value = ''
   }
 
   if (!authed) {
@@ -106,7 +144,7 @@ export default function AdminPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {projects.map(p => (
             <div key={p.id} style={{ border: '1px solid #e8e7e4', borderRadius: 10, padding: 16, background: '#fff', cursor: 'pointer' }}
-              onClick={() => setSelected(selected === p.id ? null : p.id)}>
+              onClick={() => handleSelectProject(p.id)}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
                 <div>
                   <span style={{ fontWeight: 700, fontSize: 15 }}>{p.reference}</span>
@@ -119,7 +157,7 @@ export default function AdminPage() {
               </div>
 
               {selected === p.id && (
-                <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #f0f0f0', fontSize: 14 }}>
+                <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #f0f0f0', fontSize: 14 }} onClick={e => e.stopPropagation()}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 24px' }}>
                     <div><strong>Type :</strong> {p.project_type}</div>
                     <div><strong>Adresse :</strong> {p.address}, {p.postal_code} {p.city}</div>
@@ -136,6 +174,19 @@ export default function AdminPage() {
                   {p.description && (
                     <div style={{ marginTop: 12 }}><strong>Description :</strong> {p.description}</div>
                   )}
+
+                  {/* Lien magique */}
+                  {p.token && (
+                    <div style={{ marginTop: 16, padding: 12, background: '#f5f4f2', borderRadius: 8 }}>
+                      <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Lien client :</div>
+                      <a href={`/projet/${p.reference}?token=${p.token}`} target="_blank" rel="noopener noreferrer"
+                        style={{ fontSize: 13, color: '#1a5c3a', wordBreak: 'break-all' }}>
+                        /projet/{p.reference}?token={p.token}
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Changement de statut */}
                   <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 13, fontWeight: 600 }}>Changer le statut :</span>
                     <select
@@ -149,6 +200,66 @@ export default function AdminPage() {
                       ))}
                     </select>
                   </div>
+
+                  {/* Documents client */}
+                  {projectDocs[p.id] && (
+                    <div style={{ marginTop: 20 }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Documents client</div>
+                      {projectDocs[p.id].filter(d => d.uploaded_by === 'client').length > 0 ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          {projectDocs[p.id].filter(d => d.uploaded_by === 'client').map(doc => (
+                            <div key={doc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f0f0f0' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <span style={{ fontSize: 11 }}>📄</span>
+                                <span style={{ fontSize: 13 }}>{doc.file_name}</span>
+                                <span style={{ fontSize: 11, color: '#888' }}>{new Date(doc.created_at).toLocaleDateString('fr-FR')}</span>
+                              </div>
+                              <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
+                                style={{ fontSize: 12, color: '#1a5c3a', fontWeight: 600, textDecoration: 'none' }}>
+                                Télécharger
+                              </a>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p style={{ fontSize: 13, color: '#888', margin: 0 }}>Aucun document client pour le moment.</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Documents admin (dossier livré) */}
+                  {projectDocs[p.id] && (
+                    <div style={{ marginTop: 20 }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Dossier livré</div>
+                      {projectDocs[p.id].filter(d => d.uploaded_by === 'admin').length > 0 && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 12 }}>
+                          {projectDocs[p.id].filter(d => d.uploaded_by === 'admin').map(doc => (
+                            <div key={doc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f0f0f0' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <span style={{ fontSize: 11 }}>📦</span>
+                                <span style={{ fontSize: 13 }}>{doc.file_name}</span>
+                                <span style={{ fontSize: 11, color: '#888' }}>{new Date(doc.created_at).toLocaleDateString('fr-FR')}</span>
+                              </div>
+                              <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
+                                style={{ fontSize: 12, color: '#1a5c3a', fontWeight: 600, textDecoration: 'none' }}>
+                                Voir
+                              </a>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <label style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px',
+                        background: '#1a5c3a', color: '#fff', borderRadius: 8, fontSize: 13, fontWeight: 600,
+                        cursor: adminUploading === p.id ? 'default' : 'pointer', opacity: adminUploading === p.id ? 0.6 : 1,
+                      }}>
+                        {adminUploading === p.id ? 'Envoi en cours...' : '📤 Uploader le dossier final'}
+                        <input type="file" multiple style={{ display: 'none' }}
+                          onChange={(e) => handleAdminUpload(e, p.id)}
+                          disabled={adminUploading === p.id} />
+                      </label>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
