@@ -20,7 +20,7 @@ export default function RootLayout({ children }) {
       <head>
         <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </head>
-      <body style={{ fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif" }}>
+      <body style={{ fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif", minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         <Header />
         <main style={{ maxWidth: 720, margin: "0 auto", padding: "32px 20px", flex: 1, width: "100%", boxSizing: "border-box" }}>
           {children}
