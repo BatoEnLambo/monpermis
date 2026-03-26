@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, Suspense } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { supabase } from '../../../lib/supabase'
 import { uploadFile, getDocuments } from '../../../lib/storage'
+import { getMessages, sendMessage } from '../../../lib/messages'
 import '../../../styles/dashboard.css'
 
 const ACCENT = "#1a5c3a"
@@ -41,6 +42,9 @@ function ProjetContent() {
   const [documents, setDocuments] = useState([])
   const [uploading, setUploading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
+  const [messages, setMessages] = useState([])
+  const [newMessage, setNewMessage] = useState('')
+  const [sendingMessage, setSendingMessage] = useState(false)
 
   useEffect(() => {
     const loadProject = async () => {
@@ -94,6 +98,15 @@ function ProjetContent() {
     }
   }, [project])
 
+  // Charge les messages et rafraîchit toutes les 10 secondes
+  useEffect(() => {
+    if (!project?.id) return
+    const loadMessages = () => getMessages(project.id).then(msgs => setMessages(msgs))
+    loadMessages()
+    const interval = setInterval(loadMessages, 10000)
+    return () => clearInterval(interval)
+  }, [project])
+
   if (loading) {
     return <div style={{ padding: '60px 20px', textAlign: 'center', color: '#888' }}>Chargement de votre espace...</div>
   }
@@ -128,6 +141,20 @@ function ProjetContent() {
     }
     setUploading(false)
     e.target.value = ''
+  }
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim()) return
+    setSendingMessage(true)
+    try {
+      await sendMessage(project.id, 'client', newMessage.trim())
+      setNewMessage('')
+      const msgs = await getMessages(project.id)
+      setMessages(msgs)
+    } catch (err) {
+      console.error('Error sending message:', err)
+    }
+    setSendingMessage(false)
   }
 
   const handleDrop = async (e) => {
@@ -337,12 +364,64 @@ function ProjetContent() {
         )}
       </div>
 
-      {/* 7. Contact */}
+      {/* 7. Messagerie */}
       <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24 }}>
-        <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 8px", color: GRAY_900 }}>Une question ?</h3>
-        <p style={{ fontSize: 14, color: GRAY_500, margin: 0, lineHeight: 1.6 }}>
-          Contactez-nous à <a href="mailto:contact@permisclair.fr" style={{ color: ACCENT, fontWeight: 600 }}>contact@permisclair.fr</a> en précisant votre référence {project.reference}.
-        </p>
+        <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 16px", color: GRAY_900 }}>Messagerie</h3>
+
+        <div style={{ maxHeight: 400, overflowY: 'auto', marginBottom: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {messages.length === 0 ? (
+            <p style={{ fontSize: 14, color: GRAY_500, textAlign: 'center', padding: '20px 0' }}>
+              Une question sur votre dossier ? Écrivez-nous ici.
+            </p>
+          ) : (
+            messages.map(msg => (
+              <div key={msg.id} style={{
+                alignSelf: msg.sender === 'client' ? 'flex-end' : 'flex-start',
+                maxWidth: '80%',
+              }}>
+                <div style={{
+                  padding: '10px 14px', borderRadius: 12, fontSize: 14, lineHeight: 1.5,
+                  background: msg.sender === 'client' ? ACCENT : GRAY_100,
+                  color: msg.sender === 'client' ? WHITE : GRAY_900,
+                }}>
+                  {msg.content}
+                </div>
+                <div style={{
+                  fontSize: 11, color: GRAY_500, marginTop: 4,
+                  textAlign: msg.sender === 'client' ? 'right' : 'left',
+                }}>
+                  {msg.sender === 'admin' ? 'PermisClair' : 'Vous'} · {new Date(msg.created_at).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        <div style={{ display: 'flex', gap: 8 }}>
+          <input
+            type="text"
+            value={newMessage}
+            onChange={e => setNewMessage(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage() } }}
+            placeholder="Écrivez votre message..."
+            style={{
+              flex: 1, padding: '10px 14px', borderRadius: 10, border: `1px solid ${GRAY_200}`,
+              fontSize: 16, outline: 'none', fontFamily: "'DM Sans', system-ui, sans-serif",
+            }}
+          />
+          <button
+            onClick={handleSendMessage}
+            disabled={sendingMessage || !newMessage.trim()}
+            style={{
+              padding: '10px 20px', borderRadius: 10, border: 'none',
+              background: newMessage.trim() ? ACCENT : '#d1d5db', color: WHITE,
+              fontSize: 14, fontWeight: 600, cursor: newMessage.trim() ? 'pointer' : 'default',
+              fontFamily: "'DM Sans', system-ui, sans-serif", whiteSpace: 'nowrap',
+            }}
+          >
+            Envoyer
+          </button>
+        </div>
       </div>
     </div>
   )

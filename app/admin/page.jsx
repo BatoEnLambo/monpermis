@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { uploadFile, getDocuments } from '../../lib/storage'
+import { getMessages, sendMessage } from '../../lib/messages'
 
 const ADMIN_PASSWORD = 'permisclair2026'
 
@@ -26,6 +27,8 @@ export default function AdminPage() {
   const [selected, setSelected] = useState(null)
   const [projectDocs, setProjectDocs] = useState({})
   const [adminUploading, setAdminUploading] = useState(null)
+  const [projectMessages, setProjectMessages] = useState({})
+  const [adminReply, setAdminReply] = useState({})
 
   const login = (e) => {
     e.preventDefault()
@@ -67,6 +70,14 @@ export default function AdminPage() {
         setProjectDocs(prev => ({ ...prev, [projectId]: docs }))
       } catch (err) {
         console.error('Error loading docs:', err)
+      }
+    }
+    if (!projectMessages[projectId]) {
+      try {
+        const msgs = await getMessages(projectId)
+        setProjectMessages(prev => ({ ...prev, [projectId]: msgs }))
+      } catch (err) {
+        console.error('Error loading messages:', err)
       }
     }
   }
@@ -260,6 +271,66 @@ export default function AdminPage() {
                       </label>
                     </div>
                   )}
+
+                  {/* Messagerie client */}
+                  <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #f0f0f0' }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Messagerie client</div>
+                    <div style={{ maxHeight: 300, overflowY: 'auto', marginBottom: 12, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      {(!projectMessages[p.id] || projectMessages[p.id].length === 0) ? (
+                        <div style={{ fontSize: 13, color: '#888' }}>Aucun message</div>
+                      ) : (
+                        projectMessages[p.id].map(msg => (
+                          <div key={msg.id} style={{
+                            alignSelf: msg.sender === 'admin' ? 'flex-end' : 'flex-start',
+                            maxWidth: '80%',
+                          }}>
+                            <div style={{
+                              padding: '8px 12px', borderRadius: 10, fontSize: 13, lineHeight: 1.4,
+                              background: msg.sender === 'admin' ? '#1a5c3a' : '#f5f4f2',
+                              color: msg.sender === 'admin' ? '#fff' : '#1c1c1a',
+                            }}>
+                              {msg.content}
+                            </div>
+                            <div style={{ fontSize: 10, color: '#888', marginTop: 2, textAlign: msg.sender === 'admin' ? 'right' : 'left' }}>
+                              {msg.sender === 'admin' ? 'Vous' : p.first_name} · {new Date(msg.created_at).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <input
+                        type="text"
+                        value={adminReply[p.id] || ''}
+                        onChange={e => setAdminReply(prev => ({ ...prev, [p.id]: e.target.value }))}
+                        onKeyDown={async e => {
+                          if (e.key === 'Enter' && adminReply[p.id]?.trim()) {
+                            e.stopPropagation()
+                            await sendMessage(p.id, 'admin', adminReply[p.id].trim())
+                            setAdminReply(prev => ({ ...prev, [p.id]: '' }))
+                            const msgs = await getMessages(p.id)
+                            setProjectMessages(prev => ({ ...prev, [p.id]: msgs }))
+                          }
+                        }}
+                        onClick={e => e.stopPropagation()}
+                        placeholder="Répondre au client..."
+                        style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid #ddd', fontSize: 14, outline: 'none' }}
+                      />
+                      <button
+                        onClick={async (e) => {
+                          e.stopPropagation()
+                          if (!adminReply[p.id]?.trim()) return
+                          await sendMessage(p.id, 'admin', adminReply[p.id].trim())
+                          setAdminReply(prev => ({ ...prev, [p.id]: '' }))
+                          const msgs = await getMessages(p.id)
+                          setProjectMessages(prev => ({ ...prev, [p.id]: msgs }))
+                        }}
+                        style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#1a5c3a', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                      >
+                        Envoyer
+                      </button>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
