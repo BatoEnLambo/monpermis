@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import '../../styles/form.css'
 import { supabase } from '../../lib/supabase'
+import { generateToken } from '../../lib/token'
 
 const ACCENT = "#1a5c3a"
 const ACCENT_LIGHT = "#e8f5ee"
@@ -166,6 +167,7 @@ function FormulaireContent() {
 
   const submitProject = async () => {
     const reference = 'PC-' + Date.now().toString(36).toUpperCase()
+    const token = generateToken()
     const currentPricing = PRICING[form.projectType] || null
     const price = currentPricing ? currentPricing.price : null
 
@@ -173,6 +175,7 @@ function FormulaireContent() {
       .from('projects')
       .insert({
         reference,
+        token,
         project_type: form.projectType,
         address: form.address,
         city: form.city,
@@ -199,7 +202,7 @@ function FormulaireContent() {
       return
     }
 
-    localStorage.setItem('projectData', JSON.stringify({ ...form, id: data.id, reference: data.reference, price }))
+    localStorage.setItem('projectData', JSON.stringify({ ...form, id: data.id, reference: data.reference, token: data.token, price }))
     router.push('/paiement')
   }
 

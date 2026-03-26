@@ -7,6 +7,6 @@ const HIDDEN_ROUTES = ['/formulaire', '/paiement']
 
 export default function ConditionalFooter() {
   const pathname = usePathname()
-  if (HIDDEN_ROUTES.includes(pathname)) return null
+  if (HIDDEN_ROUTES.includes(pathname) || pathname.startsWith('/projet')) return null
   return <Footer />
 }

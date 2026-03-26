@@ -10,16 +10,43 @@ function SuccesContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [done, setDone] = useState(false)
+  const [magicLink, setMagicLink] = useState(null)
 
   useEffect(() => {
-    const projectId = searchParams.get('project_id')
-    if (projectId) {
-      supabase
-        .from('projects')
-        .update({ status: 'paid', paid_at: new Date().toISOString() })
-        .eq('id', projectId)
-        .then(() => setDone(true))
+    const init = async () => {
+      const projectId = searchParams.get('project_id')
+
+      if (projectId) {
+        await supabase
+          .from('projects')
+          .update({ status: 'paid', paid_at: new Date().toISOString() })
+          .eq('id', projectId)
+      }
+
+      // Try localStorage first
+      const projectData = JSON.parse(localStorage.getItem('projectData'))
+      if (projectData?.reference && projectData?.token) {
+        setMagicLink(`/projet/${projectData.reference}?token=${projectData.token}`)
+        setDone(true)
+        return
+      }
+
+      // Fallback: fetch from Supabase
+      if (projectId) {
+        const { data } = await supabase
+          .from('projects')
+          .select('reference, token')
+          .eq('id', projectId)
+          .single()
+        if (data?.reference && data?.token) {
+          setMagicLink(`/projet/${data.reference}?token=${data.token}`)
+        }
+      }
+
+      setDone(true)
     }
+
+    init()
   }, [searchParams])
 
   return (
@@ -31,7 +58,7 @@ function SuccesContent() {
         Vous recevrez un email de confirmation sous peu.
       </p>
       <button
-        onClick={() => router.push('/dashboard')}
+        onClick={() => router.push(magicLink || '/dashboard')}
         style={{
           padding: '12px 32px',
           borderRadius: 10,
