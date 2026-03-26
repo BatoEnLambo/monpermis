@@ -21,10 +21,10 @@ export async function POST(request) {
       html: `
         <div style="font-family: 'DM Sans', Arial, sans-serif; max-width: 560px; margin: 0 auto; color: #1c1c1a;">
           <div style="padding: 32px 0; border-bottom: 1px solid #e8e7e4;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <div style="width: 32px; height: 32px; background: #1a5c3a; border-radius: 8px; color: #fff; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center;">PC</div>
-              <span style="font-size: 18px; font-weight: 700; color: #1c1c1a;">PermisClair</span>
-            </div>
+            <table cellpadding="0" cellspacing="0" border="0"><tr>
+              <td style="width:32px;height:32px;border-radius:8px;background:#1a5c3a;color:#ffffff;font-weight:700;font-size:14px;text-align:center;line-height:32px;font-family:Arial,sans-serif;">PC</td>
+              <td style="padding-left:10px;font-size:18px;font-weight:700;color:#1c1c1a;font-family:Arial,sans-serif;">PermisClair</td>
+            </tr></table>
           </div>
 
           <div style="padding: 32px 0;">
