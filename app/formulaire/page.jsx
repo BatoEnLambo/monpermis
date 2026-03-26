@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import '../../styles/form.css'
+import { supabase } from '../../lib/supabase'
 
 const ACCENT = "#1a5c3a"
 const ACCENT_LIGHT = "#e8f5ee"
@@ -163,8 +164,42 @@ function FormulaireContent() {
 
   const pricing = PRICING[form.projectType] || null
 
-  const submitProject = () => {
-    localStorage.setItem('projectData', JSON.stringify(form))
+  const submitProject = async () => {
+    const reference = 'PC-' + Date.now().toString(36).toUpperCase()
+    const currentPricing = PRICING[form.projectType] || null
+    const price = currentPricing ? currentPricing.price : null
+
+    const { data, error } = await supabase
+      .from('projects')
+      .insert({
+        reference,
+        project_type: form.projectType,
+        address: form.address,
+        city: form.city,
+        postal_code: form.postalCode,
+        surface: form.surface ? parseInt(form.surface) : null,
+        floors: form.floors,
+        rooms: form.rooms,
+        roof_type: form.roofType,
+        style: form.style,
+        description: form.description,
+        first_name: form.firstName,
+        last_name: form.lastName,
+        email: form.email,
+        phone: form.phone,
+        price,
+        status: 'pending',
+      })
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Erreur Supabase:', error)
+      alert('Une erreur est survenue. Veuillez réessayer.')
+      return
+    }
+
+    localStorage.setItem('projectData', JSON.stringify({ ...form, id: data.id, reference: data.reference, price }))
     router.push('/paiement')
   }
 

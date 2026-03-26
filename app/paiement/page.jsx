@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import '../../styles/payment.css'
+import { supabase } from '../../lib/supabase'
 
 const ACCENT = "#1a5c3a"
 const ACCENT_LIGHT = "#e8f5ee"
@@ -47,18 +48,27 @@ export default function PaiementPage() {
 
   const pricing = PRICING[form.projectType] || PRICING["Autre"]
 
-  const handlePay = () => {
+  const handlePay = async () => {
     setProcessing(true)
-    setTimeout(() => {
-      setProcessing(false)
+    setTimeout(async () => {
+      const projectData = JSON.parse(localStorage.getItem('projectData'))
+      if (projectData?.id) {
+        await supabase
+          .from('projects')
+          .update({ status: 'paid', paid_at: new Date().toISOString() })
+          .eq('id', projectData.id)
+      }
+
       const newProject = {
         ...form,
-        id: "PC-" + Date.now().toString(36).toUpperCase(),
+        id: projectData?.id || 'PC-' + Date.now().toString(36).toUpperCase(),
+        reference: projectData?.reference,
         createdAt: new Date().toISOString(),
         phase: 0,
-        status: "active",
+        status: 'paid',
       }
-      localStorage.setItem("monpermis_project", JSON.stringify(newProject))
+      localStorage.setItem('monpermis_project', JSON.stringify(newProject))
+      setProcessing(false)
       router.push('/dashboard')
     }, 1800)
   }
