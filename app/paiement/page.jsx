@@ -77,7 +77,7 @@ export default function PaiementPage() {
 
   return (
     <div className="page-payment payment-page" style={{ maxWidth: 520, margin: "0 auto" }}>
-      <button className="payment-back" onClick={() => router.push('/formulaire')} style={{ background: "none", border: "none", color: GRAY_500, fontSize: 13, cursor: "pointer", fontFamily: FONT, padding: 0, marginBottom: 20, display: "flex", alignItems: "center", gap: 4 }}>
+      <button className="payment-back" onClick={() => router.push('/formulaire?step=3')} style={{ background: "none", border: "none", color: GRAY_500, fontSize: 13, cursor: "pointer", fontFamily: FONT, padding: 0, marginBottom: 20, display: "flex", alignItems: "center", gap: 4 }}>
         ← Modifier mon projet
       </button>
 

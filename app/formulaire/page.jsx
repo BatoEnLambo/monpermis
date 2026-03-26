@@ -112,11 +112,29 @@ function FormulaireContent() {
     description: "", deadline: "", budget: "",
   })
 
-  // Pré-sélection du type de projet depuis l'URL
   useEffect(() => {
-    const type = searchParams.get('type')
-    if (type && PROJECT_TYPES.includes(type)) {
-      setForm(prev => ({ ...prev, projectType: type }))
+    // Restaure le step depuis l'URL (ex: retour depuis /paiement)
+    const stepParam = searchParams.get('step')
+    if (stepParam !== null) {
+      const s = parseInt(stepParam, 10)
+      if (s >= 0 && s <= 3) setStep(s)
+    }
+
+    // Restaure les données du formulaire depuis localStorage
+    const saved = localStorage.getItem('projectData')
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved)
+        setForm(prev => ({ ...prev, ...parsed }))
+      } catch (e) {}
+    }
+
+    // Pré-sélection du type depuis l'URL (si pas de données sauvegardées)
+    if (!saved) {
+      const type = searchParams.get('type')
+      if (type && PROJECT_TYPES.includes(type)) {
+        setForm(prev => ({ ...prev, projectType: type }))
+      }
     }
   }, [searchParams])
 
