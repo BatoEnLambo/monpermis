@@ -37,7 +37,7 @@ export default function FaqSection() {
   const [openIndex, setOpenIndex] = useState(null)
 
   return (
-    <div id="faq" className="faq-section" style={{ marginTop: 56, background: GRAY_100, borderRadius: 16, padding: "48px 24px", textAlign: "center" }}>
+    <div id="faq" className="faq-section" style={{ marginTop: 56, background: GRAY_100, borderRadius: 16, padding: "48px 24px", textAlign: "center", scrollMarginTop: 80 }}>
       <h2 className="section-title" style={{ fontSize: 24, fontWeight: 700, margin: "0 0 32px", letterSpacing: "-0.02em", color: GRAY_900 }}>
         Questions fréquentes
       </h2>

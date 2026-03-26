@@ -19,7 +19,7 @@ const cards = [
 
 export default function PricingCards() {
   return (
-    <div id="tarifs" className="tarifs-section" style={{ marginTop: 56, paddingTop: 48, borderTop: `1px solid ${GRAY_200}`, textAlign: "center" }}>
+    <div id="tarifs" className="tarifs-section" style={{ marginTop: 56, paddingTop: 48, borderTop: `1px solid ${GRAY_200}`, textAlign: "center", scrollMarginTop: 80 }}>
       <h2 className="section-title" style={{ fontSize: 28, fontWeight: 700, margin: "0 0 10px", letterSpacing: "-0.02em", color: GRAY_900 }}>
         Des prix clairs, sans surprise
       </h2>
