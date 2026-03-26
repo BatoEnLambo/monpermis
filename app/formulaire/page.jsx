@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import '../../styles/form.css'
 
@@ -99,7 +99,7 @@ function InfoTooltip({ text }) {
   )
 }
 
-export default function FormulairePage() {
+function FormulaireContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -296,5 +296,13 @@ export default function FormulairePage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function FormulairePage() {
+  return (
+    <Suspense fallback={<div style={{ padding: "60px 20px", textAlign: "center" }}>Chargement...</div>}>
+      <FormulaireContent />
+    </Suspense>
   )
 }
