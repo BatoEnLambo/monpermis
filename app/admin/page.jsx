@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { uploadFile, getDocuments } from '../../lib/storage'
-import { getMessages, sendMessage } from '../../lib/messages'
+import { getMessages, sendMessage, markAsRead } from '../../lib/messages'
 
 const ADMIN_PASSWORD = 'permisclair2026'
 
@@ -40,13 +40,29 @@ export default function AdminPage() {
     }
   }
 
+  const fetchAllMessages = async (projectsList) => {
+    const allMsgs = {}
+    for (const p of projectsList) {
+      try {
+        const msgs = await getMessages(p.id)
+        allMsgs[p.id] = msgs
+      } catch (err) {
+        allMsgs[p.id] = []
+      }
+    }
+    setProjectMessages(allMsgs)
+  }
+
   const fetchProjects = async () => {
     setLoading(true)
     const { data, error } = await supabase
       .from('projects')
       .select('*')
       .order('created_at', { ascending: false })
-    if (data) setProjects(data)
+    if (data) {
+      setProjects(data)
+      fetchAllMessages(data)
+    }
     setLoading(false)
   }
 
@@ -58,12 +74,23 @@ export default function AdminPage() {
     fetchProjects()
   }
 
+  const getUnreadCount = (project) => {
+    const msgs = projectMessages[project.id] || []
+    const clientMsgs = msgs.filter(m => m.sender === 'client')
+    if (!project.last_read_at) return clientMsgs.length
+    return clientMsgs.filter(m => new Date(m.created_at) > new Date(project.last_read_at)).length
+  }
+
+  const totalUnread = projects.reduce((sum, p) => sum + getUnreadCount(p), 0)
+
   const handleSelectProject = async (projectId) => {
     if (selected === projectId) {
       setSelected(null)
       return
     }
     setSelected(projectId)
+    markAsRead(projectId)
+    setProjects(prev => prev.map(proj => proj.id === projectId ? { ...proj, last_read_at: new Date().toISOString() } : proj))
     if (!projectDocs[projectId]) {
       try {
         const docs = await getDocuments(projectId)
@@ -145,7 +172,45 @@ export default function AdminPage() {
         <div style={{ padding: '8px 14px', background: '#fff3e0', borderRadius: 8, fontSize: 13, fontWeight: 600, color: '#e65100' }}>
           En attente : {projects.filter(p => p.status === 'pending').length}
         </div>
+        {totalUnread > 0 && (
+          <div style={{ padding: '8px 14px', background: '#fff3e0', borderRadius: 8, fontSize: 13, fontWeight: 600, color: '#e65100' }}>
+            💬 {totalUnread} message{totalUnread > 1 ? 's' : ''}
+          </div>
+        )}
       </div>
+
+      {/* Messages non lus */}
+      {totalUnread > 0 && (
+        <div style={{ background: '#fff3e0', border: '1px solid #ffe0b2', borderRadius: 12, padding: 20, marginBottom: 24 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ background: '#e65100', color: '#fff', borderRadius: '50%', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700 }}>{totalUnread}</span>
+            message{totalUnread > 1 ? 's' : ''} non lu{totalUnread > 1 ? 's' : ''}
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {projects.filter(p => getUnreadCount(p) > 0).map(p => {
+              const unread = getUnreadCount(p)
+              const lastMsg = (projectMessages[p.id] || []).filter(m => m.sender === 'client').slice(-1)[0]
+              return (
+                <div key={p.id}
+                  onClick={() => {
+                    handleSelectProject(p.id)
+                    document.getElementById(`project-${p.id}`)?.scrollIntoView({ behavior: 'smooth' })
+                  }}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: '#fff', borderRadius: 10, cursor: 'pointer', border: '1px solid #ffe0b2', transition: 'background 0.15s' }}
+                  onMouseOver={e => e.currentTarget.style.background = '#fff8f0'}
+                  onMouseOut={e => e.currentTarget.style.background = '#fff'}
+                >
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 600 }}>{p.first_name} {p.last_name} <span style={{ color: '#888', fontWeight: 400 }}>({p.reference})</span></div>
+                    {lastMsg && <div style={{ fontSize: 13, color: '#666', marginTop: 2, maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lastMsg.content}</div>}
+                  </div>
+                  <span style={{ background: '#e65100', color: '#fff', borderRadius: 12, padding: '2px 10px', fontSize: 12, fontWeight: 700 }}>{unread}</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <p>Chargement...</p>
@@ -154,7 +219,7 @@ export default function AdminPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {projects.map(p => (
-            <div key={p.id} style={{ border: '1px solid #e8e7e4', borderRadius: 10, padding: 16, background: '#fff', cursor: 'pointer' }}
+            <div key={p.id} id={`project-${p.id}`} style={{ border: '1px solid #e8e7e4', borderRadius: 10, padding: 16, background: '#fff', cursor: 'pointer' }}
               onClick={() => handleSelectProject(p.id)}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
                 <div>
@@ -164,6 +229,11 @@ export default function AdminPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span style={{ fontSize: 15, fontWeight: 600 }}>{p.price ? p.price + ' €' : 'Sur devis'}</span>
                   <span style={{ fontSize: 12 }}>{STATUS_LABELS[p.status] || p.status}</span>
+                  {getUnreadCount(p) > 0 && (
+                    <span style={{ background: '#e65100', color: '#fff', borderRadius: 10, padding: '2px 8px', fontSize: 11, fontWeight: 700, marginLeft: 8 }}>
+                      {getUnreadCount(p)} msg
+                    </span>
+                  )}
                 </div>
               </div>
 
