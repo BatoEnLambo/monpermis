@@ -1,1 +1,205 @@
-/* landing.css — à migrer depuis index.css (.page-landing) */
+/* Cartes tarifs */
+.pricing-grid {
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.pricing-card {
+  display: flex;
+  flex-direction: column;
+}
+.pricing-card:not(.pricing-card-popular) .pricing-cta:hover {
+  background: #f0faf4 !important;
+}
+
+/* CTA hover */
+.cta-btn:hover {
+  background: #14482e !important;
+}
+
+@media (max-width: 768px) {
+
+  /* Hero */
+  .hero {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+  .hero-badge {
+    margin-bottom: 0.75rem !important;
+  }
+  .hero-title {
+    font-size: 1.6rem !important;
+    margin-bottom: 12px !important;
+  }
+  .hero-subtitle {
+    font-size: 0.95rem !important;
+    line-height: 1.5 !important;
+    margin-bottom: 20px !important;
+  }
+  .hero-cta,
+  .cta-btn {
+    width: 100% !important;
+    min-height: 48px !important;
+    font-size: 1rem !important;
+  }
+
+  /* Comment ça marche */
+  .steps-section {
+    padding: 1.5rem 1rem !important;
+    margin-top: 2rem !important;
+  }
+  .steps-section .section-title {
+    margin-bottom: 1rem !important;
+  }
+  .steps-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+  .step-card {
+    padding: 0.75rem 1rem !important;
+  }
+  .step-num {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 0.8rem !important;
+    margin-bottom: 0 !important;
+  }
+  .step-title {
+    font-size: 0.95rem !important;
+    margin-top: 0.4rem !important;
+    margin-bottom: 0.2rem !important;
+  }
+  .step-desc {
+    font-size: 0.8rem !important;
+    line-height: 1.4 !important;
+  }
+  .steps-cta {
+    margin-top: 1rem !important;
+  }
+
+  /* Dossier */
+  .dossier-section {
+    padding: 2rem 1rem !important;
+    margin-top: 1.5rem !important;
+  }
+
+  /* Fondateur */
+  .founder-section {
+    margin-top: 1.5rem !important;
+    padding-top: 2rem !important;
+  }
+  .founder-layout {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  .founder-photo {
+    width: 100px !important;
+    height: 100px !important;
+    min-width: 100px !important;
+  }
+  .founder-content {
+    text-align: left;
+  }
+  .founder-name {
+    text-align: center !important;
+  }
+  .founder-badges {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 8px !important;
+  }
+  .founder-badges > div {
+    font-size: 12px !important;
+  }
+
+  /* Tarifs — grille 2x2 */
+  .tarifs-section {
+    margin-top: 1.5rem !important;
+    padding-top: 2rem !important;
+  }
+  .pricing-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.5rem !important;
+  }
+  .pricing-card {
+    padding: 0.85rem !important;
+  }
+  .pricing-sub {
+    font-size: 0.55rem !important;
+  }
+  .pricing-name {
+    font-size: 0.85rem !important;
+    margin-bottom: 0.35rem !important;
+  }
+  .pricing-price {
+    font-size: 1.2rem !important;
+    margin-bottom: 0.1rem !important;
+  }
+  .pricing-detail {
+    font-size: 0.65rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  .pricing-badge {
+    font-size: 0.5rem !important;
+    padding: 2px 5px !important;
+  }
+  .pricing-cta {
+    font-size: 0.7rem !important;
+    padding: 0.4rem !important;
+  }
+  .pricing-compare {
+    font-size: 0.8rem !important;
+    margin-top: 0.75rem !important;
+    text-align: center !important;
+  }
+
+  /* Garantie — compacte */
+  .garantie-box {
+    padding: 1rem !important;
+    margin-top: 1rem !important;
+  }
+  .garantie-icon {
+    min-width: 32px !important;
+    font-size: 24px !important;
+  }
+  .garantie-title {
+    font-size: 1rem !important;
+  }
+  .garantie-text {
+    font-size: 0.85rem !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Bandeau contact */
+  .contact-links {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  /* FAQ */
+  .faq-section {
+    padding: 2rem 1rem !important;
+    margin-top: 1rem !important;
+  }
+  .faq-question {
+    font-size: 15px !important;
+  }
+
+  /* CTA Final */
+  .cta-final {
+    padding: 2rem 1rem !important;
+    margin-top: 1rem !important;
+  }
+  .cta-final-title {
+    font-size: 1.5rem !important;
+  }
+
+  /* Section titles */
+  .section-title {
+    font-size: 1.4rem !important;
+  }
+  .section-subtitle {
+    font-size: 0.95rem !important;
+  }
+}
