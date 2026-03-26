@@ -225,7 +225,7 @@ function FormulaireContent() {
             <div style={{ marginTop: 14 }}>
               <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>Description libre du projet</label>
               <textarea className="form-textarea" value={form.description} onChange={e => updateForm("description", e.target.value)}
-                placeholder="Décrivez votre projet idéal : disposition des pièces, contraintes particulières, inspirations..."
+                placeholder="Décrivez votre projet : disposition des pièces, contraintes particulières, inspirations..."
                 style={{ width: "100%", minHeight: 100, padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 16, resize: "vertical", boxSizing: "border-box", outline: "none", transition: "border 0.15s" }}
                 onFocus={e => e.target.style.borderColor = ACCENT}
                 onBlur={e => e.target.style.borderColor = GRAY_300} />
