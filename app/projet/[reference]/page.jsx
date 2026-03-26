@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, Suspense } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { supabase } from '../../../lib/supabase'
-import { uploadFile, getDocuments } from '../../../lib/storage'
+import { uploadFile, getDocuments, deleteDocument } from '../../../lib/storage'
 import { getMessages, sendMessage } from '../../../lib/messages'
 import '../../../styles/dashboard.css'
 
@@ -158,6 +158,18 @@ function ProjetContent() {
     setSendingMessage(false)
   }
 
+  const handleDelete = async (doc) => {
+    if (!confirm('Supprimer ce fichier ?')) return
+    try {
+      await deleteDocument(doc.id, doc.file_url)
+      const docs = await getDocuments(project.id)
+      setDocuments(docs)
+    } catch (err) {
+      console.error('Delete error:', err)
+      alert('Erreur lors de la suppression.')
+    }
+  }
+
   const handleDrop = async (e) => {
     e.preventDefault()
     setDragOver(false)
@@ -302,10 +314,19 @@ function ProjetContent() {
                   <span style={{ fontSize: 13, color: GRAY_700 }}>{doc.file_name}</span>
                   <span style={{ fontSize: 11, color: GRAY_500 }}>{new Date(doc.created_at).toLocaleDateString('fr-FR')}</span>
                 </div>
-                <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
-                  style={{ fontSize: 12, color: ACCENT, fontWeight: 600, textDecoration: "none" }}>
-                  Télécharger
-                </a>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
+                    style={{ fontSize: 12, color: ACCENT, fontWeight: 600, textDecoration: "none" }}>
+                    Télécharger
+                  </a>
+                  <span
+                    onClick={(e) => { e.stopPropagation(); handleDelete(doc) }}
+                    style={{ color: '#c0392b', cursor: 'pointer', fontSize: 16, fontWeight: 600 }}
+                    title="Supprimer"
+                  >
+                    ✕
+                  </span>
+                </div>
               </div>
             ))}
           </div>
