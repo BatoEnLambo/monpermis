@@ -75,6 +75,31 @@ export async function POST(request) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
+    // Notification à Baptiste
+    try {
+      await resend.emails.send({
+        from: 'PermisClair <contact@permisclair.fr>',
+        to: 'baptistedubreil0@gmail.com',
+        subject: `💰 Nouveau paiement — ${reference} — ${price}€`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 500px; color: #1c1c1a;">
+            <h2 style="font-size: 18px; margin: 0 0 16px;">Nouveau paiement reçu !</h2>
+            <table style="width: 100%; font-size: 14px; border-collapse: collapse;">
+              <tr><td style="padding: 6px 0; color: #888;">Référence</td><td style="padding: 6px 0; font-weight: 600;">${reference}</td></tr>
+              <tr><td style="padding: 6px 0; color: #888;">Client</td><td style="padding: 6px 0;">${firstName || ''} (${email})</td></tr>
+              <tr><td style="padding: 6px 0; color: #888;">Projet</td><td style="padding: 6px 0;">${projectType}</td></tr>
+              <tr><td style="padding: 6px 0; color: #888;">Montant</td><td style="padding: 6px 0; font-weight: 700; color: #1a5c3a;">${price} €</td></tr>
+            </table>
+            <div style="margin-top: 20px;">
+              <a href="https://permisclair.fr/admin" style="display: inline-block; padding: 12px 24px; background: #1a5c3a; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600;">Voir dans l'admin →</a>
+            </div>
+          </div>
+        `,
+      })
+    } catch (adminErr) {
+      console.error('Admin notification error:', adminErr)
+    }
+
     return NextResponse.json({ success: true, id: data.id })
   } catch (error) {
     console.error('Email error:', error)
