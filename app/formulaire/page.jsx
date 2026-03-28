@@ -93,11 +93,11 @@ function InfoTooltip({ text }) {
       </div>
       {open && (
         <div className="info-tooltip-popup" style={{
-          position: "absolute", top: 24, left: 0, right: "auto",
+          position: "absolute", left: 0, top: "100%", marginTop: 6,
           background: "#fff", border: `1px solid ${GRAY_200}`, borderRadius: 8,
-          padding: "8px 12px", maxWidth: 220, width: "max-content",
+          padding: "8px 12px", minWidth: 220, maxWidth: "calc(100vw - 80px)",
           boxShadow: "0 2px 8px rgba(0,0,0,0.15)", zIndex: 10,
-          fontSize: 13, color: GRAY_700, lineHeight: 1.6,
+          fontSize: 12, color: GRAY_700, lineHeight: "1.5", whiteSpace: "normal",
         }}>
           {text}
         </div>
