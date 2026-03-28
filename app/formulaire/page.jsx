@@ -160,9 +160,9 @@ function FormulaireContent() {
   const canNext = () => {
     if (step === 0) return form.projectType && form.address && form.city && form.postalCode
     if (step === 1) {
-      if (form.projectType === "Rénovation avec modification extérieure" || form.projectType === "Autre" || !form.projectType) return true
+      if (form.projectType === "Autre" || !form.projectType) return true
       if (!form.surface) return false
-      if ((form.projectType === "Construction neuve" || form.projectType === "Extension" || form.projectType === "Surélévation") && Number(form.surface) > 150) return false
+      if ((form.projectType === "Maison neuve" || form.projectType === "Extension / Agrandissement" || form.projectType === "Surélévation") && Number(form.surface) > 150) return false
       return true
     }
     if (step === 2) {
@@ -250,7 +250,7 @@ function FormulaireContent() {
             <h2 className="form-title" style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Détails du projet</h2>
             <p className="form-subtitle" style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Ces infos nous permettent de produire vos plans sur mesure</p>
 
-            {form.projectType === "Construction neuve" && (
+            {form.projectType === "Maison neuve" && (
               <>
                 <div className="form-grid-3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
                   <div>
@@ -284,7 +284,7 @@ function FormulaireContent() {
               </>
             )}
 
-            {(form.projectType === "Extension" || form.projectType === "Surélévation") && (
+            {(form.projectType === "Extension / Agrandissement" || form.projectType === "Surélévation") && (
               <>
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
@@ -353,7 +353,27 @@ function FormulaireContent() {
               </>
             )}
 
-            {(form.projectType === "Rénovation avec modification extérieure" || form.projectType === "Autre" || !form.projectType) && (
+            {form.projectType === "Terrasse / Pergola" && (
+              <>
+                <div>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>Surface (m²)</label>
+                  <input type="number" value={form.surface} onChange={e => updateForm("surface", e.target.value)} placeholder="25"
+                    style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 16, boxSizing: "border-box", outline: "none", transition: "border 0.15s", background: WHITE }}
+                    onFocus={e => e.target.style.borderColor = ACCENT}
+                    onBlur={e => e.target.style.borderColor = GRAY_300} />
+                </div>
+                <div style={{ marginTop: 14 }}>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>Description libre du projet</label>
+                  <textarea className="form-textarea" value={form.description} onChange={e => updateForm("description", e.target.value)}
+                    placeholder="Décrivez votre projet : terrasse surélevée ou de plain-pied, couverte ou non, matériaux souhaités..."
+                    style={{ width: "100%", minHeight: 100, padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 16, resize: "vertical", boxSizing: "border-box", outline: "none", transition: "border 0.15s" }}
+                    onFocus={e => e.target.style.borderColor = ACCENT}
+                    onBlur={e => e.target.style.borderColor = GRAY_300} />
+                </div>
+              </>
+            )}
+
+            {(form.projectType === "Autre" || !form.projectType) && (
               <div>
                 <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>Description libre du projet</label>
                 <textarea className="form-textarea" value={form.description} onChange={e => updateForm("description", e.target.value)}
