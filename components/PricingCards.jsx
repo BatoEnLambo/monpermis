@@ -57,7 +57,7 @@ export default function PricingCards() {
         ))}
       </div>
       <p className="pricing-compare" style={{ fontSize: 13, color: GRAY_500, marginTop: 20 }}>
-        Un architecte facture entre 1 500€ et 4 000€ pour le même service.
+        Un dessinateur facture 600 à 2 000€ et livre en 2 à 6 semaines. Un architecte, 1 500 à 4 000€.
       </p>
     </div>
   )
