@@ -134,11 +134,12 @@ function FormulaireContent() {
       } catch (e) {}
     }
 
-    // Pré-sélection du type depuis l'URL (si pas de données sauvegardées)
+    // Pré-sélection du type et niveaux depuis l'URL (si pas de données sauvegardées)
     if (!saved) {
       const type = searchParams.get('type')
+      const floors = searchParams.get('floors')
       if (type && PROJECT_TYPES.includes(type)) {
-        setForm(prev => ({ ...prev, projectType: type }))
+        setForm(prev => ({ ...prev, projectType: type, ...(floors ? { floors } : {}) }))
       }
     }
   }, [searchParams])

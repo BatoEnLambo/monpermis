@@ -11,10 +11,10 @@ const WHITE = "#ffffff"
 const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 
 const cards = [
-  { title: "Piscine / Garage", sub: "Déclaration préalable", price: "390€", detail: "Dossier DP complet", projectType: "Piscine" },
-  { title: "Extension", sub: "Permis de construire", price: "790€", detail: "Plans + dossier PC", projectType: "Extension / Agrandissement" },
-  { title: "Maison plain-pied", sub: "Permis de construire", price: "990€", detail: "Plans + dossier PC", popular: true, projectType: "Maison neuve" },
-  { title: "Maison R+1 / complexe", sub: "Permis de construire", price: "1 190€", detail: "Plans + dossier PC", projectType: "Maison neuve" },
+  { title: "Piscine / Garage / Terrasse", sub: "Déclaration préalable", price: "390€", detail: "Dossier DP complet", projectType: "Piscine" },
+  { title: "Extension / Surélévation", sub: "DP ou permis de construire", price: "790€", detail: "Plans + dossier complet", popular: true, projectType: "Extension / Agrandissement" },
+  { title: "Maison plain-pied", sub: "Permis de construire", price: "990€", detail: "Plans + dossier PC", projectType: "Maison neuve", floors: "1 (plain-pied)" },
+  { title: "Maison R+1 / complexe", sub: "Permis de construire", price: "1 190€", detail: "Plans + dossier PC", projectType: "Maison neuve", floors: "2 (R+1)" },
 ]
 
 export default function PricingCards() {
@@ -28,7 +28,7 @@ export default function PricingCards() {
       </p>
       <div className="pricing-grid" style={{ display: "grid" }}>
         {cards.map((card, i) => (
-          <Link key={i} href={`/formulaire?type=${encodeURIComponent(card.projectType)}`}
+          <Link key={i} href={`/formulaire?type=${encodeURIComponent(card.projectType)}${card.floors ? `&floors=${encodeURIComponent(card.floors)}` : ''}`}
             className={`pricing-card${card.popular ? " pricing-card-popular" : ""}`}
             style={{
               background: card.popular ? ACCENT : WHITE,
