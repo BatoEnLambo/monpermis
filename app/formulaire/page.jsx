@@ -18,18 +18,23 @@ const GRAY_900 = "#1c1c1a"
 const WHITE = "#ffffff"
 const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 
-const PROJECT_TYPES = ["Construction neuve", "Extension", "Surélévation", "Rénovation avec modification extérieure", "Garage / Carport", "Piscine", "Autre"]
+const PROJECT_TYPES = ["Extension / Agrandissement", "Piscine", "Garage / Carport", "Maison neuve", "Terrasse / Pergola", "Surélévation", "Autre"]
 const ROOF_TYPES = ["Toit plat", "Toit 2 pans", "Toit 4 pans", "Toit monopente", "Je ne sais pas encore"]
 const STYLES = ["Moderne / Contemporain", "Traditionnel", "Ossature bois", "Cubique / Toit plat", "Autre"]
 
-const PRICING = {
-  "Construction neuve": { price: 1190, label: "Permis de construire — Maison individuelle", delay: "5 jours ouvrés" },
-  "Extension": { price: 790, label: "Permis de construire — Extension", delay: "5 jours ouvrés" },
-  "Surélévation": { price: 890, label: "Permis de construire — Surélévation", delay: "5-7 jours ouvrés" },
-  "Rénovation avec modification extérieure": { price: 590, label: "Déclaration préalable — Rénovation", delay: "3-5 jours ouvrés" },
-  "Garage / Carport": { price: 490, label: "Déclaration préalable — Garage / Carport", delay: "3-5 jours ouvrés" },
-  "Piscine": { price: 390, label: "Déclaration préalable — Piscine", delay: "3 jours ouvrés" },
-  "Autre": { price: null, label: "Projet sur mesure", delay: "Sur devis" },
+function getPricing(projectType, floors) {
+  switch (projectType) {
+    case "Piscine": return { price: 390, label: "Déclaration préalable — Piscine", delay: "3 jours ouvrés" }
+    case "Garage / Carport": return { price: 390, label: "Déclaration préalable — Garage / Carport", delay: "3 jours ouvrés" }
+    case "Terrasse / Pergola": return { price: 390, label: "Déclaration préalable — Terrasse / Pergola", delay: "3 jours ouvrés" }
+    case "Extension / Agrandissement": return { price: 790, label: "Permis de construire — Extension", delay: "5 jours ouvrés" }
+    case "Surélévation": return { price: 790, label: "Permis de construire — Surélévation", delay: "5 jours ouvrés" }
+    case "Maison neuve":
+      if (floors === "1 (plain-pied)") return { price: 990, label: "Permis de construire — Maison plain-pied", delay: "5 jours ouvrés" }
+      return { price: 1190, label: "Permis de construire — Maison R+1 ou plus", delay: "5 jours ouvrés" }
+    case "Autre": return { price: 790, label: "Projet sur mesure", delay: "5 jours ouvrés" }
+    default: return { price: 790, label: "Projet sur mesure", delay: "5 jours ouvrés" }
+  }
 }
 
 function Input({ label, value, onChange, placeholder, type = "text", max }) {
@@ -168,12 +173,12 @@ function FormulaireContent() {
     return true
   }
 
-  const pricing = PRICING[form.projectType] || null
+  const pricing = form.projectType ? getPricing(form.projectType, form.floors) : null
 
   const submitProject = async () => {
     const reference = 'PC-' + Date.now().toString(36).toUpperCase()
     const token = generateToken()
-    const currentPricing = PRICING[form.projectType] || null
+    const currentPricing = form.projectType ? getPricing(form.projectType, form.floors) : null
     const price = currentPricing ? currentPricing.price : null
 
     const { data, error } = await supabase
