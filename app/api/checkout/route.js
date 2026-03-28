@@ -5,8 +5,12 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
 export async function POST(request) {
   try {
-    const body = await request.json()
-    const { projectId, reference, price, label, email } = body
+    const formData = await request.formData()
+    const projectId = formData.get('projectId')
+    const reference = formData.get('reference')
+    const price = Number(formData.get('price'))
+    const label = formData.get('label')
+    const email = formData.get('email')
 
     console.log('Checkout request:', { projectId, reference, price, label, email })
 
@@ -44,7 +48,7 @@ export async function POST(request) {
       },
     })
 
-    return NextResponse.json({ url: session.url })
+    return NextResponse.redirect(session.url, 303)
   } catch (error) {
     console.error('Stripe error details:', {
       message: error.message,

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import '../../styles/payment.css'
 import { supabase } from '../../lib/supabase'
@@ -33,7 +33,6 @@ const PRICING = {
 export default function PaiementPage() {
   const router = useRouter()
   const [form, setForm] = useState(null)
-  const [processing, setProcessing] = useState(false)
 
   useEffect(() => {
     const data = localStorage.getItem('projectData')
@@ -48,36 +47,7 @@ export default function PaiementPage() {
 
   const pricing = PRICING[form.projectType] || PRICING["Autre"]
 
-  const handlePay = async () => {
-    if (processing) return
-    setProcessing(true)
-    try {
-      const projectData = JSON.parse(localStorage.getItem('projectData'))
-      const response = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          projectId: projectData?.id,
-          reference: projectData?.reference,
-          price: pricing.price,
-          label: pricing.label,
-          email: form?.email || projectData?.email,
-        }),
-      })
-      const data = await response.json()
-      if (data.url) {
-        setTimeout(() => { window.location.href = data.url }, 0)
-      } else {
-        console.error('Checkout error response:', data)
-        alert('Erreur paiement : ' + (data.error || JSON.stringify(data)))
-        setProcessing(false)
-      }
-    } catch (error) {
-      console.error('Checkout fetch error:', error)
-      alert('Erreur paiement : ' + (error.message || JSON.stringify(error)))
-      setProcessing(false)
-    }
-  }
+  const projectData = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('projectData') || '{}') : {}
 
   return (
     <div className="page-payment payment-page" style={{ maxWidth: 520, margin: "0 auto" }}>
@@ -124,25 +94,25 @@ export default function PaiementPage() {
                 <span style={{ fontSize: 14, color: GRAY_500, marginLeft: 4 }}>TTC</span>
               </div>
 
-              <button onClick={handlePay} disabled={processing}
-                style={{
-                  width: "100%", padding: "14px", borderRadius: 10, border: "none",
-                  background: processing ? GRAY_300 : ACCENT, color: WHITE,
-                  fontSize: 15, fontWeight: 600, cursor: processing ? "default" : "pointer",
-                  fontFamily: FONT, transition: "all 0.2s",
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                }}
-                onMouseOver={e => { if (!processing) e.currentTarget.style.background = ACCENT_HOVER }}
-                onMouseOut={e => { if (!processing) e.currentTarget.style.background = ACCENT }}>
-                {processing ? (
-                  <>
-                    <span style={{ display: "inline-block", width: 16, height: 16, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: WHITE, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-                    Paiement en cours...
-                  </>
-                ) : (
-                  <>🔒 Payer {pricing.price} € — dossier livré en 5 jours ouvrés</>
-                )}
-              </button>
+              <form method="POST" action="/api/checkout">
+                <input type="hidden" name="projectId" value={projectData?.id || ''} />
+                <input type="hidden" name="reference" value={projectData?.reference || ''} />
+                <input type="hidden" name="price" value={pricing.price} />
+                <input type="hidden" name="label" value={pricing.label} />
+                <input type="hidden" name="email" value={form?.email || projectData?.email || ''} />
+                <button type="submit"
+                  style={{
+                    width: "100%", padding: "14px", borderRadius: 10, border: "none",
+                    background: ACCENT, color: WHITE,
+                    fontSize: 15, fontWeight: 600, cursor: "pointer",
+                    fontFamily: FONT, transition: "all 0.2s",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  }}
+                  onMouseOver={e => e.currentTarget.style.background = ACCENT_HOVER}
+                  onMouseOut={e => e.currentTarget.style.background = ACCENT}>
+                  🔒 Payer {pricing.price} € — dossier livré en 5 jours ouvrés
+                </button>
+              </form>
 
               <div className="payment-badges" style={{ display: "flex", justifyContent: "center", gap: "0.5rem", marginTop: "0.75rem" }}>
                 {[
