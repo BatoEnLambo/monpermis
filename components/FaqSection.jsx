@@ -12,6 +12,14 @@ const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 
 const items = [
   {
+    q: "Mon projet nécessite une DP ou un permis de construire ?",
+    a: "Ça dépend de la surface créée et de votre zone PLU. En résumé : piscine, garage, terrasse ou extension de moins de 40 m² en zone urbaine → déclaration préalable. Maison neuve ou extension plus grande → permis de construire. Dans les deux cas, on s'en occupe. Et si vous ne savez pas, décrivez votre projet : on vous dit exactement ce qu'il vous faut.",
+  },
+  {
+    q: "Faites-vous aussi les déclarations préalables ?",
+    a: "Oui. On réalise les plans et le dossier complet pour les déclarations préalables (piscine, garage, extension, terrasse, pergola) et pour les permis de construire (maison neuve, extension importante). Le service est le même : plans sur mesure, dossier assemblé, prêt à déposer en mairie.",
+  },
+  {
     q: "Est-ce légal de ne pas passer par un architecte ?",
     a: "Oui. Pour toute construction de moins de 150 m² de surface de plancher, le recours à un architecte n'est pas obligatoire (article R.431-2 du Code de l'urbanisme). Vous pouvez faire appel à un dessinateur ou réaliser vos plans vous-même.",
   },
@@ -25,7 +33,7 @@ const items = [
   },
   {
     q: "Qu'est-ce qui est inclus exactement ?",
-    a: "Tout ce dont la mairie a besoin : plan de situation, plan de masse coté, plan en coupe, notice descriptive, plans de façades, insertion paysagère, photos, CERFA rempli, et le dossier complet assemblé en PDF prêt à déposer.",
+    a: "Tout ce qu'il faut pour déposer en mairie : plan de situation, plan de masse coté, plan en coupe, plans de façades, insertion paysagère, photos de l'environnement, notice descriptive et formulaire CERFA rempli. Le tout assemblé en un dossier PDF prêt à déposer, que ce soit pour une déclaration préalable ou un permis de construire.",
   },
   {
     q: "Qui réalise les plans ?",
