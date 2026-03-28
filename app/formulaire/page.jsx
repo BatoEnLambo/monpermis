@@ -94,9 +94,9 @@ function InfoTooltip({ text }) {
       {open && (
         <div className="info-tooltip-popup" style={{
           position: "absolute", top: 24, left: "50%", transform: "translateX(-50%)",
-          background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 8,
-          padding: 12, maxWidth: 300, width: "max-content",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.08)", zIndex: 10,
+          background: "#fff", border: `1px solid ${GRAY_200}`, borderRadius: 8,
+          padding: "8px 12px", maxWidth: 220, width: "max-content",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.15)", zIndex: 10,
           fontSize: 13, color: GRAY_700, lineHeight: 1.6,
         }}>
           {text}
@@ -254,7 +254,7 @@ function FormulaireContent() {
               <>
                 <div className="form-grid-3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
                   <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6, position: "relative" }}>
                       <label style={{ fontSize: 13, fontWeight: 500, color: GRAY_700 }}>Surface (m²)</label>
                       <InfoTooltip text="Au-delà de 150 m² de surface de plancher, le recours à un architecte est obligatoire (article R.431-2 du Code de l'urbanisme). Notre service concerne les projets de moins de 150 m²." />
                     </div>
@@ -287,7 +287,7 @@ function FormulaireContent() {
             {(form.projectType === "Extension / Agrandissement" || form.projectType === "Surélévation") && (
               <>
                 <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6, position: "relative" }}>
                     <label style={{ fontSize: 13, fontWeight: 500, color: GRAY_700 }}>Surface (m²)</label>
                     <InfoTooltip text="Au-delà de 150 m² de surface de plancher, le recours à un architecte est obligatoire (article R.431-2 du Code de l'urbanisme). Notre service concerne les projets de moins de 150 m²." />
                   </div>
