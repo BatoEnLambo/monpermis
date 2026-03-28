@@ -66,7 +66,7 @@ export default function PaiementPage() {
       })
       const data = await response.json()
       if (data.url) {
-        window.location.replace(data.url)
+        setTimeout(() => { window.location.href = data.url }, 0)
       } else {
         console.error('Checkout error response:', data)
         alert('Erreur paiement : ' + (data.error || JSON.stringify(data)))
