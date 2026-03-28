@@ -7,7 +7,7 @@ const GRAY_900 = "#1c1c1a"
 
 const badges = [
   "Permis refusé puis accepté",
-  "Plans réalisés sur SketchUp",
+  "Plans réalisés sur logiciel pro",
   "Basé en Vendée (85)",
 ]
 
@@ -21,7 +21,7 @@ export default function FounderSection() {
             Baptiste, fondateur de PermisClair
           </h2>
           <p style={{ fontSize: 14, color: GRAY_700, lineHeight: 1.7, margin: "0 0 20px" }}>
-            Je construis ma propre maison en ossature bois en Vendée. J'ai fait mes plans moi-même sur SketchUp et déposé mon permis de construire. La mairie l'a refusé. J'ai compris pourquoi, corrigé le dossier, et obtenu l'acceptation. Cette expérience m'a appris exactement ce que les mairies attendent, ce qui bloque un dossier et ce qui le fait passer. J'ai créé PermisClair pour vous éviter ces allers-retours.
+            Je construis ma propre maison en ossature bois en Vendée. J'ai fait mes plans moi-même sur un logiciel de conception professionnel et déposé mon permis de construire. La mairie l'a refusé. J'ai compris pourquoi, corrigé le dossier, et obtenu l'acceptation. Cette expérience m'a appris exactement ce que les mairies attendent, ce qui bloque un dossier et ce qui le fait passer. J'ai créé PermisClair pour vous éviter ces allers-retours.
           </p>
           <div className="founder-badges" style={{ display: "flex", gap: 16 }}>
             {badges.map((stat, i) => (
