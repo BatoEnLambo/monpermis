@@ -15,10 +15,10 @@ export default function HeroSection() {
         <span>✓</span> Dossier complet livré en 5 jours ouvrés
       </div>
       <h1 className="hero-title" style={{ fontSize: 40, fontWeight: 800, lineHeight: 1.2, margin: "0 0 20px", letterSpacing: "-0.03em", color: GRAY_900, maxWidth: 600, marginLeft: "auto", marginRight: "auto" }}>
-        Plans de maison et permis de construire : on s'occupe de tout.
+        Extension, garage, piscine, maison : on s'occupe de vos plans et de votre dossier.
       </h1>
       <p className="hero-subtitle" style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, lineHeight: 1.7, maxWidth: 540, margin: "0 auto 32px" }}>
-        Vous galérez avec les plans, le PLU, le CERFA ? Décrivez votre projet en 5 minutes — on livre le dossier complet en 5 jours. Dès 390€.
+        Décrivez votre projet en 5 minutes — on réalise vos plans sur mesure et votre dossier complet, prêt à déposer en mairie. Dès 390€, sans architecte.
       </p>
       <Link href="/formulaire" className="cta-btn" style={{ display: "inline-block", background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", textDecoration: "none" }}>
         Décrire mon projet →
