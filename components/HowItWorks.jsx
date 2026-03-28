@@ -11,7 +11,7 @@ const WHITE = "#ffffff"
 const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 
 const steps = [
-  { num: "1", title: "Décrivez votre projet", desc: "Type de construction, surface, adresse du terrain. 5 minutes chrono, pas de jargon." },
+  { num: "1", title: "Décrivez votre projet", desc: "Type de construction, surface, adresse du terrain, nombre de pièces, style de toiture. 5 minutes chrono." },
   { num: "2", title: "On produit votre dossier", desc: "Plans de masse, façades, coupes, notice descriptive, insertion paysagère. Tout assemblé, prêt à déposer." },
   { num: "3", title: "Déposez et c'est tout", desc: "Vous déposez le dossier en mairie. Si la mairie demande des corrections, on les fait sans frais." },
 ]
