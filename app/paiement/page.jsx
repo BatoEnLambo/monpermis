@@ -68,12 +68,13 @@ export default function PaiementPage() {
       if (data.url) {
         window.location.replace(data.url)
       } else {
-        alert('Erreur lors de la création du paiement. Veuillez réessayer.')
+        console.error('Checkout error response:', data)
+        alert('Erreur paiement : ' + (data.error || JSON.stringify(data)))
         setProcessing(false)
       }
     } catch (error) {
-      console.error('Erreur:', error)
-      alert('Erreur lors de la création du paiement. Veuillez réessayer.')
+      console.error('Checkout fetch error:', error)
+      alert('Erreur paiement : ' + (error.message || JSON.stringify(error)))
       setProcessing(false)
     }
   }

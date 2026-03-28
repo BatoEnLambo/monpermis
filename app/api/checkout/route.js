@@ -8,9 +8,16 @@ export async function POST(request) {
     const body = await request.json()
     const { projectId, reference, price, label, email } = body
 
+    console.log('Checkout request:', { projectId, reference, price, label, email })
+
     if (!price || !projectId) {
+      console.error('Missing data:', { price, projectId })
       return NextResponse.json({ error: 'Données manquantes' }, { status: 400 })
     }
+
+    const origin = request.headers.get('origin') || request.headers.get('referer')?.replace(/\/[^/]*$/, '') || 'https://permisclair.fr'
+
+    console.log('Using origin:', origin)
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -29,8 +36,8 @@ export async function POST(request) {
         },
       ],
       mode: 'payment',
-      success_url: `${request.headers.get('origin')}/paiement/succes?session_id={CHECKOUT_SESSION_ID}&project_id=${projectId}`,
-      cancel_url: `${request.headers.get('origin')}/paiement?cancelled=true`,
+      success_url: `${origin}/paiement/succes?session_id={CHECKOUT_SESSION_ID}&project_id=${projectId}`,
+      cancel_url: `${origin}/paiement?cancelled=true`,
       metadata: {
         project_id: projectId,
         reference: reference,
@@ -39,7 +46,12 @@ export async function POST(request) {
 
     return NextResponse.json({ url: session.url })
   } catch (error) {
-    console.error('Stripe error:', error)
+    console.error('Stripe error details:', {
+      message: error.message,
+      type: error.type,
+      code: error.code,
+      statusCode: error.statusCode,
+    })
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
