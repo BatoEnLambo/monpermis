@@ -111,7 +111,7 @@ function FormulaireContent() {
     firstName: "", lastName: "", email: "", phone: "",
     projectType: "", address: "", city: "Paris", postalCode: "75000",
     surface: "", floors: "1", rooms: "3", roofType: "", style: "",
-    description: "", deadline: "", budget: "",
+    description: "", deadline: "", budget: "", poolType: "",
   })
 
   useEffect(() => {
@@ -154,7 +154,12 @@ function FormulaireContent() {
 
   const canNext = () => {
     if (step === 0) return form.projectType && form.address && form.city && form.postalCode
-    if (step === 1) return form.surface && Number(form.surface) <= 150
+    if (step === 1) {
+      if (form.projectType === "Rénovation avec modification extérieure" || form.projectType === "Autre" || !form.projectType) return true
+      if (!form.surface) return false
+      if ((form.projectType === "Construction neuve" || form.projectType === "Extension" || form.projectType === "Surélévation") && Number(form.surface) > 150) return false
+      return true
+    }
     if (step === 2) {
       if (!form.email || !form.email.includes("@")) return false
       if (form.phone && form.phone.replace(/\s/g, "").length !== 10) return false
@@ -239,35 +244,121 @@ function FormulaireContent() {
           <div>
             <h2 className="form-title" style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Détails du projet</h2>
             <p className="form-subtitle" style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Ces infos nous permettent de produire vos plans sur mesure</p>
-            <div className="form-grid-3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
-              <div>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-                  <label style={{ fontSize: 13, fontWeight: 500, color: GRAY_700 }}>Surface (m²)</label>
-                  <InfoTooltip text="Au-delà de 150 m² de surface de plancher, le recours à un architecte est obligatoire (article R.431-2 du Code de l'urbanisme). Notre service concerne les projets de moins de 150 m²." />
+
+            {form.projectType === "Construction neuve" && (
+              <>
+                <div className="form-grid-3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                      <label style={{ fontSize: 13, fontWeight: 500, color: GRAY_700 }}>Surface (m²)</label>
+                      <InfoTooltip text="Au-delà de 150 m² de surface de plancher, le recours à un architecte est obligatoire (article R.431-2 du Code de l'urbanisme). Notre service concerne les projets de moins de 150 m²." />
+                    </div>
+                    <input type="number" value={form.surface} onChange={e => { const v = e.target.value; if (v === "" || Number(v) <= 150) updateForm("surface", v) }} placeholder="120" max={150}
+                      style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 16, boxSizing: "border-box", outline: "none", transition: "border 0.15s", background: WHITE }}
+                      onFocus={e => e.target.style.borderColor = ACCENT}
+                      onBlur={e => e.target.style.borderColor = GRAY_300} />
+                  </div>
+                  {form.surface && Number(form.surface) > 150 && (
+                    <div style={{ gridColumn: "1 / -1", fontSize: 12, color: "#c0392b", marginTop: -8 }}>Surface maximale : 150 m²</div>
+                  )}
+                  <SelectInput label="Niveaux" options={["1 (plain-pied)", "2 (R+1)", "3 (R+2)"]} value={form.floors} onChange={v => updateForm("floors", v)} />
+                  <Input label="Chambres" value={form.rooms} onChange={v => updateForm("rooms", v)} placeholder="3" type="number" />
                 </div>
-                <input type="number" value={form.surface} onChange={e => { const v = e.target.value; if (v === "" || Number(v) <= 150) updateForm("surface", v) }} placeholder="120" max={150}
-                  style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 16, boxSizing: "border-box", outline: "none", transition: "border 0.15s", background: WHITE }}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginTop: 14 }}>
+                  <SelectInput label="Type de toiture" options={ROOF_TYPES} value={form.roofType} onChange={v => updateForm("roofType", v)} />
+                  <SelectInput label="Style architectural" options={STYLES} value={form.style} onChange={v => updateForm("style", v)} />
+                </div>
+                <div style={{ marginTop: 14 }}>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>Description libre du projet</label>
+                  <textarea className="form-textarea" value={form.description} onChange={e => updateForm("description", e.target.value)}
+                    placeholder="Décrivez votre projet : disposition des pièces, contraintes particulières, inspirations..."
+                    style={{ width: "100%", minHeight: 100, padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 16, resize: "vertical", boxSizing: "border-box", outline: "none", transition: "border 0.15s" }}
+                    onFocus={e => e.target.style.borderColor = ACCENT}
+                    onBlur={e => e.target.style.borderColor = GRAY_300} />
+                </div>
+              </>
+            )}
+
+            {(form.projectType === "Extension" || form.projectType === "Surélévation") && (
+              <>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                    <label style={{ fontSize: 13, fontWeight: 500, color: GRAY_700 }}>Surface (m²)</label>
+                    <InfoTooltip text="Au-delà de 150 m² de surface de plancher, le recours à un architecte est obligatoire (article R.431-2 du Code de l'urbanisme). Notre service concerne les projets de moins de 150 m²." />
+                  </div>
+                  <input type="number" value={form.surface} onChange={e => { const v = e.target.value; if (v === "" || Number(v) <= 150) updateForm("surface", v) }} placeholder="120" max={150}
+                    style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 16, boxSizing: "border-box", outline: "none", transition: "border 0.15s", background: WHITE }}
+                    onFocus={e => e.target.style.borderColor = ACCENT}
+                    onBlur={e => e.target.style.borderColor = GRAY_300} />
+                  {form.surface && Number(form.surface) > 150 && (
+                    <div style={{ fontSize: 12, color: "#c0392b", marginTop: 4 }}>Surface maximale : 150 m²</div>
+                  )}
+                </div>
+                <div style={{ marginTop: 14 }}>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>Description libre du projet</label>
+                  <textarea className="form-textarea" value={form.description} onChange={e => updateForm("description", e.target.value)}
+                    placeholder="Décrivez votre projet : usage prévu, côté de la maison, matériaux souhaités, contraintes..."
+                    style={{ width: "100%", minHeight: 100, padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 16, resize: "vertical", boxSizing: "border-box", outline: "none", transition: "border 0.15s" }}
+                    onFocus={e => e.target.style.borderColor = ACCENT}
+                    onBlur={e => e.target.style.borderColor = GRAY_300} />
+                </div>
+              </>
+            )}
+
+            {form.projectType === "Garage / Carport" && (
+              <>
+                <div>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>Surface (m²)</label>
+                  <input type="number" value={form.surface} onChange={e => updateForm("surface", e.target.value)} placeholder="40"
+                    style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 16, boxSizing: "border-box", outline: "none", transition: "border 0.15s", background: WHITE }}
+                    onFocus={e => e.target.style.borderColor = ACCENT}
+                    onBlur={e => e.target.style.borderColor = GRAY_300} />
+                </div>
+                <div style={{ marginTop: 14 }}>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>Description libre du projet</label>
+                  <textarea className="form-textarea" value={form.description} onChange={e => updateForm("description", e.target.value)}
+                    placeholder="Décrivez votre projet : attenant ou séparé, nombre de véhicules, type de toiture souhaité..."
+                    style={{ width: "100%", minHeight: 100, padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 16, resize: "vertical", boxSizing: "border-box", outline: "none", transition: "border 0.15s" }}
+                    onFocus={e => e.target.style.borderColor = ACCENT}
+                    onBlur={e => e.target.style.borderColor = GRAY_300} />
+                </div>
+              </>
+            )}
+
+            {form.projectType === "Piscine" && (
+              <>
+                <div>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>Surface du bassin (m²)</label>
+                  <input type="number" value={form.surface} onChange={e => updateForm("surface", e.target.value)} placeholder="50"
+                    style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 16, boxSizing: "border-box", outline: "none", transition: "border 0.15s", background: WHITE }}
+                    onFocus={e => e.target.style.borderColor = ACCENT}
+                    onBlur={e => e.target.style.borderColor = GRAY_300} />
+                </div>
+                <div style={{ marginTop: 14 }}>
+                  <SelectInput label="Type de piscine" options={["Enterrée", "Hors-sol"]} value={form.poolType} onChange={v => updateForm("poolType", v)} />
+                </div>
+                <div style={{ marginTop: 14 }}>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>Description libre du projet</label>
+                  <textarea className="form-textarea" value={form.description} onChange={e => updateForm("description", e.target.value)}
+                    placeholder="Décrivez votre projet : dimensions, profondeur, forme, emplacement sur le terrain, abri prévu..."
+                    style={{ width: "100%", minHeight: 100, padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 16, resize: "vertical", boxSizing: "border-box", outline: "none", transition: "border 0.15s" }}
+                    onFocus={e => e.target.style.borderColor = ACCENT}
+                    onBlur={e => e.target.style.borderColor = GRAY_300} />
+                </div>
+              </>
+            )}
+
+            {(form.projectType === "Rénovation avec modification extérieure" || form.projectType === "Autre" || !form.projectType) && (
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>Description libre du projet</label>
+                <textarea className="form-textarea" value={form.description} onChange={e => updateForm("description", e.target.value)}
+                  placeholder="Décrivez votre projet en détail : nature des travaux, surfaces concernées, matériaux..."
+                  style={{ width: "100%", minHeight: 100, padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 16, resize: "vertical", boxSizing: "border-box", outline: "none", transition: "border 0.15s" }}
                   onFocus={e => e.target.style.borderColor = ACCENT}
                   onBlur={e => e.target.style.borderColor = GRAY_300} />
               </div>
-              {form.surface && Number(form.surface) > 150 && (
-                <div style={{ gridColumn: "1 / -1", fontSize: 12, color: "#c0392b", marginTop: -8 }}>Surface maximale : 150 m²</div>
-              )}
-              <SelectInput label="Niveaux" options={["1 (plain-pied)", "2 (R+1)", "3 (R+2)"]} value={form.floors} onChange={v => updateForm("floors", v)} />
-              <Input label="Chambres" value={form.rooms} onChange={v => updateForm("rooms", v)} placeholder="3" type="number" />
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginTop: 14 }}>
-              <SelectInput label="Type de toiture" options={ROOF_TYPES} value={form.roofType} onChange={v => updateForm("roofType", v)} />
-              <SelectInput label="Style architectural" options={STYLES} value={form.style} onChange={v => updateForm("style", v)} />
-            </div>
-            <div style={{ marginTop: 14 }}>
-              <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>Description libre du projet</label>
-              <textarea className="form-textarea" value={form.description} onChange={e => updateForm("description", e.target.value)}
-                placeholder="Décrivez votre projet : disposition des pièces, contraintes particulières, inspirations..."
-                style={{ width: "100%", minHeight: 100, padding: "10px 12px", borderRadius: 8, border: `1px solid ${GRAY_300}`, fontFamily: FONT, fontSize: 16, resize: "vertical", boxSizing: "border-box", outline: "none", transition: "border 0.15s" }}
-                onFocus={e => e.target.style.borderColor = ACCENT}
-                onBlur={e => e.target.style.borderColor = GRAY_300} />
-            </div>
+            )}
+
           </div>
         )}
 
