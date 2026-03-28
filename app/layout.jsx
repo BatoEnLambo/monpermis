@@ -18,6 +18,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <head>
+        <meta name="referrer" content="strict-origin-when-cross-origin" />
         <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </head>
       <body style={{ fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif", minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
