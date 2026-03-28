@@ -20,6 +20,13 @@ export default function RootLayout({ children }) {
       <head>
         <meta name="referrer" content="strict-origin-when-cross-origin" />
         <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-B95LM2E7VZ"></script>
+        <script dangerouslySetInnerHTML={{__html: `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-B95LM2E7VZ');
+        `}} />
       </head>
       <body style={{ fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif", minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         <Header />
