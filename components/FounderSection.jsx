@@ -21,7 +21,7 @@ export default function FounderSection() {
             Baptiste, fondateur de PermisClair
           </h2>
           <p style={{ fontSize: 14, color: GRAY_700, lineHeight: 1.7, margin: "0 0 20px" }}>
-            Je construis ma propre maison en Vendée. Quand j'ai déposé mon premier permis de construire, la mairie l'a refusé. Plutôt que d'abandonner, j'ai appris à décrypter ce que les instructeurs attendent vraiment : des plans cotés sans ambiguïté, une notice cohérente, une insertion paysagère soignée. Résultat : dossier corrigé, permis accepté. Aujourd'hui, je mets cette expérience à votre service pour que votre dossier passe du premier coup.
+            Je construis ma propre maison en Vendée. Quand j'ai déposé mon premier permis de construire, la mairie l'a refusé. Plutôt que d'abandonner, j'ai appris à décrypter ce que les instructeurs attendent vraiment : des plans cotés sans ambiguïté, une notice cohérente, une insertion paysagère soignée et un projet conforme au PLU. Résultat : dossier corrigé, permis accepté. Aujourd'hui, je mets cette expérience à votre service pour que votre dossier passe du premier coup.
           </p>
           <div className="founder-badges" style={{ display: "flex", gap: 16 }}>
             {badges.map((stat, i) => (
