@@ -81,8 +81,6 @@ function InfoTooltip({ text }) {
     <div ref={ref} style={{ position: "relative", display: "inline-flex" }}>
       <div
         onClick={(e) => { e.stopPropagation(); setOpen(!open) }}
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
         style={{
           width: 16, height: 16, borderRadius: "50%", background: GRAY_200,
           display: "flex", alignItems: "center", justifyContent: "center",
