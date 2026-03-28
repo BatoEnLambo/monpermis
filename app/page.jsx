@@ -18,16 +18,9 @@ export default function HomePage() {
           Découvrez PermisClair en 1 minute
         </h2>
         <div style={{ maxWidth: 640, margin: '0 auto', background: '#ffffff', borderRadius: 16, boxShadow: '0 2px 12px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
-          <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%' }}>
-            <iframe
-              src="https://www.youtube.com/embed/Ywz-yMmyoig"
-              title="Découvrez PermisClair en 1 minute"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              referrerPolicy="strict-origin-when-cross-origin"
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
-            />
-          </div>
+          <video controls preload="metadata" playsInline style={{ width: '100%', borderRadius: 0 }}>
+            <source src="https://slchssowoagdtxhfvkck.supabase.co/storage/v1/object/public/documents/0328_PXGXAKW9.mp4" type="video/mp4" />
+          </video>
         </div>
         <p style={{ fontSize: 14, color: '#8a8985', marginTop: 16, marginBottom: 0 }}>
           Baptiste, fondateur de PermisClair
