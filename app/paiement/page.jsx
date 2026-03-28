@@ -20,14 +20,22 @@ const SUCCESS = "#1a7a3a"
 const SUCCESS_BG = "#eefbf2"
 const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 
-const PRICING = {
-  "Construction neuve": { price: 1190, label: "Permis de construire — Maison individuelle", delay: "5 jours ouvrés", includes: ["Plans complets (PCMI1 à PCMI8)", "Notice descriptive", "CERFA rempli", "Insertion paysagère", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"] },
-  "Extension": { price: 790, label: "Permis de construire — Extension", delay: "5 jours ouvrés", includes: ["Plans complets (PCMI1 à PCMI8)", "Notice descriptive", "CERFA rempli", "Insertion paysagère", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"] },
-  "Surélévation": { price: 890, label: "Permis de construire — Surélévation", delay: "5-7 jours ouvrés", includes: ["Plans complets (PCMI1 à PCMI8)", "Notice descriptive", "CERFA rempli", "Insertion paysagère", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"] },
-  "Rénovation avec modification extérieure": { price: 590, label: "Déclaration préalable — Rénovation", delay: "3-5 jours ouvrés", includes: ["Plans complets (DP1 à DP8)", "Notice descriptive", "CERFA rempli", "Document graphique", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"] },
-  "Garage / Carport": { price: 490, label: "Déclaration préalable — Garage / Carport", delay: "3-5 jours ouvrés", includes: ["Plans complets (DP1 à DP8)", "Notice descriptive", "CERFA rempli", "Document graphique", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"] },
-  "Piscine": { price: 390, label: "Déclaration préalable — Piscine", delay: "3 jours ouvrés", includes: ["Plans complets", "CERFA rempli", "Document graphique", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"] },
-  "Autre": { price: null, label: "Projet sur mesure", delay: "Sur devis", includes: ["Analyse personnalisée de votre projet", "Devis sous 24h"] },
+const PC_INCLUDES = ["Plans complets (PCMI1 à PCMI8)", "Notice descriptive", "CERFA rempli", "Insertion paysagère", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"]
+const DP_INCLUDES = ["Plans complets (DP1 à DP8)", "Notice descriptive", "CERFA rempli", "Document graphique", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"]
+
+function getPricing(projectType, floors) {
+  switch (projectType) {
+    case "Piscine": return { price: 390, label: "Déclaration préalable — Piscine", delay: "3 jours ouvrés", includes: DP_INCLUDES }
+    case "Garage / Carport": return { price: 390, label: "Déclaration préalable — Garage / Carport", delay: "3 jours ouvrés", includes: DP_INCLUDES }
+    case "Terrasse / Pergola": return { price: 390, label: "Déclaration préalable — Terrasse / Pergola", delay: "3 jours ouvrés", includes: DP_INCLUDES }
+    case "Extension / Agrandissement": return { price: 790, label: "Permis de construire — Extension", delay: "5 jours ouvrés", includes: PC_INCLUDES }
+    case "Surélévation": return { price: 790, label: "Permis de construire — Surélévation", delay: "5 jours ouvrés", includes: PC_INCLUDES }
+    case "Maison neuve":
+      if (floors === "1 (plain-pied)") return { price: 990, label: "Permis de construire — Maison plain-pied", delay: "5 jours ouvrés", includes: PC_INCLUDES }
+      return { price: 1190, label: "Permis de construire — Maison R+1 ou plus", delay: "5 jours ouvrés", includes: PC_INCLUDES }
+    case "Autre": return { price: 790, label: "Projet sur mesure", delay: "5 jours ouvrés", includes: PC_INCLUDES }
+    default: return { price: 790, label: "Projet sur mesure", delay: "5 jours ouvrés", includes: PC_INCLUDES }
+  }
 }
 
 export default function PaiementPage() {
@@ -45,7 +53,7 @@ export default function PaiementPage() {
 
   if (!form) return null
 
-  const pricing = PRICING[form.projectType] || PRICING["Autre"]
+  const pricing = getPricing(form.projectType, form.floors)
 
   const projectData = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('projectData') || '{}') : {}
 

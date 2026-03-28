@@ -179,6 +179,10 @@ function FormulaireContent() {
     const currentPricing = form.projectType ? getPricing(form.projectType, form.floors) : null
     const price = currentPricing ? currentPricing.price : null
 
+    const fullDescription = form.poolType
+      ? `Type de piscine : ${form.poolType}. ${form.description}`.trim()
+      : form.description
+
     const { data, error } = await supabase
       .from('projects')
       .insert({
@@ -193,7 +197,7 @@ function FormulaireContent() {
         rooms: form.rooms,
         roof_type: form.roofType,
         style: form.style,
-        description: form.description,
+        description: fullDescription,
         first_name: form.firstName,
         last_name: form.lastName,
         email: form.email,
