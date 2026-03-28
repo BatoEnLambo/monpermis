@@ -49,6 +49,7 @@ export default function PaiementPage() {
   const pricing = PRICING[form.projectType] || PRICING["Autre"]
 
   const handlePay = async () => {
+    if (processing) return
     setProcessing(true)
     try {
       const projectData = JSON.parse(localStorage.getItem('projectData'))
@@ -65,7 +66,7 @@ export default function PaiementPage() {
       })
       const data = await response.json()
       if (data.url) {
-        window.location.href = data.url
+        window.location.replace(data.url)
       } else {
         alert('Erreur lors de la création du paiement. Veuillez réessayer.')
         setProcessing(false)
@@ -130,8 +131,8 @@ export default function PaiementPage() {
                   fontFamily: FONT, transition: "all 0.2s",
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                 }}
-                onMouseOver={e => { if (!processing) e.target.style.background = ACCENT_HOVER }}
-                onMouseOut={e => { if (!processing) e.target.style.background = ACCENT }}>
+                onMouseOver={e => { if (!processing) e.currentTarget.style.background = ACCENT_HOVER }}
+                onMouseOut={e => { if (!processing) e.currentTarget.style.background = ACCENT }}>
                 {processing ? (
                   <>
                     <span style={{ display: "inline-block", width: 16, height: 16, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: WHITE, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
