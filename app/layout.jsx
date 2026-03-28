@@ -1,4 +1,5 @@
 import './globals.css'
+import Script from 'next/script'
 import Header from '../components/Header'
 import ConditionalFooter from '../components/ConditionalFooter'
 
@@ -18,6 +19,15 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <head>
+        <Script src="https://www.googletagmanager.com/gtag/js?id=AW-7682660541" strategy="afterInteractive" />
+        <Script id="google-ads" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-7682660541');
+          `}
+        </Script>
         <meta name="referrer" content="strict-origin-when-cross-origin" />
         <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-B95LM2E7VZ"></script>
