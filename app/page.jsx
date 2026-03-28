@@ -13,22 +13,25 @@ export default function HomePage() {
     <div className="page-landing">
       <HeroSection />
 
-      <section style={{ padding: '48px 20px', textAlign: 'center' }}>
-        <div style={{ maxWidth: 720, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1c1c1a', marginBottom: 20 }}>
-            Découvrez PermisClair en 1 minute
-          </h2>
-          <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', borderRadius: 12, overflow: 'hidden' }}>
+      <div className="video-section" style={{ background: '#f5f4f2', borderRadius: 16, padding: '48px 24px', marginTop: 56, textAlign: 'center' }}>
+        <h2 style={{ fontSize: 28, fontWeight: 700, margin: '0 0 32px', letterSpacing: '-0.02em', color: '#1c1c1a' }}>
+          Découvrez PermisClair en 1 minute
+        </h2>
+        <div style={{ maxWidth: 640, margin: '0 auto', background: '#ffffff', borderRadius: 16, boxShadow: '0 2px 12px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
+          <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%' }}>
             <iframe
               src="https://www.youtube.com/embed/Ywz-yMmyoig"
               title="Découvrez PermisClair en 1 minute"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none', borderRadius: 12 }}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
             />
           </div>
         </div>
-      </section>
+        <p style={{ fontSize: 14, color: '#8a8985', marginTop: 16, marginBottom: 0 }}>
+          Baptiste, fondateur de PermisClair
+        </p>
+      </div>
 
       <HowItWorks />
       <ProofSection />
