@@ -8,8 +8,9 @@ import { extensionMaisonPrix } from './extension-maison-prix'
 import { empriseAuSolSurfaceDePlancher } from './emprise-au-sol-surface-de-plancher'
 import { faireSesPlans } from './faire-ses-plans-maison'
 import { piscineDeclarationPrealable } from './piscine-declaration-prealable'
+import { planExtensionMaison } from './plan-extension-maison'
 
-export const guides = [extensionMaison, planDeMasse, declarationPrealableTravaux, planDeSituation, cerfaDeclarationPrealable, planDeCoupe, extensionMaisonPrix, empriseAuSolSurfaceDePlancher, faireSesPlans, piscineDeclarationPrealable]
+export const guides = [extensionMaison, planDeMasse, declarationPrealableTravaux, planDeSituation, cerfaDeclarationPrealable, planDeCoupe, extensionMaisonPrix, empriseAuSolSurfaceDePlancher, faireSesPlans, piscineDeclarationPrealable, planExtensionMaison]
 
 export function getGuideBySlug(slug) {
   return guides.find((guide) => guide.slug === slug) || null
