@@ -6,8 +6,9 @@ import { cerfaDeclarationPrealable } from './cerfa-declaration-prealable'
 import { planDeCoupe } from './plan-de-coupe'
 import { extensionMaisonPrix } from './extension-maison-prix'
 import { empriseAuSolSurfaceDePlancher } from './emprise-au-sol-surface-de-plancher'
+import { faireSesPlans } from './faire-ses-plans-maison'
 
-export const guides = [extensionMaison, planDeMasse, declarationPrealableTravaux, planDeSituation, cerfaDeclarationPrealable, planDeCoupe, extensionMaisonPrix, empriseAuSolSurfaceDePlancher]
+export const guides = [extensionMaison, planDeMasse, declarationPrealableTravaux, planDeSituation, cerfaDeclarationPrealable, planDeCoupe, extensionMaisonPrix, empriseAuSolSurfaceDePlancher, faireSesPlans]
 
 export function getGuideBySlug(slug) {
   return guides.find((guide) => guide.slug === slug) || null
