@@ -2,8 +2,9 @@ import { extensionMaison } from './extension-maison'
 import { planDeMasse } from './plan-de-masse'
 import { declarationPrealableTravaux } from './declaration-prealable-travaux'
 import { planDeSituation } from './plan-de-situation'
+import { cerfaDeclarationPrealable } from './cerfa-declaration-prealable'
 
-export const guides = [extensionMaison, planDeMasse, declarationPrealableTravaux, planDeSituation]
+export const guides = [extensionMaison, planDeMasse, declarationPrealableTravaux, planDeSituation, cerfaDeclarationPrealable]
 
 export function getGuideBySlug(slug) {
   return guides.find((guide) => guide.slug === slug) || null

@@ -7,7 +7,7 @@ export const declarationPrealableTravaux = {
   category: "Démarches",
   readingTime: "13 min",
   image: null,
-  relatedArticles: ["extension-maison", "plan-de-masse"],
+  relatedArticles: ["extension-maison", "plan-de-masse", "cerfa-declaration-prealable"],
   content: `
 <p>La déclaration préalable de travaux (DP) est une autorisation d'urbanisme obligatoire pour les projets de faible ampleur : extensions jusqu'à 40 m² en zone PLU, piscines, garages, clôtures, modifications de façade. Le dossier comprend un formulaire CERFA et des pièces graphiques (plans, photos). Le délai d'instruction est d'un mois. C'est plus simple qu'un permis de construire, mais c'est loin d'être une simple formalité.</p>
 
