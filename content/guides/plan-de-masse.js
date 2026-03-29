@@ -7,7 +7,7 @@ export const planDeMasse = {
   category: "Démarches",
   readingTime: "13 min",
   image: null,
-  relatedArticles: ["extension-maison"],
+  relatedArticles: ["extension-maison", "declaration-prealable-travaux"],
   content: `
 <p>Le plan de masse (PCMI2 pour un permis de construire, DPC2 pour une déclaration préalable) est une vue de dessus de votre terrain qui montre l'implantation de votre projet avec les constructions existantes, les limites de propriété, les accès, les réseaux et les cotations en 3 dimensions. C'est la pièce la plus technique et la plus souvent refusée du dossier d'urbanisme.</p>
 

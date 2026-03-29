@@ -1,7 +1,8 @@
 import { extensionMaison } from './extension-maison'
 import { planDeMasse } from './plan-de-masse'
+import { declarationPrealableTravaux } from './declaration-prealable-travaux'
 
-export const guides = [extensionMaison, planDeMasse]
+export const guides = [extensionMaison, planDeMasse, declarationPrealableTravaux]
 
 export function getGuideBySlug(slug) {
   return guides.find((guide) => guide.slug === slug) || null
