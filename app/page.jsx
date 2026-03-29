@@ -4,6 +4,7 @@ import ProofSection from '../components/ProofSection'
 import FounderSection from '../components/FounderSection'
 import PricingCards from '../components/PricingCards'
 import GuaranteeSection from '../components/GuaranteeSection'
+import GuidesSection from '../components/GuidesSection'
 import FaqSection from '../components/FaqSection'
 import ContactBanner from '../components/ContactBanner'
 import FinalCta from '../components/FinalCta'
@@ -32,6 +33,7 @@ export default function HomePage() {
       <FounderSection />
       <PricingCards />
       <GuaranteeSection />
+      <GuidesSection />
       <FaqSection />
       <ContactBanner />
       <FinalCta />

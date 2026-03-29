@@ -13,6 +13,12 @@
   background: #f0faf4 !important;
 }
 
+/* Guides section card hover */
+.guides-section-card:hover {
+  border-color: #1a5c3a !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+}
+
 /* CTA hover */
 .cta-btn:hover {
   background: #14482e !important;
@@ -179,6 +185,19 @@
   .garantie-text {
     font-size: 0.85rem !important;
     line-height: 1.4 !important;
+  }
+
+  /* Guides section */
+  .guides-section {
+    padding: 2rem 1rem !important;
+    margin-top: 2rem !important;
+  }
+  .guides-section-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .guides-section-card:hover {
+    border-color: #1a5c3a !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
   }
 
   /* Bandeau contact */
