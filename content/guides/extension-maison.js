@@ -7,7 +7,7 @@ export const extensionMaison = {
   category: "Extension",
   readingTime: "15 min",
   image: null,
-  relatedArticles: ["plan-de-masse", "declaration-prealable-travaux", "extension-maison-prix", "emprise-au-sol-surface-de-plancher", "plan-extension-maison"],
+  relatedArticles: ["plan-de-masse", "declaration-prealable-travaux", "extension-maison-prix", "emprise-au-sol-surface-de-plancher", "plan-extension-maison", "extension-40m2-sans-permis"],
   content: `
 <p>Agrandir sa maison coûte entre 1 200 et 4 000 €/m² selon le type d'extension choisi. Selon la surface créée et votre localisation, vous aurez besoin d'une simple déclaration préalable (jusqu'à 40 m² en zone PLU) ou d'un permis de construire. Ce guide couvre tout : types d'extension, prix au m², démarches administratives, plans à fournir, erreurs à éviter et étapes concrètes pour mener votre projet à bien.</p>
 
