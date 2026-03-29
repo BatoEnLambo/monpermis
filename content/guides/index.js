@@ -1,6 +1,6 @@
-import { testArticle } from './test-article'
+import { extensionMaison } from './extension-maison'
 
-export const guides = [testArticle]
+export const guides = [extensionMaison]
 
 export function getGuideBySlug(slug) {
   return guides.find((guide) => guide.slug === slug) || null
