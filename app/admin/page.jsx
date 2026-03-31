@@ -144,6 +144,9 @@ export default function AdminPage() {
     pvc: 'PVC', aluminium: 'Aluminium', bois: 'Bois',
     tout_egout: 'Tout-à-l\'égout', fosse_septique: 'Fosse septique / ANC',
     ne_sait_pas: 'Ne sait pas',
+    fenetre_oscillo_battante: 'Fenêtre oscillo-battante', fenetre_coulissante: 'Fenêtre coulissante',
+    baie_vitree_coulissante: 'Baie vitrée coulissante', baie_vitree_galandage: 'Baie vitrée à galandage',
+    porte_fenetre: 'Porte-fenêtre', porte_entree: "Porte d'entrée",
   }
   const label = (v) => LABELS[v] || v || '-'
 
@@ -160,7 +163,10 @@ export default function AdminPage() {
     if (d.materiau_facade) count++
     if (d.materiau_couverture) count++
     if (d.menuiserie_materiau || d.menuiserie_couleur) count++
-    if (d.ouvertures_description) count++
+    try {
+      const ouv = JSON.parse(d.ouvertures_description || '[]')
+      if (Array.isArray(ouv) && ouv.some(p => p.ouvertures?.some(o => o.largeur && o.hauteur && o.type))) count++
+    } catch { if (d.ouvertures_description) count++ }
     if (d.constructions_existantes === true || d.constructions_existantes === false) count++
     if (d.implantation_description) count++
     if (d.assainissement) count++
@@ -420,12 +426,28 @@ export default function AdminPage() {
                         </div>
 
                         {/* Bloc Ouvertures */}
-                        {d.ouvertures_description && (
-                          <>
-                            <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Ouvertures</div>
-                            <div style={{ fontSize: 13, marginBottom: 16, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{d.ouvertures_description}</div>
-                          </>
-                        )}
+                        {d.ouvertures_description && (() => {
+                          let ouvPieces = []
+                          try { ouvPieces = JSON.parse(d.ouvertures_description) } catch {}
+                          if (!Array.isArray(ouvPieces) || ouvPieces.length === 0) return null
+                          return (
+                            <>
+                              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Ouvertures</div>
+                              <div style={{ fontSize: 13, marginBottom: 16, lineHeight: 1.8 }}>
+                                {ouvPieces.map((piece, i) => (
+                                  <div key={i} style={{ marginBottom: i < ouvPieces.length - 1 ? 8 : 0 }}>
+                                    <strong>{piece.piece || 'Pièce sans nom'}</strong>
+                                    {(piece.ouvertures || []).map((o, j) => (
+                                      <div key={j} style={{ paddingLeft: 16, color: '#44433f' }}>
+                                        {o.largeur && o.hauteur ? `${o.largeur} × ${o.hauteur} cm` : '—'} — {label(o.type)}
+                                      </div>
+                                    ))}
+                                  </div>
+                                ))}
+                              </div>
+                            </>
+                          )
+                        })()}
 
                         {/* Bloc Terrain */}
                         <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Terrain</div>

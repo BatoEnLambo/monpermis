@@ -7,6 +7,7 @@ import { uploadFile, getDocuments, deleteDocument } from '../../../lib/storage'
 import { getMessages, sendMessage } from '../../../lib/messages'
 import ConstructionDetailsForm from '../../../components/ConstructionDetailsForm'
 import TerrainDetailsForm from '../../../components/TerrainDetailsForm'
+import OuverturesForm from '../../../components/OuverturesForm'
 import TerrainPhotosUpload from '../../../components/TerrainPhotosUpload'
 import '../../../styles/dashboard.css'
 
@@ -175,7 +176,10 @@ function ProjetContent() {
     if (d.materiau_couverture) count++
     if (d.menuiserie_materiau || d.menuiserie_couleur) count++
     // Ouvertures (1)
-    if (d.ouvertures_description) count++
+    try {
+      const ouv = JSON.parse(d.ouvertures_description || '[]')
+      if (Array.isArray(ouv) && ouv.some(p => p.ouvertures?.some(o => o.largeur && o.hauteur && o.type))) count++
+    } catch { if (d.ouvertures_description) count++ }
     // Terrain (4)
     if (d.constructions_existantes === true || d.constructions_existantes === false) count++
     if (d.implantation_description) count++
@@ -357,34 +361,7 @@ function ProjetContent() {
 
             <ConstructionDetailsForm data={details} onFieldUpdate={handleFieldUpdate} />
 
-            {/* Vos ouvertures */}
-            <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                <h3 style={{ fontSize: 15, fontWeight: 600, color: GRAY_900, margin: 0, letterSpacing: '-0.02em' }}>
-                  Vos ouvertures
-                </h3>
-                <span style={{ fontSize: 12, fontWeight: 500, color: GRAY_500 }}>
-                  {details.ouvertures_description ? '1' : '0'}/1 rempli
-                </span>
-              </div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>
-                Décrivez vos ouvertures
-              </label>
-              <textarea
-                value={details.ouvertures_description || ''}
-                onChange={e => handleFieldUpdate('ouvertures_description', e.target.value || null)}
-                placeholder={`Pour chaque pièce, indiquez : la pièce, les dimensions L × H en cm, et le type.\nExemple :\nSalon = 300 × 215, baie vitrée coulissante\nChambre 1 = 180 × 80, fenêtre oscillo-battante\nPorte d'entrée = 100 × 215, baie vitrée à galandage`}
-                rows={6}
-                style={{
-                  width: '100%', padding: '10px 12px', borderRadius: 8,
-                  border: `1px solid ${GRAY_300}`, fontSize: 14, boxSizing: 'border-box',
-                  outline: 'none', transition: 'border 0.15s', background: WHITE,
-                  fontFamily: 'inherit', minHeight: 140, resize: 'vertical',
-                }}
-                onFocus={e => { e.target.style.borderColor = ACCENT }}
-                onBlur={e => { e.target.style.borderColor = GRAY_300 }}
-              />
-            </div>
+            <OuverturesForm data={details.ouvertures_description} onFieldUpdate={handleFieldUpdate} />
 
             <TerrainDetailsForm data={details} onFieldUpdate={handleFieldUpdate} />
             <TerrainPhotosUpload projectId={project.id} onPhotoCountChange={setPhotoCount} />
