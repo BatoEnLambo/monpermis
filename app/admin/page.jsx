@@ -160,12 +160,13 @@ export default function AdminPage() {
     if (d.materiau_facade) count++
     if (d.materiau_couverture) count++
     if (d.menuiserie_materiau || d.menuiserie_couleur) count++
+    if (d.ouvertures_description) count++
     if (d.constructions_existantes === true || d.constructions_existantes === false) count++
     if (d.implantation_description) count++
     if (d.assainissement) count++
     if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) count++
     count += (photos || []).length
-    return Math.round((count / 19) * 100)
+    return Math.round((count / 20) * 100)
   }
 
   const fetchProjectDetails = async (projectId) => {
@@ -417,6 +418,14 @@ export default function AdminPage() {
                           <div><strong>Couverture :</strong> {label(d.materiau_couverture)}</div>
                           <div><strong>Menuiseries :</strong> {label(d.menuiserie_materiau)}{d.menuiserie_couleur ? ` — ${d.menuiserie_couleur}` : ''}</div>
                         </div>
+
+                        {/* Bloc Ouvertures */}
+                        {d.ouvertures_description && (
+                          <>
+                            <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Ouvertures</div>
+                            <div style={{ fontSize: 13, marginBottom: 16, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{d.ouvertures_description}</div>
+                          </>
+                        )}
 
                         {/* Bloc Terrain */}
                         <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Terrain</div>
