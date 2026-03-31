@@ -23,7 +23,7 @@ const TYPE_OPTIONS = [
 ]
 
 const inputStyle = {
-  padding: '8px 10px',
+  padding: '10px 12px',
   borderRadius: 8,
   border: `1px solid ${GRAY_300}`,
   fontSize: 14,
@@ -32,6 +32,12 @@ const inputStyle = {
   transition: 'border 0.15s',
   background: WHITE,
   fontFamily: 'inherit',
+}
+
+const selectStyle = {
+  ...inputStyle,
+  cursor: 'pointer',
+  appearance: 'auto',
 }
 
 function handleFocus(e) { e.target.style.borderColor = ACCENT }
@@ -110,97 +116,97 @@ export default function OuverturesForm({ data, onFieldUpdate }) {
           background: GRAY_50,
           border: `1px solid ${GRAY_200}`,
           borderRadius: 10,
-          padding: 16,
-          marginBottom: 12,
-          position: 'relative',
+          padding: 20,
+          marginBottom: 16,
         }}>
-          {/* Delete piece button */}
-          <button
-            type="button"
-            onClick={() => removePiece(pi)}
-            style={{
-              position: 'absolute', top: 10, right: 10,
-              width: 26, height: 26, borderRadius: '50%',
-              border: 'none', background: 'transparent',
-              color: GRAY_500, fontSize: 14, cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'color 0.15s',
-            }}
-            onMouseEnter={e => e.currentTarget.style.color = '#c0392b'}
-            onMouseLeave={e => e.currentTarget.style.color = GRAY_500}
-            title="Supprimer cette pièce"
-          >
-            ✕
-          </button>
-
-          {/* Piece name */}
-          <input
-            type="text"
-            value={piece.piece}
-            onChange={e => updatePieceName(pi, e.target.value)}
-            placeholder="ex : Salon, Chambre 1, Cuisine..."
-            style={{ ...inputStyle, width: '100%', marginBottom: 12, fontWeight: 500 }}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-          />
+          {/* Header: piece name + delete */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+            <input
+              type="text"
+              value={piece.piece}
+              onChange={e => updatePieceName(pi, e.target.value)}
+              placeholder="ex : Salon, Chambre 1, Cuisine..."
+              style={{ ...inputStyle, flex: 1, fontWeight: 500 }}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+            />
+            <button
+              type="button"
+              onClick={() => removePiece(pi)}
+              style={{
+                width: 36, height: 36, borderRadius: 8, flexShrink: 0,
+                border: `1px solid ${GRAY_300}`, background: WHITE,
+                color: GRAY_500, fontSize: 14, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = '#c0392b'; e.currentTarget.style.color = '#c0392b' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = GRAY_300; e.currentTarget.style.color = GRAY_500 }}
+              title="Supprimer cette pièce"
+            >
+              ✕
+            </button>
+          </div>
 
           {/* Ouvertures list */}
           {piece.ouvertures.map((ouv, oi) => (
-            <div key={oi} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <input
-                  type="number"
-                  className="no-spinner"
-                  step={1}
-                  min={0}
-                  value={ouv.largeur || ''}
-                  onChange={e => updateOuverture(pi, oi, 'largeur', e.target.value ? Number(e.target.value) : '')}
-                  placeholder="L"
-                  style={{ ...inputStyle, width: 70, textAlign: 'center' }}
+            <div key={oi} style={{ marginBottom: 12 }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <input
+                    type="number"
+                    className="no-spinner"
+                    step={1}
+                    min={0}
+                    value={ouv.largeur || ''}
+                    onChange={e => updateOuverture(pi, oi, 'largeur', e.target.value ? Number(e.target.value) : '')}
+                    placeholder="L"
+                    style={{ ...inputStyle, width: 72, textAlign: 'center' }}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                  />
+                  <span style={{ fontSize: 13, color: GRAY_500 }}>×</span>
+                  <input
+                    type="number"
+                    className="no-spinner"
+                    step={1}
+                    min={0}
+                    value={ouv.hauteur || ''}
+                    onChange={e => updateOuverture(pi, oi, 'hauteur', e.target.value ? Number(e.target.value) : '')}
+                    placeholder="H"
+                    style={{ ...inputStyle, width: 72, textAlign: 'center' }}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                  />
+                  <span style={{ fontSize: 12, color: GRAY_500, whiteSpace: 'nowrap' }}>cm</span>
+                </div>
+                <select
+                  value={ouv.type || ''}
+                  onChange={e => updateOuverture(pi, oi, 'type', e.target.value)}
+                  style={{ ...selectStyle, flex: 1, minWidth: 0, width: 0 }}
                   onFocus={handleFocus}
                   onBlur={handleBlur}
-                />
-                <span style={{ fontSize: 13, color: GRAY_500 }}>×</span>
-                <input
-                  type="number"
-                  className="no-spinner"
-                  step={1}
-                  min={0}
-                  value={ouv.hauteur || ''}
-                  onChange={e => updateOuverture(pi, oi, 'hauteur', e.target.value ? Number(e.target.value) : '')}
-                  placeholder="H"
-                  style={{ ...inputStyle, width: 70, textAlign: 'center' }}
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
-                />
-                <span style={{ fontSize: 12, color: GRAY_500 }}>cm</span>
+                >
+                  <option value="">Type...</option>
+                  {TYPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => removeOuverture(pi, oi)}
+                  style={{
+                    width: 36, height: 36, borderRadius: 8, flexShrink: 0,
+                    border: `1px solid ${GRAY_300}`, background: WHITE,
+                    color: GRAY_500, fontSize: 18, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'all 0.15s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#c0392b'; e.currentTarget.style.color = '#c0392b' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = GRAY_300; e.currentTarget.style.color = GRAY_500 }}
+                  title="Supprimer cette ouverture"
+                >
+                  −
+                </button>
               </div>
-              <select
-                value={ouv.type || ''}
-                onChange={e => updateOuverture(pi, oi, 'type', e.target.value)}
-                style={{ ...inputStyle, flex: 1, minWidth: 160, cursor: 'pointer', appearance: 'auto' }}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-              >
-                <option value="">Type...</option>
-                {TYPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
-              <button
-                type="button"
-                onClick={() => removeOuverture(pi, oi)}
-                style={{
-                  width: 28, height: 28, borderRadius: 6,
-                  border: `1px solid ${GRAY_300}`, background: WHITE,
-                  color: GRAY_500, fontSize: 16, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'all 0.15s', flexShrink: 0,
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#c0392b'; e.currentTarget.style.color = '#c0392b' }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = GRAY_300; e.currentTarget.style.color = GRAY_500 }}
-                title="Supprimer cette ouverture"
-              >
-                −
-              </button>
             </div>
           ))}
 
@@ -208,7 +214,7 @@ export default function OuverturesForm({ data, onFieldUpdate }) {
             type="button"
             onClick={() => addOuverture(pi)}
             style={{
-              padding: '6px 14px', borderRadius: 8,
+              padding: '8px 16px', borderRadius: 8, marginTop: 4,
               border: `1px dashed ${GRAY_300}`, background: 'transparent',
               fontSize: 13, fontWeight: 500, color: ACCENT,
               cursor: 'pointer', transition: 'border-color 0.15s',
@@ -225,7 +231,7 @@ export default function OuverturesForm({ data, onFieldUpdate }) {
         type="button"
         onClick={addPiece}
         style={{
-          padding: '10px 20px', borderRadius: 8,
+          padding: '12px 20px', borderRadius: 8,
           border: `1px solid ${GRAY_300}`, background: WHITE,
           fontSize: 14, fontWeight: 600, color: ACCENT,
           cursor: 'pointer', transition: 'all 0.15s',
@@ -236,6 +242,14 @@ export default function OuverturesForm({ data, onFieldUpdate }) {
       >
         + Ajouter une pièce
       </button>
+
+      {pieceCount === 0 && (
+        <p style={{ fontSize: 13, color: GRAY_500, margin: '12px 0 0', lineHeight: 1.5, textAlign: 'center' }}>
+          Ajoutez chaque pièce de votre maison et ses ouvertures (fenêtres, baies vitrées, portes).
+          <br />
+          Exemple : Salon → 1 baie vitrée 300 × 215 cm coulissante.
+        </p>
+      )}
     </div>
   )
 }
