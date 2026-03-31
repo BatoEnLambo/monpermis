@@ -29,6 +29,8 @@ export default function AdminPage() {
   const [adminUploading, setAdminUploading] = useState(null)
   const [projectMessages, setProjectMessages] = useState({})
   const [adminReply, setAdminReply] = useState({})
+  const [projectDetails, setProjectDetails] = useState({})
+  const [projectPhotos, setProjectPhotos] = useState({})
 
   const login = (e) => {
     e.preventDefault()
@@ -107,6 +109,11 @@ export default function AdminPage() {
         console.error('Error loading messages:', err)
       }
     }
+    // Fetch project_details for Maison neuve
+    const proj = projects.find(pr => pr.id === projectId)
+    if (proj?.project_type === 'Maison neuve') {
+      fetchProjectDetails(projectId)
+    }
   }
 
   const handleAdminUpload = async (e, projectId) => {
@@ -126,6 +133,54 @@ export default function AdminPage() {
     }
     setAdminUploading(null)
     e.target.value = ''
+  }
+
+  const LABELS = {
+    dalle: 'Dalle béton', vide_sanitaire: 'Vide sanitaire', pilotis: 'Pilotis', sous_sol: 'Sous-sol',
+    enduit: 'Enduit', bardage_bois: 'Bardage bois', pierre: 'Pierre', mixte: 'Mixte', autre: 'Autre',
+    tuile_canal: 'Tuile canal', tuile_plate: 'Tuile plate', ardoise: 'Ardoise', bac_acier: 'Bac acier', zinc: 'Zinc',
+    pvc: 'PVC', aluminium: 'Aluminium', bois: 'Bois',
+    tout_egout: 'Tout-à-l\'égout', fosse_septique: 'Fosse septique / ANC',
+    ne_sait_pas: 'Ne sait pas',
+  }
+  const label = (v) => LABELS[v] || v || '-'
+
+  const computeDetailsProgress = (d, photos) => {
+    if (!d) return 0
+    let count = 0
+    if (d.dimensions_longueur) count++
+    if (d.dimensions_largeur) count++
+    if (d.fondation) count++
+    if (d.hauteur_faitage || d.hauteur_faitage_nsp) count++
+    if (d.hauteur_egout || d.hauteur_egout_nsp) count++
+    if (d.pente_toiture || d.pente_toiture_nsp) count++
+    if (d.debord_toit || d.debord_toit_nsp) count++
+    if (d.materiau_facade) count++
+    if (d.materiau_couverture) count++
+    if (d.menuiserie_materiau || d.menuiserie_couleur) count++
+    if (d.constructions_existantes === true || d.constructions_existantes === false) count++
+    if (d.implantation_description) count++
+    if (d.assainissement) count++
+    if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz) count++
+    count += (photos || []).length
+    return Math.round((count / 19) * 100)
+  }
+
+  const fetchProjectDetails = async (projectId) => {
+    if (projectDetails[projectId] !== undefined) return
+    const { data } = await supabase
+      .from('project_details')
+      .select('*')
+      .eq('project_id', projectId)
+      .single()
+    setProjectDetails(prev => ({ ...prev, [projectId]: data || null }))
+    // Fetch terrain photos
+    const { data: files } = await supabase.storage.from('documents').list(`${projectId}/photos-terrain`)
+    const photos = (files || []).filter(f => f.name && f.name !== '.emptyFolderPlaceholder').map(f => {
+      const { data: urlData } = supabase.storage.from('documents').getPublicUrl(`${projectId}/photos-terrain/${f.name}`)
+      return { name: f.name.replace(/\.[^.]+$/, '').replace(/-/g, ' '), url: urlData.publicUrl }
+    })
+    setProjectPhotos(prev => ({ ...prev, [projectId]: photos }))
   }
 
   if (!authed) {
@@ -281,6 +336,62 @@ export default function AdminPage() {
                       ))}
                     </select>
                   </div>
+
+                  {/* Fiche technique client (Maison neuve) */}
+                  {p.project_type === 'Maison neuve' && projectDetails[p.id] && (() => {
+                    const d = projectDetails[p.id]
+                    const photos = projectPhotos[p.id] || []
+                    const progress = computeDetailsProgress(d, photos)
+                    const nspOrVal = (val, nsp, unit) => nsp ? 'À proposer' : val ? `${val} ${unit}` : '-'
+                    const raccordements = [d.raccordement_eau && 'Eau', d.raccordement_electricite && 'Électricité', d.raccordement_gaz && 'Gaz'].filter(Boolean)
+                    return (
+                      <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #f0f0f0' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                          <div style={{ fontSize: 14, fontWeight: 700 }}>Fiche technique client</div>
+                          <span style={{ fontSize: 12, fontWeight: 600, padding: '2px 10px', borderRadius: 10, background: progress === 100 ? '#e8f5ee' : '#fff3e0', color: progress === 100 ? '#1a5c3a' : '#e65100' }}>
+                            {progress}%
+                          </span>
+                        </div>
+
+                        {/* Bloc Construction */}
+                        <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Construction</div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13, marginBottom: 16 }}>
+                          <div><strong>Dimensions :</strong> {d.dimensions_longueur && d.dimensions_largeur ? `${d.dimensions_longueur} × ${d.dimensions_largeur} m` : '-'}</div>
+                          <div><strong>Fondation :</strong> {label(d.fondation)}</div>
+                          <div><strong>Hauteur faîtage :</strong> {nspOrVal(d.hauteur_faitage, d.hauteur_faitage_nsp, 'm')}</div>
+                          <div><strong>Hauteur égout :</strong> {nspOrVal(d.hauteur_egout, d.hauteur_egout_nsp, 'm')}</div>
+                          <div><strong>Pente toiture :</strong> {nspOrVal(d.pente_toiture, d.pente_toiture_nsp, '°')}</div>
+                          <div><strong>Débord toit :</strong> {nspOrVal(d.debord_toit, d.debord_toit_nsp, 'cm')}</div>
+                          <div><strong>Façade :</strong> {label(d.materiau_facade)}{d.materiau_facade_detail ? ` (${d.materiau_facade_detail})` : ''}</div>
+                          <div><strong>Couverture :</strong> {label(d.materiau_couverture)}</div>
+                          <div><strong>Menuiseries :</strong> {label(d.menuiserie_materiau)}{d.menuiserie_couleur ? ` — ${d.menuiserie_couleur}` : ''}</div>
+                        </div>
+
+                        {/* Bloc Terrain */}
+                        <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Terrain</div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13, marginBottom: 16 }}>
+                          <div><strong>Constructions existantes :</strong> {d.constructions_existantes === true ? `Oui${d.constructions_existantes_detail ? ` — ${d.constructions_existantes_detail}` : ''}` : d.constructions_existantes === false ? 'Non' : '-'}</div>
+                          <div><strong>Assainissement :</strong> {label(d.assainissement)}</div>
+                          <div><strong>Raccordements :</strong> {raccordements.length > 0 ? raccordements.join(', ') : '-'}</div>
+                          <div style={{ gridColumn: '1 / -1' }}><strong>Implantation :</strong> {d.implantation_description || '-'}</div>
+                        </div>
+
+                        {/* Photos terrain */}
+                        {photos.length > 0 && (
+                          <>
+                            <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Photos terrain ({photos.length}/5)</div>
+                            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                              {photos.map((photo, i) => (
+                                <a key={i} href={photo.url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: 80, height: 60, borderRadius: 6, overflow: 'hidden', border: '1px solid #e8e7e4' }}>
+                                  <img src={photo.url} alt={photo.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                                </a>
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )
+                  })()}
 
                   {/* Documents client */}
                   {projectDocs[p.id] && (

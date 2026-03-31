@@ -45,6 +45,11 @@
     margin-bottom: 6px !important;
   }
 
+  /* Terrain photos grid */
+  .terrain-photos-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
   /* Chat popup mobile */
   .chat-popup {
     width: calc(100vw - 32px) !important;

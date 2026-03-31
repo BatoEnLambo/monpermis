@@ -1,10 +1,13 @@
 'use client'
 
-import { useState, useEffect, useRef, Suspense } from 'react'
+import { useState, useEffect, useRef, useCallback, Suspense } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { supabase } from '../../../lib/supabase'
 import { uploadFile, getDocuments, deleteDocument } from '../../../lib/storage'
 import { getMessages, sendMessage } from '../../../lib/messages'
+import ConstructionDetailsForm from '../../../components/ConstructionDetailsForm'
+import TerrainDetailsForm from '../../../components/TerrainDetailsForm'
+import TerrainPhotosUpload from '../../../components/TerrainPhotosUpload'
 import '../../../styles/dashboard.css'
 
 const ACCENT = "#1a5c3a"
@@ -46,6 +49,12 @@ function ProjetContent() {
   const [newMessage, setNewMessage] = useState('')
   const [sendingMessage, setSendingMessage] = useState(false)
   const [chatOpen, setChatOpen] = useState(false)
+
+  // Fiche technique (Maison neuve only)
+  const [details, setDetails] = useState(null)
+  const [photoCount, setPhotoCount] = useState(0)
+  const [saved, setSaved] = useState(false)
+  const debounceRef = useRef({})
 
   useEffect(() => {
     const loadProject = async () => {
@@ -107,6 +116,73 @@ function ProjetContent() {
     const interval = setInterval(loadMessages, 10000)
     return () => clearInterval(interval)
   }, [project])
+
+  // Charge les project_details pour Maison neuve
+  useEffect(() => {
+    if (!project?.id || project.project_type !== 'Maison neuve') return
+    const loadDetails = async () => {
+      const { data, error } = await supabase
+        .from('project_details')
+        .select('*')
+        .eq('project_id', project.id)
+        .single()
+      if (data) {
+        setDetails(data)
+      } else {
+        // Créer le row s'il n'existe pas
+        const { data: newRow } = await supabase
+          .from('project_details')
+          .insert({ project_id: project.id })
+          .select()
+          .single()
+        if (newRow) setDetails(newRow)
+      }
+    }
+    loadDetails()
+  }, [project])
+
+  const handleFieldUpdate = useCallback((field, value) => {
+    setDetails(prev => ({ ...prev, [field]: value }))
+
+    // Debounce la sauvegarde
+    if (debounceRef.current[field]) clearTimeout(debounceRef.current[field])
+    debounceRef.current[field] = setTimeout(async () => {
+      const { error } = await supabase
+        .from('project_details')
+        .update({ [field]: value, updated_at: new Date().toISOString() })
+        .eq('project_id', project.id)
+      if (!error) {
+        setSaved(true)
+        setTimeout(() => setSaved(false), 2000)
+      }
+    }, 500)
+  }, [project?.id])
+
+  // Calcul progression fiche technique
+  const computeProgress = useCallback(() => {
+    if (!details) return 0
+    const d = details
+    let count = 0
+    // Construction (10)
+    if (d.dimensions_longueur) count++
+    if (d.dimensions_largeur) count++
+    if (d.fondation) count++
+    if (d.hauteur_faitage || d.hauteur_faitage_nsp) count++
+    if (d.hauteur_egout || d.hauteur_egout_nsp) count++
+    if (d.pente_toiture || d.pente_toiture_nsp) count++
+    if (d.debord_toit || d.debord_toit_nsp) count++
+    if (d.materiau_facade) count++
+    if (d.materiau_couverture) count++
+    if (d.menuiserie_materiau || d.menuiserie_couleur) count++
+    // Terrain (4)
+    if (d.constructions_existantes === true || d.constructions_existantes === false) count++
+    if (d.implantation_description) count++
+    if (d.assainissement) count++
+    if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz) count++
+    // Photos
+    count += photoCount
+    return Math.round((count / 19) * 100)
+  }, [details, photoCount])
 
   if (loading) {
     return <div style={{ padding: '60px 20px', textAlign: 'center', color: '#888' }}>Chargement de votre espace...</div>
@@ -245,6 +321,44 @@ function ProjetContent() {
         </div>
         <p style={{ fontSize: 13, color: GRAY_500, fontStyle: "italic", margin: "16px 0 0" }}>Si la mairie demande des modifications après votre dépôt, on corrige et on vous renvoie le dossier gratuitement.</p>
       </div>
+
+      {/* Fiche technique — Maison neuve uniquement */}
+      {project.project_type === 'Maison neuve' && details && (() => {
+        const progress = computeProgress()
+        return (
+          <>
+            {/* Barre de progression globale */}
+            <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20, position: 'relative' }}>
+              {saved && (
+                <span style={{ position: 'absolute', top: 16, right: 20, fontSize: 13, color: ACCENT, fontWeight: 500 }}>
+                  Sauvegardé ✓
+                </span>
+              )}
+              <h3 style={{ fontSize: 15, fontWeight: 600, margin: '0 0 14px', color: GRAY_900, letterSpacing: '-0.02em' }}>
+                Votre fiche technique : {progress}% complète
+              </h3>
+              <div style={{ background: GRAY_200, borderRadius: 6, height: 10, overflow: 'hidden' }}>
+                <div style={{
+                  width: `${progress}%`,
+                  height: '100%',
+                  background: progress === 100 ? '#16a34a' : ACCENT,
+                  borderRadius: 6,
+                  transition: 'width 0.4s ease',
+                }} />
+              </div>
+              <p style={{ fontSize: 12, color: GRAY_500, margin: '10px 0 0' }}>
+                {progress === 100
+                  ? 'Fiche complète — merci !'
+                  : 'Complétez ces informations pour que nous puissions réaliser vos plans.'}
+              </p>
+            </div>
+
+            <ConstructionDetailsForm data={details} onFieldUpdate={handleFieldUpdate} />
+            <TerrainDetailsForm data={details} onFieldUpdate={handleFieldUpdate} />
+            <TerrainPhotosUpload projectId={project.id} onPhotoCountChange={setPhotoCount} />
+          </>
+        )
+      })()}
 
       {/* 3. Checklist documents */}
       {clientDocs.length < 3 && (
