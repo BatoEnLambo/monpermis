@@ -178,7 +178,7 @@ function ProjetContent() {
     if (d.constructions_existantes === true || d.constructions_existantes === false) count++
     if (d.implantation_description) count++
     if (d.assainissement) count++
-    if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz) count++
+    if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) count++
     // Photos
     count += photoCount
     return Math.round((count / 19) * 100)

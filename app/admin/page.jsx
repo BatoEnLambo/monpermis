@@ -161,7 +161,7 @@ export default function AdminPage() {
     if (d.constructions_existantes === true || d.constructions_existantes === false) count++
     if (d.implantation_description) count++
     if (d.assainissement) count++
-    if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz) count++
+    if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) count++
     count += (photos || []).length
     return Math.round((count / 19) * 100)
   }
@@ -343,7 +343,7 @@ export default function AdminPage() {
                     const photos = projectPhotos[p.id] || []
                     const progress = computeDetailsProgress(d, photos)
                     const nspOrVal = (val, nsp, unit) => nsp ? 'À proposer' : val ? `${val} ${unit}` : '-'
-                    const raccordements = [d.raccordement_eau && 'Eau', d.raccordement_electricite && 'Électricité', d.raccordement_gaz && 'Gaz'].filter(Boolean)
+                    const raccordements = d.raccordement_aucun ? ['Aucun'] : [d.raccordement_eau && 'Eau', d.raccordement_electricite && 'Électricité', d.raccordement_gaz && 'Gaz', d.raccordement_fibre && 'Fibre'].filter(Boolean)
                     return (
                       <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #f0f0f0' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>

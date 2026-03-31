@@ -92,7 +92,7 @@ export default function TerrainDetailsForm({ data, onFieldUpdate }) {
     if (d.constructions_existantes === true || d.constructions_existantes === false) count++
     if (d.implantation_description) count++
     if (d.assainissement) count++
-    if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz) count++
+    if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) count++
     return count
   }, [d])
 
@@ -179,14 +179,31 @@ export default function TerrainDetailsForm({ data, onFieldUpdate }) {
             { field: 'raccordement_eau', label: 'Eau' },
             { field: 'raccordement_electricite', label: 'Électricité' },
             { field: 'raccordement_gaz', label: 'Gaz' },
+            { field: 'raccordement_fibre', label: 'Fibre' },
           ].map(opt => (
             <CheckboxStyled
               key={opt.field}
-              checked={!!d[opt.field]}
-              onChange={val => onFieldUpdate(opt.field, val)}
+              checked={!!d[opt.field] && !d.raccordement_aucun}
+              onChange={val => {
+                onFieldUpdate(opt.field, val)
+                if (val) onFieldUpdate('raccordement_aucun', false)
+              }}
               label={opt.label}
             />
           ))}
+          <CheckboxStyled
+            checked={!!d.raccordement_aucun}
+            onChange={val => {
+              onFieldUpdate('raccordement_aucun', val)
+              if (val) {
+                onFieldUpdate('raccordement_eau', false)
+                onFieldUpdate('raccordement_electricite', false)
+                onFieldUpdate('raccordement_gaz', false)
+                onFieldUpdate('raccordement_fibre', false)
+              }
+            }}
+            label="Aucun"
+          />
         </div>
       </div>
     </div>

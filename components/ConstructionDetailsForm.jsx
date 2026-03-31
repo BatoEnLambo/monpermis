@@ -113,7 +113,7 @@ function NumberWithNsp({ label, field, nspField, value, nspValue, unit, step, on
         >
           {nspValue && <span style={{ color: WHITE, fontSize: 12, fontWeight: 700, lineHeight: 1 }}>✓</span>}
         </div>
-        <span style={{ fontSize: 13, color: GRAY_500 }}>Je ne sais pas, proposez-moi</span>
+        <span style={{ fontSize: 13, color: GRAY_500 }}>Je ne sais pas</span>
       </label>
     </div>
   )
