@@ -8,7 +8,6 @@ const ACCENT_LIGHT = "#e8f5ee"
 const GRAY_200 = "#e8e7e4"
 const GRAY_300 = "#d4d3d0"
 const GRAY_500 = "#8a8985"
-const GRAY_700 = "#44433f"
 const GRAY_900 = "#1c1c1a"
 const WHITE = "#ffffff"
 
@@ -70,7 +69,6 @@ export default function TerrainPhotosUpload({ projectId, token, onPhotoCountChan
       const ext = getExt(file.name)
       const filePath = `${projectId}/photos-terrain/${slotKey}.${ext}`
 
-      // Remove existing file for this slot if any
       if (photos[slotKey]) {
         const oldPath = `${projectId}/photos-terrain/${photos[slotKey].fileName}`
         await supabase.storage.from(BUCKET).remove([oldPath])
@@ -121,7 +119,7 @@ export default function TerrainPhotosUpload({ projectId, token, onPhotoCountChan
         </span>
       </div>
 
-      <div className="terrain-photos-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
+      <div className="terrain-photos-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
         {SLOTS.map(slot => {
           const photo = photos[slot.key]
           const isUploading = uploading[slot.key]
@@ -141,7 +139,7 @@ export default function TerrainPhotosUpload({ projectId, token, onPhotoCountChan
               {photo ? (
                 <div style={{
                   position: 'relative',
-                  borderRadius: 10,
+                  borderRadius: 8,
                   border: `1px solid ${GRAY_200}`,
                   overflow: 'hidden',
                   aspectRatio: '4/3',
@@ -170,38 +168,39 @@ export default function TerrainPhotosUpload({ projectId, token, onPhotoCountChan
                       position: 'absolute',
                       top: 6,
                       right: 6,
-                      width: 28,
-                      height: 28,
+                      width: 26,
+                      height: 26,
                       borderRadius: '50%',
                       border: 'none',
                       background: 'rgba(0,0,0,0.5)',
                       color: WHITE,
-                      fontSize: 14,
+                      fontSize: 13,
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       transition: 'background 0.15s',
+                      fontFamily: 'inherit',
                     }}
                     onMouseEnter={e => e.currentTarget.style.background = 'rgba(192,57,43,0.8)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'rgba(0,0,0,0.5)'}
                     title="Supprimer"
                   >
-                    🗑
+                    ✕
                   </button>
                 </div>
               ) : (
                 <div
                   onClick={() => !isUploading && inputRefs.current[slot.key]?.click()}
                   style={{
-                    borderRadius: 10,
+                    borderRadius: 8,
                     border: `2px dashed ${GRAY_300}`,
                     aspectRatio: '4/3',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: 8,
+                    gap: 6,
                     cursor: isUploading ? 'wait' : 'pointer',
                     background: isUploading ? ACCENT_LIGHT : WHITE,
                     transition: 'all 0.15s',
@@ -210,8 +209,8 @@ export default function TerrainPhotosUpload({ projectId, token, onPhotoCountChan
                   onMouseEnter={e => { if (!isUploading) e.currentTarget.style.borderColor = ACCENT }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = GRAY_300 }}
                 >
-                  <span style={{ fontSize: 24, color: GRAY_300 }}>📷</span>
-                  <span style={{ fontSize: 12, fontWeight: 500, color: GRAY_500, textAlign: 'center', padding: '0 8px' }}>
+                  <span style={{ fontSize: 22, color: GRAY_300 }}>+</span>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: GRAY_500, textAlign: 'center', padding: '0 8px', lineHeight: 1.3 }}>
                     {isUploading ? 'Upload...' : slot.label}
                   </span>
                 </div>

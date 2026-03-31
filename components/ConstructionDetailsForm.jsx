@@ -3,13 +3,13 @@
 import { useMemo } from 'react'
 
 const ACCENT = "#1a5c3a"
+const ACCENT_LIGHT = "#e8f5ee"
 const GRAY_200 = "#e8e7e4"
 const GRAY_300 = "#d4d3d0"
 const GRAY_500 = "#8a8985"
 const GRAY_700 = "#44433f"
 const GRAY_900 = "#1c1c1a"
 const WHITE = "#ffffff"
-const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 
 const FONDATION_OPTIONS = [
   { value: 'dalle', label: 'Dalle béton' },
@@ -49,12 +49,12 @@ const inputStyle = {
   padding: '10px 12px',
   borderRadius: 8,
   border: `1px solid ${GRAY_300}`,
-  fontFamily: FONT,
-  fontSize: 16,
+  fontSize: 14,
   boxSizing: 'border-box',
   outline: 'none',
   transition: 'border 0.15s',
   background: WHITE,
+  fontFamily: 'inherit',
 }
 
 const selectStyle = {
@@ -76,38 +76,44 @@ function handleBlur(e) { e.target.style.borderColor = GRAY_300 }
 function NumberWithNsp({ label, field, nspField, value, nspValue, unit, step, onFieldUpdate }) {
   const disabled = !!nspValue
   return (
-    <div style={{ marginTop: 14 }}>
+    <div style={{ marginTop: 16 }}>
       <label style={labelStyle}>{label}</label>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{ position: 'relative', flex: 1 }}>
-          <input
-            type="number"
-            step={step}
-            min={0}
-            value={disabled ? '' : (value || '')}
-            onChange={e => onFieldUpdate(field, e.target.value ? Number(e.target.value) : null)}
-            disabled={disabled}
-            style={disabled ? disabledInputStyle : inputStyle}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            placeholder={disabled ? '—' : ''}
-          />
-          {unit && !disabled && (
-            <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 13, color: GRAY_500, pointerEvents: 'none' }}>{unit}</span>
-          )}
-        </div>
-      </div>
-      <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, fontSize: 13, color: GRAY_500, cursor: 'pointer', userSelect: 'none' }}>
+      <div style={{ position: 'relative' }}>
         <input
-          type="checkbox"
-          checked={!!nspValue}
-          onChange={e => {
-            onFieldUpdate(nspField, e.target.checked)
-            if (e.target.checked) onFieldUpdate(field, null)
-          }}
-          style={{ width: 16, height: 16, accentColor: ACCENT, cursor: 'pointer' }}
+          type="number"
+          className="no-spinner"
+          step={step}
+          min={0}
+          value={disabled ? '' : (value || '')}
+          onChange={e => onFieldUpdate(field, e.target.value ? Number(e.target.value) : null)}
+          disabled={disabled}
+          style={disabled ? disabledInputStyle : inputStyle}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          placeholder={disabled ? '—' : ''}
         />
-        Je ne sais pas, proposez-moi
+        {unit && !disabled && (
+          <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 13, color: GRAY_500, pointerEvents: 'none' }}>{unit}</span>
+        )}
+      </div>
+      <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, cursor: 'pointer', userSelect: 'none' }}>
+        <div
+          onClick={(e) => {
+            e.preventDefault()
+            onFieldUpdate(nspField, !nspValue)
+            if (!nspValue) onFieldUpdate(field, null)
+          }}
+          style={{
+            width: 18, height: 18, borderRadius: 4, flexShrink: 0,
+            border: nspValue ? `2px solid ${ACCENT}` : `2px solid ${GRAY_300}`,
+            background: nspValue ? ACCENT : WHITE,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            transition: 'all 0.15s', cursor: 'pointer',
+          }}
+        >
+          {nspValue && <span style={{ color: WHITE, fontSize: 12, fontWeight: 700, lineHeight: 1 }}>✓</span>}
+        </div>
+        <span style={{ fontSize: 13, color: GRAY_500 }}>Je ne sais pas, proposez-moi</span>
       </label>
     </div>
   )
@@ -133,7 +139,6 @@ export default function ConstructionDetailsForm({ data, onFieldUpdate }) {
 
   return (
     <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
-      {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <h3 style={{ fontSize: 15, fontWeight: 600, color: GRAY_900, margin: 0, letterSpacing: '-0.02em' }}>
           Votre construction
@@ -146,11 +151,12 @@ export default function ConstructionDetailsForm({ data, onFieldUpdate }) {
       {/* Dimensions */}
       <div>
         <label style={labelStyle}>Dimensions intérieures</label>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div>
             <label style={{ ...labelStyle, fontSize: 12, color: GRAY_500 }}>Longueur (m)</label>
             <input
               type="number"
+              className="no-spinner"
               step={0.1}
               min={0}
               value={d.dimensions_longueur || ''}
@@ -164,6 +170,7 @@ export default function ConstructionDetailsForm({ data, onFieldUpdate }) {
             <label style={{ ...labelStyle, fontSize: 12, color: GRAY_500 }}>Largeur (m)</label>
             <input
               type="number"
+              className="no-spinner"
               step={0.1}
               min={0}
               value={d.dimensions_largeur || ''}
@@ -177,7 +184,7 @@ export default function ConstructionDetailsForm({ data, onFieldUpdate }) {
       </div>
 
       {/* Fondation */}
-      <div style={{ marginTop: 14 }}>
+      <div style={{ marginTop: 16 }}>
         <label style={labelStyle}>Type de fondation</label>
         <select
           value={d.fondation || ''}
@@ -191,56 +198,13 @@ export default function ConstructionDetailsForm({ data, onFieldUpdate }) {
         </select>
       </div>
 
-      {/* Hauteur au faîtage */}
-      <NumberWithNsp
-        label="Hauteur au faîtage"
-        field="hauteur_faitage"
-        nspField="hauteur_faitage_nsp"
-        value={d.hauteur_faitage}
-        nspValue={d.hauteur_faitage_nsp}
-        unit="m"
-        step={0.01}
-        onFieldUpdate={onFieldUpdate}
-      />
-
-      {/* Hauteur à l'égout */}
-      <NumberWithNsp
-        label="Hauteur à l'égout"
-        field="hauteur_egout"
-        nspField="hauteur_egout_nsp"
-        value={d.hauteur_egout}
-        nspValue={d.hauteur_egout_nsp}
-        unit="m"
-        step={0.01}
-        onFieldUpdate={onFieldUpdate}
-      />
-
-      {/* Pente de toiture */}
-      <NumberWithNsp
-        label="Pente de toiture"
-        field="pente_toiture"
-        nspField="pente_toiture_nsp"
-        value={d.pente_toiture}
-        nspValue={d.pente_toiture_nsp}
-        unit="°"
-        step={1}
-        onFieldUpdate={onFieldUpdate}
-      />
-
-      {/* Débords de toit */}
-      <NumberWithNsp
-        label="Débords de toit"
-        field="debord_toit"
-        nspField="debord_toit_nsp"
-        value={d.debord_toit}
-        nspValue={d.debord_toit_nsp}
-        unit="cm"
-        step={1}
-        onFieldUpdate={onFieldUpdate}
-      />
+      <NumberWithNsp label="Hauteur au faîtage" field="hauteur_faitage" nspField="hauteur_faitage_nsp" value={d.hauteur_faitage} nspValue={d.hauteur_faitage_nsp} unit="m" step={0.01} onFieldUpdate={onFieldUpdate} />
+      <NumberWithNsp label="Hauteur à l'égout" field="hauteur_egout" nspField="hauteur_egout_nsp" value={d.hauteur_egout} nspValue={d.hauteur_egout_nsp} unit="m" step={0.01} onFieldUpdate={onFieldUpdate} />
+      <NumberWithNsp label="Pente de toiture" field="pente_toiture" nspField="pente_toiture_nsp" value={d.pente_toiture} nspValue={d.pente_toiture_nsp} unit="°" step={1} onFieldUpdate={onFieldUpdate} />
+      <NumberWithNsp label="Débords de toit" field="debord_toit" nspField="debord_toit_nsp" value={d.debord_toit} nspValue={d.debord_toit_nsp} unit="cm" step={1} onFieldUpdate={onFieldUpdate} />
 
       {/* Matériau de façade */}
-      <div style={{ marginTop: 14 }}>
+      <div style={{ marginTop: 16 }}>
         <label style={labelStyle}>Matériau de façade</label>
         <select
           value={d.materiau_facade || ''}
@@ -268,7 +232,7 @@ export default function ConstructionDetailsForm({ data, onFieldUpdate }) {
       </div>
 
       {/* Matériau de couverture */}
-      <div style={{ marginTop: 14 }}>
+      <div style={{ marginTop: 16 }}>
         <label style={labelStyle}>Matériau de couverture</label>
         <select
           value={d.materiau_couverture || ''}
@@ -283,7 +247,7 @@ export default function ConstructionDetailsForm({ data, onFieldUpdate }) {
       </div>
 
       {/* Menuiseries — matériau */}
-      <div style={{ marginTop: 14 }}>
+      <div style={{ marginTop: 16 }}>
         <label style={labelStyle}>Menuiseries — matériau</label>
         <select
           value={d.menuiserie_materiau || ''}
@@ -298,7 +262,7 @@ export default function ConstructionDetailsForm({ data, onFieldUpdate }) {
       </div>
 
       {/* Menuiseries — couleur */}
-      <div style={{ marginTop: 14 }}>
+      <div style={{ marginTop: 16 }}>
         <label style={labelStyle}>Menuiseries — couleur</label>
         <input
           type="text"

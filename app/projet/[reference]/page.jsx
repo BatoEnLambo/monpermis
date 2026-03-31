@@ -323,7 +323,6 @@ function ProjetContent() {
       </div>
 
       {/* Fiche technique — Maison neuve uniquement */}
-      {console.log('DEBUG project_type:', project.project_type, 'details:', details)}
       {project.project_type === 'Maison neuve' && details && (() => {
         const progress = computeProgress()
         return (
