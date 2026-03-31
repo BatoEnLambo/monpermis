@@ -217,14 +217,16 @@ export default function AdminPage() {
       }
 
       const content = await zip.generateAsync({ type: 'blob' })
-      const clientName = `${project.first_name}_${project.last_name}`.toUpperCase().replace(/\s+/g, '_')
+      const clientName = `${project.first_name || ''}_${project.last_name || ''}`.toUpperCase().replace(/\s+/g, '_')
       const fileName = `${project.reference}_${clientName}.zip`
       const url = URL.createObjectURL(content)
       const a = document.createElement('a')
       a.href = url
       a.download = fileName
+      document.body.appendChild(a)
       a.click()
-      URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+      setTimeout(() => URL.revokeObjectURL(url), 1000)
     } catch (err) {
       console.error('ZIP error:', err)
       alert('Erreur lors de la création du ZIP.')
