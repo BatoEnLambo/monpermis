@@ -42,7 +42,7 @@ export async function generateMetadata({ params }) {
   const guide = getGuideBySlug(slug)
   if (!guide) return {}
 
-  const url = `https://permisclair.fr/guides/${guide.slug}`
+  const url = `https://www.permisclair.fr/guides/${guide.slug}`
 
   return {
     title: `${guide.title} — PermisClair`,
@@ -64,7 +64,7 @@ export default async function GuidePage({ params }) {
   if (!guide) notFound()
 
   const { items: tocItems, html: contentHtml } = parseTableOfContents(guide.content)
-  const url = `https://permisclair.fr/guides/${guide.slug}`
+  const url = `https://www.permisclair.fr/guides/${guide.slug}`
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -81,7 +81,7 @@ export default async function GuidePage({ params }) {
     publisher: {
       '@type': 'Organization',
       name: 'PermisClair',
-      url: 'https://permisclair.fr',
+      url: 'https://www.permisclair.fr',
     },
   }
 

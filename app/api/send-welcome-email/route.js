@@ -12,7 +12,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Données manquantes' }, { status: 400 })
     }
 
-    const clientUrl = `https://permisclair.fr/projet/${reference}?token=${token}`
+    const clientUrl = `https://www.permisclair.fr/projet/${reference}?token=${token}`
 
     const { data, error } = await resend.emails.send({
       from: 'PermisClair <contact@permisclair.fr>',
@@ -64,7 +64,7 @@ export async function POST(request) {
           <div style="padding: 20px 0; border-top: 1px solid #e8e7e4; font-size: 12px; color: #888; line-height: 1.5;">
             PermisClair — Plans et permis de construire, clé en main.<br>
             Vendée, France<br>
-            <a href="https://permisclair.fr" style="color: #888;">permisclair.fr</a>
+            <a href="https://www.permisclair.fr" style="color: #888;">permisclair.fr</a>
           </div>
         </div>
       `,
@@ -91,7 +91,7 @@ export async function POST(request) {
               <tr><td style="padding: 6px 0; color: #888;">Montant</td><td style="padding: 6px 0; font-weight: 700; color: #1a5c3a;">${price} €</td></tr>
             </table>
             <div style="margin-top: 20px;">
-              <a href="https://permisclair.fr/admin" style="display: inline-block; padding: 12px 24px; background: #1a5c3a; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600;">Voir dans l'admin →</a>
+              <a href="https://www.permisclair.fr/admin" style="display: inline-block; padding: 12px 24px; background: #1a5c3a; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600;">Voir dans l'admin →</a>
             </div>
           </div>
         `,

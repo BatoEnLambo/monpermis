@@ -19,7 +19,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Données manquantes' }, { status: 400 })
     }
 
-    const origin = request.headers.get('origin') || request.headers.get('referer')?.replace(/\/[^/]*$/, '') || 'https://permisclair.fr'
+    const origin = request.headers.get('origin') || request.headers.get('referer')?.replace(/\/[^/]*$/, '') || 'https://www.permisclair.fr'
 
     console.log('Using origin:', origin)
 

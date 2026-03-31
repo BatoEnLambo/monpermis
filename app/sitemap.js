@@ -1,6 +1,6 @@
 import { getAllGuides } from '../content/guides'
 
-const BASE_URL = 'https://permisclair.fr'
+const BASE_URL = 'https://www.permisclair.fr'
 
 export default function sitemap() {
   const staticPages = [

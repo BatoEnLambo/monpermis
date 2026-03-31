@@ -18,7 +18,7 @@ export const metadata = {
     title: 'Guides pratiques | PermisClair',
     description: 'Guides complets pour vos projets de construction : extension, piscine, garage, maison neuve. Démarches, plans, prix et conseils pratiques.',
     type: 'website',
-    url: 'https://permisclair.fr/guides',
+    url: 'https://www.permisclair.fr/guides',
   },
 }
 
