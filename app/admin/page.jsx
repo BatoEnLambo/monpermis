@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import JSZip from 'jszip'
 import { supabase } from '../../lib/supabase'
 import { uploadFile, getDocuments, deleteDocument } from '../../lib/storage'
 import { getMessages, sendMessage, markAsRead } from '../../lib/messages'
@@ -31,6 +32,7 @@ export default function AdminPage() {
   const [adminReply, setAdminReply] = useState({})
   const [projectDetails, setProjectDetails] = useState({})
   const [projectPhotos, setProjectPhotos] = useState({})
+  const [zipping, setZipping] = useState(null)
 
   const login = (e) => {
     e.preventDefault()
@@ -181,6 +183,53 @@ export default function AdminPage() {
       return { name: f.name.replace(/\.[^.]+$/, '').replace(/-/g, ' '), url: urlData.publicUrl }
     })
     setProjectPhotos(prev => ({ ...prev, [projectId]: photos }))
+  }
+
+  const handleDownloadAll = async (project) => {
+    setZipping(project.id)
+    try {
+      const zip = new JSZip()
+
+      // Client documents
+      const docs = (projectDocs[project.id] || []).filter(d => d.uploaded_by === 'client')
+      for (const doc of docs) {
+        try {
+          const resp = await fetch(doc.file_url)
+          if (resp.ok) {
+            const blob = await resp.blob()
+            zip.file(`documents/${doc.file_name}`, blob)
+          }
+        } catch (e) { console.error('Fetch doc error:', e) }
+      }
+
+      // Terrain photos
+      const { data: photoFiles } = await supabase.storage.from('documents').list(`${project.id}/photos-terrain`)
+      const validPhotos = (photoFiles || []).filter(f => f.name && f.name !== '.emptyFolderPlaceholder')
+      for (const f of validPhotos) {
+        try {
+          const { data: urlData } = supabase.storage.from('documents').getPublicUrl(`${project.id}/photos-terrain/${f.name}`)
+          const resp = await fetch(urlData.publicUrl)
+          if (resp.ok) {
+            const blob = await resp.blob()
+            zip.file(`photos-terrain/${f.name}`, blob)
+          }
+        } catch (e) { console.error('Fetch photo error:', e) }
+      }
+
+      const content = await zip.generateAsync({ type: 'blob' })
+      const clientName = `${project.first_name}_${project.last_name}`.toUpperCase().replace(/\s+/g, '_')
+      const fileName = `${project.reference}_${clientName}.zip`
+      const url = URL.createObjectURL(content)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = fileName
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      console.error('ZIP error:', err)
+      alert('Erreur lors de la création du ZIP.')
+    }
+    setZipping(null)
   }
 
   if (!authed) {
@@ -396,7 +445,20 @@ export default function AdminPage() {
                   {/* Documents client */}
                   {projectDocs[p.id] && (
                     <div style={{ marginTop: 20 }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Documents client</div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                        <div style={{ fontSize: 14, fontWeight: 700 }}>Documents client</div>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleDownloadAll(p) }}
+                          disabled={zipping === p.id}
+                          style={{
+                            padding: '6px 14px', borderRadius: 8, border: '1px solid #ddd', background: '#fff',
+                            fontSize: 13, fontWeight: 600, cursor: zipping === p.id ? 'default' : 'pointer',
+                            opacity: zipping === p.id ? 0.6 : 1, color: '#1a5c3a',
+                          }}
+                        >
+                          {zipping === p.id ? 'Téléchargement...' : '📥 Télécharger tout (.zip)'}
+                        </button>
+                      </div>
                       {projectDocs[p.id].filter(d => d.uploaded_by === 'client').length > 0 ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                           {projectDocs[p.id].filter(d => d.uploaded_by === 'client').map(doc => (
