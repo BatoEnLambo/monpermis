@@ -120,7 +120,7 @@ function ProjetContent() {
 
   // Charge les project_details pour Maison neuve
   useEffect(() => {
-    if (!project?.id || project.project_type !== 'Maison neuve') return
+    if (!project?.id || !project.project_type?.startsWith('Maison neuve')) return
     const loadDetails = async () => {
       const { data, error } = await supabase
         .from('project_details')
@@ -329,7 +329,7 @@ function ProjetContent() {
       </div>
 
       {/* Fiche technique — Maison neuve uniquement */}
-      {project.project_type === 'Maison neuve' && details && (() => {
+      {project.project_type?.startsWith('Maison neuve') && details && (() => {
         const progress = computeProgress()
         return (
           <>

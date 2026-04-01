@@ -113,7 +113,7 @@ export default function AdminPage() {
     }
     // Fetch project_details for Maison neuve
     const proj = projects.find(pr => pr.id === projectId)
-    if (proj?.project_type === 'Maison neuve') {
+    if (proj?.project_type?.startsWith('Maison neuve')) {
       fetchProjectDetails(projectId)
     }
   }
@@ -396,7 +396,7 @@ export default function AdminPage() {
                   </div>
 
                   {/* Fiche technique client (Maison neuve) */}
-                  {p.project_type === 'Maison neuve' && projectDetails[p.id] && (() => {
+                  {p.project_type?.startsWith('Maison neuve') && projectDetails[p.id] && (() => {
                     const d = projectDetails[p.id]
                     const photos = projectPhotos[p.id] || []
                     const progress = computeDetailsProgress(d, photos)

@@ -18,7 +18,8 @@ const GRAY_900 = "#1c1c1a"
 const WHITE = "#ffffff"
 const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 
-const PROJECT_TYPES = ["Extension / Agrandissement", "Piscine", "Garage / Carport", "Maison neuve", "Terrasse / Pergola", "Surélévation", "Autre"]
+const PROJECT_TYPES = ["Extension / Agrandissement", "Piscine", "Garage / Carport", "Maison neuve — Dossier PC", "Maison neuve — Plans + Dossier PC", "Terrasse / Pergola", "Surélévation", "Autre"]
+const MAISON_TYPES = ["Maison neuve — Dossier PC", "Maison neuve — Plans + Dossier PC"]
 const ROOF_TYPES = ["Toit plat", "Toit 2 pans", "Toit 4 pans", "Toit monopente", "Je ne sais pas encore"]
 const STYLES = ["Moderne / Contemporain", "Traditionnel", "Ossature bois", "Cubique / Toit plat", "Autre"]
 
@@ -29,6 +30,10 @@ function getPricing(projectType, floors) {
     case "Terrasse / Pergola": return { price: 390, label: "Déclaration préalable — Terrasse / Pergola", delay: "3 jours ouvrés" }
     case "Extension / Agrandissement": return { price: 790, label: "Permis de construire — Extension", delay: "5 jours ouvrés" }
     case "Surélévation": return { price: 790, label: "Permis de construire — Surélévation", delay: "5 jours ouvrés" }
+    case "Maison neuve — Dossier PC": return { price: 590, label: "Permis de construire — Maison neuve (dossier)", delay: "5 jours ouvrés" }
+    case "Maison neuve — Plans + Dossier PC":
+      if (floors === "1 (plain-pied)") return { price: 990, label: "Permis de construire — Maison neuve + plans (plain-pied)", delay: "5 jours ouvrés" }
+      return { price: 1190, label: "Permis de construire — Maison neuve + plans (R+1)", delay: "5 jours ouvrés" }
     case "Maison neuve":
       if (floors === "1 (plain-pied)") return { price: 990, label: "Permis de construire — Maison plain-pied", delay: "5 jours ouvrés" }
       return { price: 1190, label: "Permis de construire — Maison R+1 ou plus", delay: "5 jours ouvrés" }
@@ -161,7 +166,7 @@ function FormulaireContent() {
     if (step === 1) {
       if (form.projectType === "Autre" || !form.projectType) return true
       if (!form.surface) return false
-      if ((form.projectType === "Maison neuve" || form.projectType === "Extension / Agrandissement" || form.projectType === "Surélévation") && Number(form.surface) > 150) return false
+      if ((MAISON_TYPES.includes(form.projectType) || form.projectType === "Maison neuve" || form.projectType === "Extension / Agrandissement" || form.projectType === "Surélévation") && Number(form.surface) > 150) return false
       return true
     }
     if (step === 2) {
@@ -253,7 +258,7 @@ function FormulaireContent() {
             <h2 className="form-title" style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Détails du projet</h2>
             <p className="form-subtitle" style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Ces infos nous permettent de produire vos plans sur mesure</p>
 
-            {form.projectType === "Maison neuve" && (
+            {(MAISON_TYPES.includes(form.projectType) || form.projectType === "Maison neuve") && (
               <>
                 <div className="form-grid-3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
                   <div>

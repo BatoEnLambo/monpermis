@@ -6,6 +6,7 @@ import '../styles/landing.css'
 const ACCENT = "#1a5c3a"
 const GRAY_200 = "#e8e7e4"
 const GRAY_500 = "#8a8985"
+const GRAY_700 = "#44433f"
 const GRAY_900 = "#1c1c1a"
 const WHITE = "#ffffff"
 const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
@@ -13,8 +14,8 @@ const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 const cards = [
   { title: "Piscine / Garage / Terrasse", sub: "Déclaration préalable", price: "390€", detail: "Dossier DP complet", projectType: "Piscine" },
   { title: "Extension / Surélévation", sub: "DP ou permis de construire", price: "790€", detail: "Plans + dossier complet", popular: true, projectType: "Extension / Agrandissement" },
-  { title: "Maison plain-pied", sub: "Permis de construire", price: "990€", detail: "Plans + dossier PC", projectType: "Maison neuve", floors: "1 (plain-pied)" },
-  { title: "Maison R+1 / complexe", sub: "Permis de construire", price: "1 190€", detail: "Plans + dossier PC", projectType: "Maison neuve", floors: "2 (R+1)" },
+  { title: "Maison neuve", sub: "Permis de construire", price: "590€", detail: "Dossier PC complet", projectType: "Maison neuve — Dossier PC" },
+  { title: "Maison neuve + plans", sub: "Permis de construire", price: "À partir de 990€", detail: "Plans complets + dossier PC", projectType: "Maison neuve — Plans + Dossier PC" },
 ]
 
 export default function PricingCards() {
@@ -56,7 +57,10 @@ export default function PricingCards() {
           </Link>
         ))}
       </div>
-      <p className="pricing-compare" style={{ fontSize: 13, color: GRAY_500, marginTop: 20 }}>
+      <p className="pricing-option-re2020" style={{ fontSize: 13, color: GRAY_700, marginTop: 20, lineHeight: 1.6 }}>
+        <strong>Option RE2020 : +250 €</strong> — Attestation thermique obligatoire pour toute construction neuve, réalisée par notre partenaire certifié.
+      </p>
+      <p className="pricing-compare" style={{ fontSize: 13, color: GRAY_500, marginTop: 12 }}>
         Un dessinateur facture 600 à 2 000€ et livre en 2 à 6 semaines. Un architecte, 1 500 à 4 000€.
       </p>
     </div>

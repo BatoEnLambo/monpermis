@@ -23,6 +23,8 @@ const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 const PC_INCLUDES = ["Plans complets (PCMI1 à PCMI8)", "Notice descriptive", "CERFA rempli", "Insertion paysagère", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"]
 const DP_INCLUDES = ["Plans complets (DP1 à DP8)", "Notice descriptive", "CERFA rempli", "Document graphique", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"]
 
+const PC_DOSSIER_INCLUDES = ["Dossier PC complet (PCMI1 à PCMI8)", "Notice descriptive", "CERFA rempli", "Insertion paysagère", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"]
+
 function getPricing(projectType, floors) {
   switch (projectType) {
     case "Piscine": return { price: 390, label: "Déclaration préalable — Piscine", delay: "3 jours ouvrés", includes: DP_INCLUDES }
@@ -30,6 +32,10 @@ function getPricing(projectType, floors) {
     case "Terrasse / Pergola": return { price: 390, label: "Déclaration préalable — Terrasse / Pergola", delay: "3 jours ouvrés", includes: DP_INCLUDES }
     case "Extension / Agrandissement": return { price: 790, label: "Permis de construire — Extension", delay: "5 jours ouvrés", includes: PC_INCLUDES }
     case "Surélévation": return { price: 790, label: "Permis de construire — Surélévation", delay: "5 jours ouvrés", includes: PC_INCLUDES }
+    case "Maison neuve — Dossier PC": return { price: 590, label: "Permis de construire — Maison neuve (dossier)", delay: "5 jours ouvrés", includes: PC_DOSSIER_INCLUDES }
+    case "Maison neuve — Plans + Dossier PC":
+      if (floors === "1 (plain-pied)") return { price: 990, label: "Permis de construire — Maison neuve + plans (plain-pied)", delay: "5 jours ouvrés", includes: PC_INCLUDES }
+      return { price: 1190, label: "Permis de construire — Maison neuve + plans (R+1)", delay: "5 jours ouvrés", includes: PC_INCLUDES }
     case "Maison neuve":
       if (floors === "1 (plain-pied)") return { price: 990, label: "Permis de construire — Maison plain-pied", delay: "5 jours ouvrés", includes: PC_INCLUDES }
       return { price: 1190, label: "Permis de construire — Maison R+1 ou plus", delay: "5 jours ouvrés", includes: PC_INCLUDES }
