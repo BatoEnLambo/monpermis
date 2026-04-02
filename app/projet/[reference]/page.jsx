@@ -221,13 +221,15 @@ function ProjetContent() {
   const progressSaveRef = useRef(null)
   const progress = computeProgress()
   useEffect(() => {
-    if (!project?.id || progress === undefined) return
+    if (!project?.id || progress === undefined || progress === null) return
     if (progressSaveRef.current) clearTimeout(progressSaveRef.current)
-    progressSaveRef.current = setTimeout(() => {
-      supabase
+    progressSaveRef.current = setTimeout(async () => {
+      console.log('[PermisClair] Saving completion_percentage:', progress, 'for project:', project.id)
+      const { error } = await supabase
         .from('project_details')
         .update({ completion_percentage: progress })
         .eq('project_id', project.id)
+      if (error) console.error('[PermisClair] completion_percentage save error:', error)
     }, 2000)
   }, [progress, project?.id])
 
