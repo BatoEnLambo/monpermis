@@ -60,6 +60,11 @@
     grid-template-columns: 1fr 1fr !important;
   }
 
+  /* Coordonnées 2-col rows → 1 col on mobile */
+  .coordonnees-row {
+    grid-template-columns: 1fr !important;
+  }
+
   /* Chat popup mobile */
   .chat-popup {
     width: calc(100vw - 32px) !important;

@@ -153,6 +153,16 @@ export default function AdminPage() {
   const computeDetailsProgress = (d, photos) => {
     if (!d) return 0
     let count = 0
+    // Coordonnées (8)
+    if (d.client_civilite) count++
+    if (d.client_nom) count++
+    if (d.client_prenom) count++
+    if (d.client_date_naissance) count++
+    if (d.client_commune_naissance) count++
+    if (d.client_departement_naissance) count++
+    if (d.client_telephone) count++
+    if (d.client_email) count++
+    // Construction (10)
     if (d.dimensions_longueur) count++
     if (d.dimensions_largeur) count++
     if (d.fondation) count++
@@ -172,7 +182,7 @@ export default function AdminPage() {
     if (d.assainissement) count++
     if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) count++
     count += (photos || []).length
-    return Math.round((count / 20) * 100)
+    return Math.round((count / 28) * 100)
   }
 
   const fetchProjectDetails = async (projectId) => {
@@ -409,6 +419,19 @@ export default function AdminPage() {
                           <span style={{ fontSize: 12, fontWeight: 600, padding: '2px 10px', borderRadius: 10, background: progress === 100 ? '#e8f5ee' : '#fff3e0', color: progress === 100 ? '#1a5c3a' : '#e65100' }}>
                             {progress}%
                           </span>
+                        </div>
+
+                        {/* Bloc Coordonnées */}
+                        <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Coordonnées client</div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13, marginBottom: 16 }}>
+                          <div><strong>Identité :</strong> {[d.client_civilite === 'M' ? 'M.' : d.client_civilite, d.client_nom, d.client_prenom].filter(Boolean).join(' ') || '-'}</div>
+                          <div><strong>Date de naissance :</strong> {d.client_date_naissance || '-'}</div>
+                          <div><strong>Commune de naissance :</strong> {d.client_commune_naissance || '-'}</div>
+                          <div><strong>Département :</strong> {d.client_departement_naissance || '-'}</div>
+                          <div><strong>Téléphone :</strong> {d.client_telephone || '-'}</div>
+                          <div><strong>Email :</strong> {d.client_email || '-'}</div>
+                          {d.client_adresse_differente && <div style={{ gridColumn: '1 / -1' }}><strong>Adresse postale :</strong> {d.client_adresse || '-'}</div>}
+                          <div><strong>Réponse mairie par email :</strong> {d.client_reponse_mairie_email === false ? 'Non' : 'Oui'}</div>
                         </div>
 
                         {/* Bloc Construction */}

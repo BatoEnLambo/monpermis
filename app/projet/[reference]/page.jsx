@@ -9,6 +9,7 @@ import ConstructionDetailsForm from '../../../components/ConstructionDetailsForm
 import TerrainDetailsForm from '../../../components/TerrainDetailsForm'
 import OuverturesForm from '../../../components/OuverturesForm'
 import TerrainPhotosUpload from '../../../components/TerrainPhotosUpload'
+import CoordonneesCerfaForm from '../../../components/CoordonneesCerfaForm'
 import '../../../styles/dashboard.css'
 
 const ACCENT = "#1a5c3a"
@@ -164,6 +165,15 @@ function ProjetContent() {
     if (!details) return 0
     const d = details
     let count = 0
+    // Coordonnées (8)
+    if (d.client_civilite) count++
+    if (d.client_nom) count++
+    if (d.client_prenom) count++
+    if (d.client_date_naissance) count++
+    if (d.client_commune_naissance) count++
+    if (d.client_departement_naissance) count++
+    if (d.client_telephone) count++
+    if (d.client_email) count++
     // Construction (10)
     if (d.dimensions_longueur) count++
     if (d.dimensions_largeur) count++
@@ -187,7 +197,7 @@ function ProjetContent() {
     if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) count++
     // Photos
     count += photoCount
-    return Math.round((count / 20) * 100)
+    return Math.round((count / 28) * 100)
   }, [details, photoCount])
 
   if (loading) {
@@ -358,6 +368,8 @@ function ProjetContent() {
                   : 'Complétez ces informations pour que nous puissions réaliser vos plans.'}
               </p>
             </div>
+
+            <CoordonneesCerfaForm details={details} onFieldUpdate={handleFieldUpdate} />
 
             <ConstructionDetailsForm data={details} onFieldUpdate={handleFieldUpdate} />
 
