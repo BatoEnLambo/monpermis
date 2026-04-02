@@ -193,7 +193,8 @@ function ProjetContent() {
       const ouv = JSON.parse(d.ouvertures_description || '[]')
       if (Array.isArray(ouv) && ouv.some(p => p.piece && p.longueur && p.largeur)) count++
     } catch { if (d.ouvertures_description) count++ }
-    // Terrain (4)
+    // Terrain (5)
+    if (d.parcelle_nsp || d.parcelle_section || d.parcelle_numero) count++
     if (d.constructions_existantes === false) {
       count++
     } else if (d.constructions_existantes === true) {
@@ -213,7 +214,7 @@ function ProjetContent() {
     if (d.isolation_type) count++
     // Photos
     count += photoCount
-    return Math.round((count / 32) * 100)
+    return Math.round((count / 33) * 100)
   }, [details, photoCount, croquisCount])
 
   if (loading) {

@@ -261,6 +261,7 @@ export default function TerrainDetailsForm({ data, onFieldUpdate }) {
 
   const filledCount = useMemo(() => {
     let count = 0
+    if (d.parcelle_nsp || d.parcelle_section || d.parcelle_numero) count++
     if (d.constructions_existantes === false) {
       count++
     } else if (d.constructions_existantes === true) {
@@ -280,8 +281,72 @@ export default function TerrainDetailsForm({ data, onFieldUpdate }) {
           Votre terrain
         </h3>
         <span style={{ fontSize: 12, fontWeight: 500, color: GRAY_500 }}>
-          {filledCount}/4 remplis
+          {filledCount}/5 remplis
         </span>
+      </div>
+
+      {/* Informations cadastrales */}
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: GRAY_900, marginBottom: 2 }}>Informations cadastrales</div>
+        <p style={{ fontSize: 12, color: GRAY_500, margin: '0 0 12px', lineHeight: 1.4 }}>
+          Vous trouverez ces informations sur votre acte de vente ou sur cadastre.gouv.fr
+        </p>
+
+        <div className="coordonnees-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+          <div>
+            <label style={labelStyle}>Section cadastrale</label>
+            <input
+              type="text"
+              value={d.parcelle_section || ''}
+              onChange={e => onFieldUpdate('parcelle_section', e.target.value || null)}
+              placeholder="ex : A, B, O, AK..."
+              disabled={!!d.parcelle_nsp}
+              style={{ ...inputStyle, ...(d.parcelle_nsp ? { background: GRAY_50, color: GRAY_500, cursor: 'not-allowed' } : {}) }}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Numéro de parcelle</label>
+            <input
+              type="text"
+              value={d.parcelle_numero || ''}
+              onChange={e => onFieldUpdate('parcelle_numero', e.target.value || null)}
+              placeholder="ex : 1372"
+              disabled={!!d.parcelle_nsp}
+              style={{ ...inputStyle, ...(d.parcelle_nsp ? { background: GRAY_50, color: GRAY_500, cursor: 'not-allowed' } : {}) }}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+            />
+          </div>
+        </div>
+
+        <div style={{ marginBottom: 10 }}>
+          <label style={labelStyle}>Surface du terrain</label>
+          <input
+            type="text"
+            value={d.parcelle_surface || ''}
+            onChange={e => onFieldUpdate('parcelle_surface', e.target.value || null)}
+            placeholder="ex : 800 m², 1 200 m²"
+            disabled={!!d.parcelle_nsp}
+            style={{ ...inputStyle, ...(d.parcelle_nsp ? { background: GRAY_50, color: GRAY_500, cursor: 'not-allowed' } : {}) }}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+          />
+        </div>
+
+        <CheckboxStyled
+          checked={!!d.parcelle_nsp}
+          onChange={val => {
+            onFieldUpdate('parcelle_nsp', val)
+            if (val) {
+              onFieldUpdate('parcelle_section', null)
+              onFieldUpdate('parcelle_numero', null)
+              onFieldUpdate('parcelle_surface', null)
+            }
+          }}
+          label="Je ne connais pas ces informations"
+        />
       </div>
 
       {/* Constructions existantes */}

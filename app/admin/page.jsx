@@ -182,6 +182,7 @@ export default function AdminPage() {
       const ouv = JSON.parse(d.ouvertures_description || '[]')
       if (Array.isArray(ouv) && ouv.some(p => p.piece && p.longueur && p.largeur)) count++
     } catch { if (d.ouvertures_description) count++ }
+    if (d.parcelle_nsp || d.parcelle_section || d.parcelle_numero) count++
     if (d.constructions_existantes === false) {
       count++
     } else if (d.constructions_existantes === true) {
@@ -201,7 +202,7 @@ export default function AdminPage() {
     if (d.isolation_type) count++
     // Photos
     count += (photos || []).length
-    return Math.round((count / 32) * 100)
+    return Math.round((count / 33) * 100)
   }
 
   const fetchProjectDetails = async (projectId) => {
@@ -550,6 +551,11 @@ export default function AdminPage() {
                         {/* Bloc Terrain */}
                         <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Terrain</div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13, marginBottom: 16 }}>
+                          {d.parcelle_nsp ? (
+                            <div style={{ gridColumn: '1 / -1' }}><strong>Parcelle :</strong> Non renseigné par le client</div>
+                          ) : (d.parcelle_section || d.parcelle_numero || d.parcelle_surface) ? (
+                            <div style={{ gridColumn: '1 / -1' }}><strong>Parcelle :</strong> {[d.parcelle_section ? `Section ${d.parcelle_section}` : null, d.parcelle_numero ? `n° ${d.parcelle_numero}` : null].filter(Boolean).join(', ')}{d.parcelle_surface ? ` — ${d.parcelle_surface}` : ''}</div>
+                          ) : null}
                           <div style={{ gridColumn: '1 / -1' }}>
                             <strong>Constructions existantes :</strong>{' '}
                             {d.constructions_existantes === true ? (() => {
