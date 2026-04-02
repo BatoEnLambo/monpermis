@@ -471,7 +471,19 @@ function ProjetContent() {
               )
             })()}
 
-            <CoordonneesCerfaForm details={details} onFieldUpdate={handleFieldUpdate} />
+            {/* Bloc ① Vos informations */}
+            <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#1a472a', color: WHITE, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, flexShrink: 0 }}>1</div>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, color: GRAY_900, margin: 0, letterSpacing: '-0.02em' }}>Vos informations</h3>
+                </div>
+                <span style={{ fontSize: 12, fontWeight: 500, color: GRAY_500 }}>
+                  {[details.client_civilite, details.client_nom, details.client_prenom, details.client_date_naissance, details.client_commune_naissance, details.client_departement_naissance, details.client_telephone, details.client_email].filter(Boolean).length}/8 remplis
+                </span>
+              </div>
+              <CoordonneesCerfaForm details={details} onFieldUpdate={handleFieldUpdate} />
+            </div>
 
             <ConstructionDetailsForm data={details} onFieldUpdate={handleFieldUpdate} />
 
