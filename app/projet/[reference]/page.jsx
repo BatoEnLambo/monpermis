@@ -376,31 +376,100 @@ function ProjetContent() {
         const progress = computeProgress()
         return (
           <>
-            {/* Barre de progression globale */}
-            <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20, position: 'relative' }}>
-              {saved && (
-                <span style={{ position: 'absolute', top: 16, right: 20, fontSize: 13, color: ACCENT, fontWeight: 500 }}>
-                  Sauvegardé ✓
-                </span>
-              )}
-              <h3 style={{ fontSize: 15, fontWeight: 600, margin: '0 0 14px', color: GRAY_900, letterSpacing: '-0.02em' }}>
-                Votre fiche technique : {progress}% complète
-              </h3>
-              <div style={{ background: GRAY_200, borderRadius: 6, height: 10, overflow: 'hidden' }}>
-                <div style={{
-                  width: `${progress}%`,
-                  height: '100%',
-                  background: progress === 100 ? '#16a34a' : ACCENT,
-                  borderRadius: 6,
-                  transition: 'width 0.4s ease',
-                }} />
-              </div>
-              <p style={{ fontSize: 12, color: GRAY_500, margin: '10px 0 0' }}>
-                {progress === 100
-                  ? 'Fiche complète — merci !'
-                  : 'Complétez ces informations pour que nous puissions réaliser vos plans.'}
-              </p>
-            </div>
+            {/* Barre de progression globale — sticky */}
+            {(() => {
+              const d = details
+              // ① Vos informations (8)
+              let infoCount = 0
+              if (d.client_civilite) infoCount++
+              if (d.client_nom) infoCount++
+              if (d.client_prenom) infoCount++
+              if (d.client_date_naissance) infoCount++
+              if (d.client_commune_naissance) infoCount++
+              if (d.client_departement_naissance) infoCount++
+              if (d.client_telephone) infoCount++
+              if (d.client_email) infoCount++
+              // ② Votre construction (15 = construction 10 + pièces 1 + croquis 1 + chauffage 3)
+              let constrCount = 0
+              if (d.dimensions_longueur) constrCount++
+              if (d.dimensions_largeur) constrCount++
+              if (d.fondation) constrCount++
+              if (d.hauteur_faitage || d.hauteur_faitage_nsp) constrCount++
+              if (d.hauteur_egout || d.hauteur_egout_nsp) constrCount++
+              if (d.pente_toiture || d.pente_toiture_nsp) constrCount++
+              if (d.debord_toit || d.debord_toit_nsp) constrCount++
+              if (d.materiau_facade) constrCount++
+              if (d.materiau_couverture) constrCount++
+              if (d.menuiserie_materiau || d.menuiserie_couleur) constrCount++
+              try {
+                const ouv = JSON.parse(d.ouvertures_description || '[]')
+                if (Array.isArray(ouv) && ouv.some(p => p.piece && p.longueur && p.largeur)) constrCount++
+              } catch { if (d.ouvertures_description) constrCount++ }
+              if (croquisCount > 0) constrCount++
+              if (d.chauffage_principal) constrCount++
+              if (d.eau_chaude) constrCount++
+              if (d.isolation_type) constrCount++
+              // ③ Votre terrain (10 = terrain 5 + photos 5)
+              let terrainCount = 0
+              if (d.parcelle_nsp || d.parcelle_section || d.parcelle_numero) terrainCount++
+              if (d.constructions_existantes === false) { terrainCount++ }
+              else if (d.constructions_existantes === true) {
+                try {
+                  const liste = JSON.parse(d.constructions_existantes_liste || '[]')
+                  if (Array.isArray(liste) && liste.some(item => item.nom)) terrainCount++
+                } catch { if (d.constructions_existantes_liste) terrainCount++ }
+              }
+              if (d.implantation_description) terrainCount++
+              if (d.assainissement) terrainCount++
+              if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) terrainCount++
+              terrainCount += photoCount
+
+              const badgeStyle = (filled, max) => {
+                const s = filled === max ? 'complete' : filled > 0 ? 'partial' : 'empty'
+                return {
+                  display: 'inline-flex', alignItems: 'center', gap: 4,
+                  padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap',
+                  background: s === 'complete' ? '#e6f4ea' : s === 'partial' ? '#fff3e0' : '#f0f0f0',
+                  color: s === 'complete' ? '#1a5c3a' : s === 'partial' ? '#e65100' : '#888',
+                }
+              }
+
+              return (
+                <div className="dash-progress-sticky" style={{
+                  background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20,
+                  position: 'sticky', top: 56, zIndex: 50,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                }}>
+                  {saved && (
+                    <span style={{ position: 'absolute', top: 16, right: 20, fontSize: 13, color: ACCENT, fontWeight: 500 }}>
+                      Sauvegardé ✓
+                    </span>
+                  )}
+                  <h3 style={{ fontSize: 15, fontWeight: 600, margin: '0 0 14px', color: GRAY_900, letterSpacing: '-0.02em' }}>
+                    Votre fiche technique : {progress}% complète
+                  </h3>
+                  <div style={{ background: GRAY_200, borderRadius: 6, height: 10, overflow: 'hidden' }}>
+                    <div style={{
+                      width: `${progress}%`,
+                      height: '100%',
+                      background: progress === 100 ? '#16a34a' : ACCENT,
+                      borderRadius: 6,
+                      transition: 'width 0.4s ease',
+                    }} />
+                  </div>
+                  <p style={{ fontSize: 12, color: GRAY_500, margin: '10px 0 0' }}>
+                    {progress === 100
+                      ? 'Fiche complète — merci !'
+                      : 'Complétez ces informations pour que nous puissions réaliser vos plans.'}
+                  </p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
+                    <span style={badgeStyle(infoCount, 8)}><strong>①</strong> Vos informations {infoCount}/8</span>
+                    <span style={badgeStyle(constrCount, 15)}><strong>②</strong> Votre construction {constrCount}/15</span>
+                    <span style={badgeStyle(terrainCount, 10)}><strong>③</strong> Votre terrain {terrainCount}/10</span>
+                  </div>
+                </div>
+              )
+            })()}
 
             <CoordonneesCerfaForm details={details} onFieldUpdate={handleFieldUpdate} />
 
