@@ -10,6 +10,7 @@ import TerrainDetailsForm from '../../../components/TerrainDetailsForm'
 import OuverturesForm from '../../../components/OuverturesForm'
 import TerrainPhotosUpload from '../../../components/TerrainPhotosUpload'
 import CoordonneesCerfaForm from '../../../components/CoordonneesCerfaForm'
+import CroquisUploadForm from '../../../components/CroquisUploadForm'
 import '../../../styles/dashboard.css'
 
 const ACCENT = "#1a5c3a"
@@ -55,6 +56,7 @@ function ProjetContent() {
   // Fiche technique (Maison neuve only)
   const [details, setDetails] = useState(null)
   const [photoCount, setPhotoCount] = useState(0)
+  const [croquisCount, setCroquisCount] = useState(0)
   const [saved, setSaved] = useState(false)
   const debounceRef = useRef({})
 
@@ -195,10 +197,12 @@ function ProjetContent() {
     if (d.implantation_description) count++
     if (d.assainissement) count++
     if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) count++
+    // Croquis (1)
+    if (croquisCount > 0) count++
     // Photos
     count += photoCount
-    return Math.round((count / 28) * 100)
-  }, [details, photoCount])
+    return Math.round((count / 29) * 100)
+  }, [details, photoCount, croquisCount])
 
   if (loading) {
     return <div style={{ padding: '60px 20px', textAlign: 'center', color: '#888' }}>Chargement de votre espace...</div>
@@ -374,6 +378,8 @@ function ProjetContent() {
             <ConstructionDetailsForm data={details} onFieldUpdate={handleFieldUpdate} />
 
             <OuverturesForm data={details.ouvertures_description} onFieldUpdate={handleFieldUpdate} />
+
+            <CroquisUploadForm projectId={project.id} details={details} onFieldUpdate={handleFieldUpdate} onCroquisCountChange={setCroquisCount} />
 
             <TerrainDetailsForm data={details} onFieldUpdate={handleFieldUpdate} />
             <TerrainPhotosUpload projectId={project.id} onPhotoCountChange={setPhotoCount} />

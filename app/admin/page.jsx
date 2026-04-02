@@ -32,6 +32,7 @@ export default function AdminPage() {
   const [adminReply, setAdminReply] = useState({})
   const [projectDetails, setProjectDetails] = useState({})
   const [projectPhotos, setProjectPhotos] = useState({})
+  const [projectCroquis, setProjectCroquis] = useState({})
   const [zipping, setZipping] = useState(null)
 
   const login = (e) => {
@@ -150,7 +151,7 @@ export default function AdminPage() {
   }
   const label = (v) => LABELS[v] || v || '-'
 
-  const computeDetailsProgress = (d, photos) => {
+  const computeDetailsProgress = (d, photos, croquisFiles) => {
     if (!d) return 0
     let count = 0
     // Coordonnées (8)
@@ -181,8 +182,11 @@ export default function AdminPage() {
     if (d.implantation_description) count++
     if (d.assainissement) count++
     if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) count++
+    // Croquis (1)
+    if ((croquisFiles || []).length > 0) count++
+    // Photos
     count += (photos || []).length
-    return Math.round((count / 28) * 100)
+    return Math.round((count / 29) * 100)
   }
 
   const fetchProjectDetails = async (projectId) => {
@@ -200,6 +204,13 @@ export default function AdminPage() {
       return { name: f.name.replace(/\.[^.]+$/, '').replace(/-/g, ' '), url: urlData.publicUrl }
     })
     setProjectPhotos(prev => ({ ...prev, [projectId]: photos }))
+    // Fetch croquis files
+    const { data: croquisFiles } = await supabase.storage.from('documents').list(`${projectId}/croquis`)
+    const croquis = (croquisFiles || []).filter(f => f.name && f.name !== '.emptyFolderPlaceholder').map(f => {
+      const { data: cUrlData } = supabase.storage.from('documents').getPublicUrl(`${projectId}/croquis/${f.name}`)
+      return { name: f.name, url: cUrlData.publicUrl }
+    })
+    setProjectCroquis(prev => ({ ...prev, [projectId]: croquis }))
   }
 
   const handleDownloadAll = async (project) => {
@@ -409,7 +420,8 @@ export default function AdminPage() {
                   {p.project_type?.startsWith('Maison neuve') && projectDetails[p.id] && (() => {
                     const d = projectDetails[p.id]
                     const photos = projectPhotos[p.id] || []
-                    const progress = computeDetailsProgress(d, photos)
+                    const croquis = projectCroquis[p.id] || []
+                    const progress = computeDetailsProgress(d, photos, croquis)
                     const nspOrVal = (val, nsp, unit) => nsp ? 'À proposer' : val ? `${val} ${unit}` : '-'
                     const raccordements = d.raccordement_aucun ? ['Aucun'] : [d.raccordement_eau && 'Eau', d.raccordement_electricite && 'Électricité', d.raccordement_gaz && 'Gaz', d.raccordement_fibre && 'Fibre'].filter(Boolean)
                     return (
@@ -466,6 +478,44 @@ export default function AdminPage() {
                                       </div>
                                     ))}
                                   </div>
+                                ))}
+                              </div>
+                            </>
+                          )
+                        })()}
+
+                        {/* Bloc Croquis */}
+                        {(() => {
+                          const cl = (() => { try { return JSON.parse(d.croquis_checklist || '{}') } catch { return {} } })()
+                          const checkItems = [
+                            { key: 'murs', label: 'Murs extérieurs' },
+                            { key: 'dimensions', label: 'Dimensions' },
+                            { key: 'ouvertures_placees', label: 'Ouvertures placées' },
+                            { key: 'ouvertures_dimensions', label: 'Dimensions ouvertures' },
+                          ]
+                          const allChecked = checkItems.every(c => cl[c.key])
+                          return (
+                            <>
+                              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a', display: 'flex', alignItems: 'center', gap: 8 }}>
+                                Croquis ({croquis.length} fichier{croquis.length !== 1 ? 's' : ''})
+                                {croquis.length > 0 && !allChecked && (
+                                  <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 8, background: '#fff3e0', color: '#e65100' }}>Potentiellement incomplet</span>
+                                )}
+                              </div>
+                              {croquis.length > 0 ? (
+                                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+                                  {croquis.map((c, i) => (
+                                    <a key={i} href={c.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: '#1a5c3a', fontWeight: 600, textDecoration: 'none' }}>
+                                      {c.name.toLowerCase().endsWith('.pdf') ? '📄' : '🖼️'} {c.name}
+                                    </a>
+                                  ))}
+                                </div>
+                              ) : (
+                                <div style={{ fontSize: 13, color: '#888', marginBottom: 8 }}>Aucun croquis uploadé</div>
+                              )}
+                              <div style={{ fontSize: 12, color: '#666', marginBottom: 16 }}>
+                                {checkItems.map(c => (
+                                  <span key={c.key} style={{ marginRight: 12 }}>{cl[c.key] ? '✓' : '✗'} {c.label}</span>
                                 ))}
                               </div>
                             </>
