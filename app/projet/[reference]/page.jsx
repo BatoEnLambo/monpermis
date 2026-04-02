@@ -433,7 +433,7 @@ function ProjetContent() {
               )
             })()}
 
-            {progress === 100 && (
+            {progress === 100 ? (
               <div style={{ background: '#e6f4ea', border: '1px solid #1a5c3a44', borderRadius: 14, padding: 24, marginBottom: 20, textAlign: 'center' }}>
                 <div style={{ fontSize: 36, marginBottom: 8 }}>✓</div>
                 <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1a5c3a', margin: '0 0 8px', letterSpacing: '-0.02em' }}>
@@ -441,6 +441,17 @@ function ProjetContent() {
                 </h3>
                 <p style={{ fontSize: 14, color: GRAY_700, margin: 0, lineHeight: 1.6 }}>
                   Merci ! Nous avons toutes les informations nécessaires pour démarrer la réalisation de vos plans. Vous recevrez votre dossier complet sous 5 jours ouvrés. On vous tient au courant par email à chaque étape.
+                </p>
+              </div>
+            ) : (
+              <div style={{ textAlign: 'center', marginBottom: 24, padding: '8px 0' }}>
+                <div style={{ fontSize: 17, fontWeight: 600, color: GRAY_900, marginBottom: 10 }}>
+                  Bienvenue dans votre espace projet !
+                </div>
+                <p style={{ fontSize: 14, color: '#555', margin: 0, lineHeight: 1.7 }}>
+                  Ce formulaire nous permet de démarrer vos plans sans vous déranger ensuite.<br />
+                  Remplissez ce que vous pouvez — pour ce que vous ne savez pas, cochez "Je ne sais pas", on s'en occupe.<br />
+                  10 minutes maintenant, zéro aller-retour ensuite.
                 </p>
               </div>
             )}

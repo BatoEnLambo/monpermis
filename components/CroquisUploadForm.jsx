@@ -150,6 +150,61 @@ export default function CroquisUploadForm({ projectId, details, onFieldUpdate, o
         </p>
       </div>
 
+      {/* Exemple visuel */}
+      <div style={{ textAlign: 'center', marginBottom: 20 }}>
+        <div style={{ fontSize: 12, color: GRAY_500, marginBottom: 8 }}>Exemple de croquis</div>
+        <svg viewBox="0 0 500 320" style={{ width: '100%', maxWidth: 500, height: 'auto' }} xmlns="http://www.w3.org/2000/svg">
+          {/* Fond */}
+          <rect x="80" y="60" width="300" height="200" fill="#fafafa" stroke="#333" strokeWidth="3" />
+
+          {/* Ouverture haut — Porte d'entrée */}
+          <rect x="200" y="58" width="50" height="5" fill="#fafafa" />
+          <line x1="200" y1="60" x2="200" y2="55" stroke="#333" strokeWidth="2" />
+          <line x1="250" y1="60" x2="250" y2="55" stroke="#333" strokeWidth="2" />
+          <text x="225" y="48" textAnchor="middle" fontSize="9" fill="#555" fontFamily="sans-serif">Porte 100 × 215</text>
+
+          {/* Ouverture bas — Baie vitrée */}
+          <rect x="170" y="258" width="100" height="5" fill="#fafafa" />
+          <line x1="170" y1="260" x2="170" y2="265" stroke="#333" strokeWidth="2" />
+          <line x1="270" y1="260" x2="270" y2="265" stroke="#333" strokeWidth="2" />
+          <text x="220" y="282" textAnchor="middle" fontSize="9" fill="#555" fontFamily="sans-serif">Baie vitrée 300 × 215</text>
+
+          {/* Ouverture gauche — Fenêtre */}
+          <rect x="78" y="130" width="5" height="50" fill="#fafafa" />
+          <line x1="80" y1="130" x2="75" y2="130" stroke="#333" strokeWidth="2" />
+          <line x1="80" y1="180" x2="75" y2="180" stroke="#333" strokeWidth="2" />
+          <text x="70" y="160" textAnchor="end" fontSize="9" fill="#555" fontFamily="sans-serif">Fenêtre</text>
+          <text x="70" y="172" textAnchor="end" fontSize="9" fill="#555" fontFamily="sans-serif">180 × 80</text>
+
+          {/* Ouverture droite — Fenêtre */}
+          <rect x="378" y="130" width="5" height="50" fill="#fafafa" />
+          <line x1="380" y1="130" x2="385" y2="130" stroke="#333" strokeWidth="2" />
+          <line x1="380" y1="180" x2="385" y2="180" stroke="#333" strokeWidth="2" />
+          <text x="392" y="160" textAnchor="start" fontSize="9" fill="#555" fontFamily="sans-serif">Fenêtre</text>
+          <text x="392" y="172" textAnchor="start" fontSize="9" fill="#555" fontFamily="sans-serif">180 × 80</text>
+
+          {/* Cotation haut — longueur */}
+          <line x1="80" y1="40" x2="380" y2="40" stroke="#1a5c3a" strokeWidth="1" />
+          <line x1="80" y1="35" x2="80" y2="45" stroke="#1a5c3a" strokeWidth="1" />
+          <line x1="380" y1="35" x2="380" y2="45" stroke="#1a5c3a" strokeWidth="1" />
+          <text x="230" y="35" textAnchor="middle" fontSize="11" fill="#1a5c3a" fontWeight="600" fontFamily="sans-serif">10,00 m</text>
+
+          {/* Cotation droite — largeur */}
+          <line x1="420" y1="60" x2="420" y2="260" stroke="#1a5c3a" strokeWidth="1" />
+          <line x1="415" y1="60" x2="425" y2="60" stroke="#1a5c3a" strokeWidth="1" />
+          <line x1="415" y1="260" x2="425" y2="260" stroke="#1a5c3a" strokeWidth="1" />
+          <text x="440" y="165" textAnchor="middle" fontSize="11" fill="#1a5c3a" fontWeight="600" fontFamily="sans-serif" transform="rotate(90, 440, 165)">8,00 m</text>
+
+          {/* Noms de pièces */}
+          <text x="155" y="110" textAnchor="middle" fontSize="11" fill="#999" fontFamily="sans-serif">Chambre</text>
+          <text x="230" y="170" textAnchor="middle" fontSize="12" fill="#999" fontFamily="sans-serif">Salon</text>
+          <text x="310" y="230" textAnchor="middle" fontSize="11" fill="#999" fontFamily="sans-serif">Cuisine</text>
+        </svg>
+        <div style={{ fontSize: 12, color: GRAY_500, marginTop: 6, fontStyle: 'italic' }}>
+          Votre croquis peut ressembler à ça, même dessiné à la main !
+        </div>
+      </div>
+
       {/* Upload zone */}
       <div
         onClick={() => !uploading && inputRef.current?.click()}
