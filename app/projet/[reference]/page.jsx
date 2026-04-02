@@ -539,8 +539,40 @@ function ProjetContent() {
               )
             })()}
 
-            <TerrainDetailsForm data={details} onFieldUpdate={handleFieldUpdate} />
-            <TerrainPhotosUpload projectId={project.id} onPhotoCountChange={setPhotoCount} />
+            {/* Bloc ③ Votre terrain */}
+            {(() => {
+              const d = details
+              let tCount = 0
+              if (d.parcelle_nsp || d.parcelle_section || d.parcelle_numero) tCount++
+              if (d.constructions_existantes === false) { tCount++ }
+              else if (d.constructions_existantes === true) {
+                try {
+                  const liste = JSON.parse(d.constructions_existantes_liste || '[]')
+                  if (Array.isArray(liste) && liste.some(item => item.nom)) tCount++
+                } catch { if (d.constructions_existantes_liste) tCount++ }
+              }
+              if (d.implantation_description) tCount++
+              if (d.assainissement) tCount++
+              if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) tCount++
+              tCount += photoCount
+              return (
+                <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#1a472a', color: WHITE, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, flexShrink: 0 }}>3</div>
+                      <h3 style={{ fontSize: 16, fontWeight: 600, color: GRAY_900, margin: 0, letterSpacing: '-0.02em' }}>Votre terrain</h3>
+                    </div>
+                    <span style={{ fontSize: 12, fontWeight: 500, color: GRAY_500 }}>{tCount}/10 remplis</span>
+                  </div>
+
+                  <TerrainDetailsForm data={details} onFieldUpdate={handleFieldUpdate} />
+
+                  <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '24px 0' }} />
+                  <div style={{ fontSize: 13, color: '#555', marginBottom: 12 }}>Photos de votre terrain</div>
+                  <TerrainPhotosUpload projectId={project.id} onPhotoCountChange={setPhotoCount} />
+                </div>
+              )
+            })()}
           </>
         )
       })()}

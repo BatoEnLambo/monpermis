@@ -275,16 +275,7 @@ export default function TerrainDetailsForm({ data, onFieldUpdate }) {
   }, [d])
 
   return (
-    <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <h3 style={{ fontSize: 15, fontWeight: 600, color: GRAY_900, margin: 0, letterSpacing: '-0.02em' }}>
-          Votre terrain
-        </h3>
-        <span style={{ fontSize: 12, fontWeight: 500, color: GRAY_500 }}>
-          {filledCount}/5 remplis
-        </span>
-      </div>
-
+    <div>
       {/* Informations cadastrales */}
       <div style={{ marginBottom: 20 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: GRAY_900, marginBottom: 2 }}>Informations cadastrales</div>

@@ -109,16 +109,7 @@ export default function TerrainPhotosUpload({ projectId, token, onPhotoCountChan
   const photoCount = Object.keys(photos).length
 
   return (
-    <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <h3 style={{ fontSize: 15, fontWeight: 600, color: GRAY_900, margin: 0, letterSpacing: '-0.02em' }}>
-          Photos du terrain
-        </h3>
-        <span style={{ fontSize: 12, fontWeight: 500, color: GRAY_500 }}>
-          {photoCount}/5 photos
-        </span>
-      </div>
-
+    <div>
       <div className="terrain-photos-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
         {SLOTS.map(slot => {
           const photo = photos[slot.key]
