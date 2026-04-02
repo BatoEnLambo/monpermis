@@ -401,6 +401,7 @@ export default function AdminPage() {
                     <div><strong>Téléphone :</strong> {p.phone || '-'}</div>
                     <div><strong>Créé le :</strong> {new Date(p.created_at).toLocaleDateString('fr-FR')}</div>
                     {p.paid_at && <div><strong>Payé le :</strong> {new Date(p.paid_at).toLocaleDateString('fr-FR')}</div>}
+                    {p.paid_at && <div><strong>Relances :</strong> J+1 {p.reminder_j1_sent ? '✓' : '—'} · J+3 {p.reminder_j3_sent ? '✓' : '—'} · J+7 {p.reminder_j7_sent ? '✓' : '—'}</div>}
                   </div>
                   {p.description && (
                     <div style={{ marginTop: 12 }}><strong>Description :</strong> {p.description}</div>

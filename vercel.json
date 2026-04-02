@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/reminders?key=${REMINDER_CRON_SECRET}",
+      "schedule": "0 7 * * *"
+    }
+  ]
+}
