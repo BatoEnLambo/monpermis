@@ -217,6 +217,20 @@ function ProjetContent() {
     return Math.round((count / 33) * 100)
   }, [details, photoCount, croquisCount])
 
+  // Sauvegarde du pourcentage en DB pour l'admin et les relances
+  const progressSaveRef = useRef(null)
+  const progress = computeProgress()
+  useEffect(() => {
+    if (!project?.id || progress === undefined) return
+    if (progressSaveRef.current) clearTimeout(progressSaveRef.current)
+    progressSaveRef.current = setTimeout(() => {
+      supabase
+        .from('project_details')
+        .update({ completion_percentage: progress })
+        .eq('project_id', project.id)
+    }, 2000)
+  }, [progress, project?.id])
+
   if (loading) {
     return <div style={{ padding: '60px 20px', textAlign: 'center', color: '#888' }}>Chargement de votre espace...</div>
   }

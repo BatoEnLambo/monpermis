@@ -155,54 +155,104 @@ export default function AdminPage() {
   }
   const label = (v) => LABELS[v] || v || '-'
 
-  const computeDetailsProgress = (d, photos, croquisFiles) => {
-    if (!d) return 0
-    let count = 0
+  const computeSectionStatus = (d, photos, croquisFiles) => {
+    if (!d) return { progress: 0, sections: [] }
+
     // Coordonnées (8)
-    if (d.client_civilite) count++
-    if (d.client_nom) count++
-    if (d.client_prenom) count++
-    if (d.client_date_naissance) count++
-    if (d.client_commune_naissance) count++
-    if (d.client_departement_naissance) count++
-    if (d.client_telephone) count++
-    if (d.client_email) count++
+    let coordCount = 0
+    if (d.client_civilite) coordCount++
+    if (d.client_nom) coordCount++
+    if (d.client_prenom) coordCount++
+    if (d.client_date_naissance) coordCount++
+    if (d.client_commune_naissance) coordCount++
+    if (d.client_departement_naissance) coordCount++
+    if (d.client_telephone) coordCount++
+    if (d.client_email) coordCount++
+
     // Construction (10)
-    if (d.dimensions_longueur) count++
-    if (d.dimensions_largeur) count++
-    if (d.fondation) count++
-    if (d.hauteur_faitage || d.hauteur_faitage_nsp) count++
-    if (d.hauteur_egout || d.hauteur_egout_nsp) count++
-    if (d.pente_toiture || d.pente_toiture_nsp) count++
-    if (d.debord_toit || d.debord_toit_nsp) count++
-    if (d.materiau_facade) count++
-    if (d.materiau_couverture) count++
-    if (d.menuiserie_materiau || d.menuiserie_couleur) count++
+    let constrCount = 0
+    if (d.dimensions_longueur) constrCount++
+    if (d.dimensions_largeur) constrCount++
+    if (d.fondation) constrCount++
+    if (d.hauteur_faitage || d.hauteur_faitage_nsp) constrCount++
+    if (d.hauteur_egout || d.hauteur_egout_nsp) constrCount++
+    if (d.pente_toiture || d.pente_toiture_nsp) constrCount++
+    if (d.debord_toit || d.debord_toit_nsp) constrCount++
+    if (d.materiau_facade) constrCount++
+    if (d.materiau_couverture) constrCount++
+    if (d.menuiserie_materiau || d.menuiserie_couleur) constrCount++
+
+    // Pièces
+    let piecesStatus = 'empty'
     try {
       const ouv = JSON.parse(d.ouvertures_description || '[]')
-      if (Array.isArray(ouv) && ouv.some(p => p.piece && p.longueur && p.largeur)) count++
-    } catch { if (d.ouvertures_description) count++ }
-    if (d.parcelle_nsp || d.parcelle_section || d.parcelle_numero) count++
+      if (Array.isArray(ouv) && ouv.length > 0) {
+        const hasComplete = ouv.some(p => p.piece && p.longueur && p.largeur && p.ouvertures?.length > 0)
+        const hasPartial = ouv.some(p => p.piece)
+        piecesStatus = hasComplete ? 'complete' : hasPartial ? 'partial' : 'empty'
+      }
+    } catch { if (d.ouvertures_description) piecesStatus = 'partial' }
+
+    // Croquis
+    const croquisCount = (croquisFiles || []).length
+    let croquisStatus = 'empty'
+    if (croquisCount > 0) {
+      let checklistOk = false
+      try {
+        const cl = JSON.parse(d.croquis_checklist || '{}')
+        checklistOk = cl.murs && cl.dimensions && cl.ouvertures_placees && cl.ouvertures_dimensions
+      } catch {}
+      croquisStatus = checklistOk ? 'complete' : 'partial'
+    }
+
+    // Chauffage (3)
+    let chauffCount = 0
+    if (d.chauffage_principal) chauffCount++
+    if (d.eau_chaude) chauffCount++
+    if (d.isolation_type) chauffCount++
+
+    // Terrain (5)
+    let terrainCount = 0
+    if (d.parcelle_nsp || d.parcelle_section || d.parcelle_numero) terrainCount++
     if (d.constructions_existantes === false) {
-      count++
+      terrainCount++
     } else if (d.constructions_existantes === true) {
       try {
         const liste = JSON.parse(d.constructions_existantes_liste || '[]')
-        if (Array.isArray(liste) && liste.some(item => item.nom)) count++
-      } catch { if (d.constructions_existantes_liste) count++ }
+        if (Array.isArray(liste) && liste.some(item => item.nom)) terrainCount++
+      } catch { if (d.constructions_existantes_liste) terrainCount++ }
     }
-    if (d.implantation_description) count++
-    if (d.assainissement) count++
-    if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) count++
-    // Croquis (1)
-    if ((croquisFiles || []).length > 0) count++
-    // Chauffage et énergie (3)
-    if (d.chauffage_principal) count++
-    if (d.eau_chaude) count++
-    if (d.isolation_type) count++
-    // Photos
-    count += (photos || []).length
-    return Math.round((count / 33) * 100)
+    if (d.implantation_description) terrainCount++
+    if (d.assainissement) terrainCount++
+    if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) terrainCount++
+
+    // Photos (5 max)
+    const photoCount = (photos || []).length
+
+    // Calcul progression globale
+    let total = coordCount + constrCount + chauffCount + terrainCount + photoCount
+    if (piecesStatus === 'complete' || (piecesStatus === 'partial' && (() => { try { const o = JSON.parse(d.ouvertures_description || '[]'); return Array.isArray(o) && o.some(p => p.piece && p.longueur && p.largeur) } catch { return !!d.ouvertures_description } })())) total++
+    else if (piecesStatus === 'partial') { /* partial but no dimensions = 0 */ }
+    if (croquisCount > 0) total++
+    const progress = Math.round((total / 33) * 100)
+
+    const status = (filled, max) => filled === max ? 'complete' : filled > 0 ? 'partial' : 'empty'
+
+    const sections = [
+      { name: 'Coordonnées', status: status(coordCount, 8), filled: coordCount, max: 8, reason: 'nécessaire pour le CERFA' },
+      { name: 'Construction', status: status(constrCount, 10), filled: constrCount, max: 10, reason: 'nécessaire pour les plans' },
+      { name: 'Pièces', status: piecesStatus, reason: 'dimensions + ouvertures nécessaires pour les plans' },
+      { name: 'Croquis', status: croquisStatus, detail: croquisCount > 0 ? `${croquisCount} fichier${croquisCount > 1 ? 's' : ''}` : null, reason: 'bloquant pour démarrer les plans' },
+      { name: 'Chauffage', status: status(chauffCount, 3), filled: chauffCount, max: 3, reason: 'nécessaire pour l\'étude RE2020' },
+      { name: 'Terrain', status: status(terrainCount, 5), filled: terrainCount, max: 5, reason: 'nécessaire pour le plan de masse' },
+      { name: 'Photos terrain', status: status(photoCount, 5), filled: photoCount, max: 5, reason: 'nécessaires pour l\'insertion paysagère' },
+    ]
+
+    return { progress, sections }
+  }
+
+  const computeDetailsProgress = (d, photos, croquisFiles) => {
+    return computeSectionStatus(d, photos, croquisFiles).progress
   }
 
   const fetchProjectDetails = async (projectId) => {
@@ -379,6 +429,14 @@ export default function AdminPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span style={{ fontSize: 15, fontWeight: 600 }}>{p.price ? p.price + ' €' : 'Sur devis'}</span>
                   <span style={{ fontSize: 12 }}>{STATUS_LABELS[p.status] || p.status}</span>
+                  {p.project_type?.startsWith('Maison neuve') && projectDetails[p.id] && (() => {
+                    const pct = computeDetailsProgress(projectDetails[p.id], projectPhotos[p.id] || [], projectCroquis[p.id] || [])
+                    const cfg = pct === 100 ? { bg: '#e8f5ee', color: '#1a5c3a', text: 'Complet' }
+                      : pct >= 70 ? { bg: '#fff3e0', color: '#e65100', text: 'Quasi complet' }
+                      : pct > 0 ? { bg: '#fce4ec', color: '#c62828', text: 'Incomplet' }
+                      : { bg: '#f5f4f2', color: '#888', text: 'Vide' }
+                    return <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 8, background: cfg.bg, color: cfg.color }}>{pct}% — {cfg.text}</span>
+                  })()}
                   {getUnreadCount(p) > 0 && (
                     <span style={{ background: '#e65100', color: '#fff', borderRadius: 10, padding: '2px 8px', fontSize: 11, fontWeight: 700, marginLeft: 8 }}>
                       {getUnreadCount(p)} msg
@@ -438,16 +496,45 @@ export default function AdminPage() {
                     const d = projectDetails[p.id]
                     const photos = projectPhotos[p.id] || []
                     const croquis = projectCroquis[p.id] || []
-                    const progress = computeDetailsProgress(d, photos, croquis)
+                    const { progress, sections } = computeSectionStatus(d, photos, croquis)
                     const nspOrVal = (val, nsp, unit) => nsp ? 'À proposer' : val ? `${val} ${unit}` : '-'
                     const raccordements = d.raccordement_aucun ? ['Aucun'] : [d.raccordement_eau && 'Eau', d.raccordement_electricite && 'Électricité', d.raccordement_gaz && 'Gaz', d.raccordement_fibre && 'Fibre'].filter(Boolean)
+                    const missing = sections.filter(s => s.status !== 'complete')
+                    const statusIcon = { complete: '✅', partial: '🟡', empty: '⚪' }
+                    const statusBg = { complete: '#e8f5ee', partial: '#fff3e0', empty: '#f5f4f2' }
+                    const statusColor = { complete: '#1a5c3a', partial: '#e65100', empty: '#888' }
                     return (
                       <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #f0f0f0' }}>
+
+                        {/* État du dossier */}
+                        <div style={{ background: '#fafaf9', border: '1px solid #e8e7e4', borderRadius: 10, padding: 16, marginBottom: 16 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                            <div style={{ fontSize: 14, fontWeight: 700 }}>État du dossier</div>
+                            <span style={{ fontSize: 13, fontWeight: 700, padding: '2px 10px', borderRadius: 10, background: progress === 100 ? '#e8f5ee' : '#fff3e0', color: progress === 100 ? '#1a5c3a' : '#e65100' }}>
+                              {progress}%
+                            </span>
+                          </div>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: missing.length > 0 ? 12 : 0 }}>
+                            {sections.map(s => (
+                              <span key={s.name} style={{ fontSize: 11, fontWeight: 500, padding: '3px 8px', borderRadius: 6, background: statusBg[s.status], color: statusColor[s.status], whiteSpace: 'nowrap' }}>
+                                {statusIcon[s.status]} {s.name}{s.filled !== undefined ? ` ${s.filled}/${s.max}` : ''}
+                              </span>
+                            ))}
+                          </div>
+                          {progress === 100 ? (
+                            <div style={{ fontSize: 13, fontWeight: 600, color: '#1a5c3a' }}>✅ Dossier complet — prêt à démarrer</div>
+                          ) : missing.length > 0 && (
+                            <div style={{ fontSize: 12, color: '#444', lineHeight: 1.6 }}>
+                              <div style={{ fontWeight: 600, marginBottom: 4, color: '#e65100' }}>⚠ Éléments manquants :</div>
+                              {missing.map(s => (
+                                <div key={s.name}>• <strong>{s.name}</strong> : {s.status === 'empty' ? (s.name === 'Croquis' ? 'aucun fichier uploadé' : s.name === 'Pièces' ? 'aucune pièce renseignée' : `aucun champ rempli`) : s.filled !== undefined ? `${s.filled}/${s.max} remplis` : s.detail || 'partiel'} <span style={{ color: '#888' }}>({s.reason})</span></div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
                           <div style={{ fontSize: 14, fontWeight: 700 }}>Fiche technique client</div>
-                          <span style={{ fontSize: 12, fontWeight: 600, padding: '2px 10px', borderRadius: 10, background: progress === 100 ? '#e8f5ee' : '#fff3e0', color: progress === 100 ? '#1a5c3a' : '#e65100' }}>
-                            {progress}%
-                          </span>
                         </div>
 
                         {/* Bloc Coordonnées */}
