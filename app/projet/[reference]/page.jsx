@@ -485,13 +485,59 @@ function ProjetContent() {
               <CoordonneesCerfaForm details={details} onFieldUpdate={handleFieldUpdate} />
             </div>
 
-            <ConstructionDetailsForm data={details} onFieldUpdate={handleFieldUpdate} />
+            {/* Bloc ② Votre construction */}
+            {(() => {
+              const d = details
+              let cCount = 0
+              if (d.dimensions_longueur) cCount++
+              if (d.dimensions_largeur) cCount++
+              if (d.fondation) cCount++
+              if (d.hauteur_faitage || d.hauteur_faitage_nsp) cCount++
+              if (d.hauteur_egout || d.hauteur_egout_nsp) cCount++
+              if (d.pente_toiture || d.pente_toiture_nsp) cCount++
+              if (d.debord_toit || d.debord_toit_nsp) cCount++
+              if (d.materiau_facade) cCount++
+              if (d.materiau_couverture) cCount++
+              if (d.menuiserie_materiau || d.menuiserie_couleur) cCount++
+              try {
+                const ouv = JSON.parse(d.ouvertures_description || '[]')
+                if (Array.isArray(ouv) && ouv.some(p => p.piece && p.longueur && p.largeur)) cCount++
+              } catch { if (d.ouvertures_description) cCount++ }
+              if (croquisCount > 0) cCount++
+              if (d.chauffage_principal) cCount++
+              if (d.eau_chaude) cCount++
+              if (d.isolation_type) cCount++
+              const hrStyle = { border: 'none', borderTop: '1px solid #eee', margin: '24px 0' }
+              return (
+                <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#1a472a', color: WHITE, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, flexShrink: 0 }}>2</div>
+                      <h3 style={{ fontSize: 16, fontWeight: 600, color: GRAY_900, margin: 0, letterSpacing: '-0.02em' }}>Votre construction</h3>
+                    </div>
+                    <span style={{ fontSize: 12, fontWeight: 500, color: GRAY_500 }}>{cCount}/15 remplis</span>
+                  </div>
 
-            <OuverturesForm data={details.ouvertures_description} onFieldUpdate={handleFieldUpdate} />
+                  <div style={{ fontSize: 13, color: '#555', marginBottom: 12 }}>Dimensions et matériaux</div>
+                  <ConstructionDetailsForm data={details} onFieldUpdate={handleFieldUpdate} />
 
-            <CroquisUploadForm projectId={project.id} details={details} onFieldUpdate={handleFieldUpdate} onCroquisCountChange={setCroquisCount} />
+                  <hr style={hrStyle} />
+                  <div style={{ fontSize: 13, color: '#555', marginBottom: 12 }}>Pièces et ouvertures</div>
+                  <OuverturesForm data={details.ouvertures_description} onFieldUpdate={handleFieldUpdate} />
 
-            <ChauffageEnergieForm details={details} onFieldUpdate={handleFieldUpdate} />
+                  <hr style={hrStyle} />
+                  <div style={{ fontSize: 13, color: '#555', marginBottom: 12 }}>Croquis de votre projet</div>
+                  <CroquisUploadForm projectId={project.id} details={details} onFieldUpdate={handleFieldUpdate} onCroquisCountChange={setCroquisCount} />
+
+                  <hr style={hrStyle} />
+                  <div style={{ fontSize: 13, color: '#555', marginBottom: 4 }}>Chauffage et énergie</div>
+                  <p style={{ fontSize: 12, color: GRAY_500, margin: '0 0 16px', lineHeight: 1.4 }}>
+                    Ces informations sont nécessaires pour l'étude thermique RE2020.
+                  </p>
+                  <ChauffageEnergieForm details={details} onFieldUpdate={handleFieldUpdate} />
+                </div>
+              )
+            })()}
 
             <TerrainDetailsForm data={details} onFieldUpdate={handleFieldUpdate} />
             <TerrainPhotosUpload projectId={project.id} onPhotoCountChange={setPhotoCount} />

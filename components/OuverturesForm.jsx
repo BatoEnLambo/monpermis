@@ -106,16 +106,7 @@ export default function OuverturesForm({ data, onFieldUpdate }) {
   const pieceCount = pieces.length
 
   return (
-    <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <h3 style={{ fontSize: 15, fontWeight: 600, color: GRAY_900, margin: 0, letterSpacing: '-0.02em' }}>
-          Vos pièces
-        </h3>
-        <span style={{ fontSize: 12, fontWeight: 500, color: GRAY_500 }}>
-          {pieceCount} pièce{pieceCount !== 1 ? 's' : ''}
-        </span>
-      </div>
-
+    <div>
       {pieces.map((piece, pi) => (
         <div key={pi} style={{
           background: GRAY_50,

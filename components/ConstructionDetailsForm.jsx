@@ -138,16 +138,7 @@ export default function ConstructionDetailsForm({ data, onFieldUpdate }) {
   }, [d])
 
   return (
-    <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <h3 style={{ fontSize: 15, fontWeight: 600, color: GRAY_900, margin: 0, letterSpacing: '-0.02em' }}>
-          Votre construction
-        </h3>
-        <span style={{ fontSize: 12, fontWeight: 500, color: GRAY_500 }}>
-          {filledCount}/10 remplis
-        </span>
-      </div>
-
+    <div>
       {/* Dimensions */}
       <div>
         <label style={labelStyle}>Dimensions intérieures</label>

@@ -71,19 +71,7 @@ export default function ChauffageEnergieForm({ details, onFieldUpdate }) {
   }, [d])
 
   return (
-    <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-        <h3 style={{ fontSize: 15, fontWeight: 600, color: GRAY_900, margin: 0, letterSpacing: '-0.02em' }}>
-          Chauffage et énergie
-        </h3>
-        <span style={{ fontSize: 12, fontWeight: 500, color: GRAY_500 }}>
-          {filledCount}/3 remplis
-        </span>
-      </div>
-      <p style={{ fontSize: 12, color: GRAY_500, margin: '0 0 20px', lineHeight: 1.4 }}>
-        Ces informations sont nécessaires pour l'étude thermique RE2020.
-      </p>
-
+    <div>
       {/* Chauffage principal */}
       <div>
         <label style={labelStyle}>Chauffage principal</label>

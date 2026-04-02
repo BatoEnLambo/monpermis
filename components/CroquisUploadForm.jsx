@@ -130,16 +130,7 @@ export default function CroquisUploadForm({ projectId, details, onFieldUpdate, o
   const isPdf = (name) => name.toLowerCase().endsWith('.pdf')
 
   return (
-    <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <h3 style={{ fontSize: 15, fontWeight: 600, color: GRAY_900, margin: 0, letterSpacing: '-0.02em' }}>
-          Votre croquis
-        </h3>
-        <span style={{ fontSize: 12, fontWeight: 500, color: GRAY_500 }}>
-          {files.length} fichier{files.length !== 1 ? 's' : ''}
-        </span>
-      </div>
-
+    <div>
       {/* Instructions */}
       <div style={{ background: ACCENT_LIGHT, border: `1px solid ${ACCENT}44`, borderRadius: 10, padding: 20, marginBottom: 20 }}>
         <div style={{ fontSize: 14, fontWeight: 600, color: GRAY_900, marginBottom: 8 }}>Comment faire un bon croquis ?</div>
