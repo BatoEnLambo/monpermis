@@ -10,7 +10,7 @@ const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 
 export default function HeroSection() {
   return (
-    <div className="hero" style={{ textAlign: "center", paddingTop: 48, paddingBottom: 56 }}>
+    <div className="hero" style={{ textAlign: "center", paddingTop: 48, paddingBottom: 24 }}>
       <div className="hero-badge" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: ACCENT_LIGHT, color: ACCENT, fontSize: 13, fontWeight: 600, padding: "6px 14px", borderRadius: 20, marginBottom: 24 }}>
         <span>✓</span> Dossier complet livré en 5 jours ouvrés
       </div>
