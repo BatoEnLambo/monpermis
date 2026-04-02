@@ -11,6 +11,7 @@ import OuverturesForm from '../../../components/OuverturesForm'
 import TerrainPhotosUpload from '../../../components/TerrainPhotosUpload'
 import CoordonneesCerfaForm from '../../../components/CoordonneesCerfaForm'
 import CroquisUploadForm from '../../../components/CroquisUploadForm'
+import ChauffageEnergieForm from '../../../components/ChauffageEnergieForm'
 import '../../../styles/dashboard.css'
 
 const ACCENT = "#1a5c3a"
@@ -199,9 +200,13 @@ function ProjetContent() {
     if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) count++
     // Croquis (1)
     if (croquisCount > 0) count++
+    // Chauffage et énergie (3)
+    if (d.chauffage_principal) count++
+    if (d.eau_chaude) count++
+    if (d.isolation_type) count++
     // Photos
     count += photoCount
-    return Math.round((count / 29) * 100)
+    return Math.round((count / 32) * 100)
   }, [details, photoCount, croquisCount])
 
   if (loading) {
@@ -380,6 +385,8 @@ function ProjetContent() {
             <OuverturesForm data={details.ouvertures_description} onFieldUpdate={handleFieldUpdate} />
 
             <CroquisUploadForm projectId={project.id} details={details} onFieldUpdate={handleFieldUpdate} onCroquisCountChange={setCroquisCount} />
+
+            <ChauffageEnergieForm details={details} onFieldUpdate={handleFieldUpdate} />
 
             <TerrainDetailsForm data={details} onFieldUpdate={handleFieldUpdate} />
             <TerrainPhotosUpload projectId={project.id} onPhotoCountChange={setPhotoCount} />

@@ -145,6 +145,10 @@ export default function AdminPage() {
     pvc: 'PVC', aluminium: 'Aluminium', bois: 'Bois',
     tout_egout: 'Tout-à-l\'égout', fosse_septique: 'Fosse septique / ANC',
     ne_sait_pas: 'Ne sait pas',
+    pac_air_eau: 'PAC air/eau', pac_air_air: 'PAC air/air', poele_bois: 'Poêle à bois / granulés',
+    chaudiere_gaz: 'Chaudière gaz', electrique: 'Électrique',
+    thermodynamique: 'Ballon thermodynamique', solaire: 'Chauffe-eau solaire', lie_chauffage: 'Liée au chauffage',
+    ite: 'ITE (extérieur)', iti: 'ITI (intérieur)', mixte: 'Mixte (ITE + ITI)',
     fenetre_oscillo_battante: 'Fenêtre oscillo-battante', fenetre_coulissante: 'Fenêtre coulissante',
     baie_vitree_coulissante: 'Baie vitrée coulissante', baie_vitree_galandage: 'Baie vitrée à galandage',
     porte_fenetre: 'Porte-fenêtre', porte_entree: "Porte d'entrée",
@@ -184,9 +188,13 @@ export default function AdminPage() {
     if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) count++
     // Croquis (1)
     if ((croquisFiles || []).length > 0) count++
+    // Chauffage et énergie (3)
+    if (d.chauffage_principal) count++
+    if (d.eau_chaude) count++
+    if (d.isolation_type) count++
     // Photos
     count += (photos || []).length
-    return Math.round((count / 29) * 100)
+    return Math.round((count / 32) * 100)
   }
 
   const fetchProjectDetails = async (projectId) => {
@@ -521,6 +529,16 @@ export default function AdminPage() {
                             </>
                           )
                         })()}
+
+                        {/* Bloc Chauffage et énergie */}
+                        <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Chauffage et énergie</div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13, marginBottom: 16 }}>
+                          <div><strong>Chauffage principal :</strong> {label(d.chauffage_principal)}</div>
+                          <div><strong>Eau chaude :</strong> {label(d.eau_chaude)}</div>
+                          <div><strong>Isolation :</strong> {label(d.isolation_type)}</div>
+                          {d.chauffage_appoint && <div><strong>Appoint :</strong> {d.chauffage_appoint}</div>}
+                          {d.energie_commentaire && <div style={{ gridColumn: '1 / -1' }}><strong>Commentaire :</strong> {d.energie_commentaire}</div>}
+                        </div>
 
                         {/* Bloc Terrain */}
                         <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Terrain</div>
