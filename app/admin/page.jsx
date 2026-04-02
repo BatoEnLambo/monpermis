@@ -535,7 +535,10 @@ export default function AdminPage() {
 
                         {/* Groupe 1 — Informations client */}
                         <div style={{ background: '#fff', border: '1px solid #e8e7e4', borderRadius: 10, padding: 16, marginBottom: 12 }}>
-                          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 10, color: '#1a5c3a' }}>Informations client</div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                            <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#1a472a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>1</div>
+                            <div style={{ fontSize: 14, fontWeight: 700, color: '#1a5c3a' }}>Informations client</div>
+                          </div>
                           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13 }}>
                             <div><strong>Identité :</strong> {[d.client_civilite === 'M' ? 'M.' : d.client_civilite, d.client_nom, d.client_prenom].filter(Boolean).join(' ') || '-'}</div>
                             <div><strong>Date de naissance :</strong> {d.client_date_naissance || '-'}</div>
@@ -550,10 +553,13 @@ export default function AdminPage() {
 
                         {/* Groupe 2 — Construction */}
                         <div style={{ background: '#fff', border: '1px solid #e8e7e4', borderRadius: 10, padding: 16, marginBottom: 12 }}>
-                          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 10, color: '#1a5c3a' }}>Construction</div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                            <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#1a472a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>2</div>
+                            <div style={{ fontSize: 14, fontWeight: 700, color: '#1a5c3a' }}>Construction</div>
+                          </div>
 
                           {/* Dimensions et matériaux */}
-                          <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 6 }}>Dimensions et matériaux</div>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: '#1a5c3a', marginBottom: 6 }}>Dimensions et matériaux</div>
                           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13 }}>
                             <div><strong>Dimensions :</strong> {d.dimensions_longueur && d.dimensions_largeur ? `${d.dimensions_longueur} × ${d.dimensions_largeur} m` : '-'}</div>
                             <div><strong>Fondation :</strong> {label(d.fondation)}</div>
@@ -567,27 +573,25 @@ export default function AdminPage() {
                           </div>
 
                           {/* Pièces & Ouvertures */}
-                          {d.ouvertures_description && (() => {
+                          <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '12px 0' }} />
+                          <div style={{ fontSize: 12, fontWeight: 600, color: '#1a5c3a', marginBottom: 6 }}>Pièces & Ouvertures</div>
+                          {(() => {
                             let ouvPieces = []
-                            try { ouvPieces = JSON.parse(d.ouvertures_description) } catch {}
-                            if (!Array.isArray(ouvPieces) || ouvPieces.length === 0) return null
+                            try { ouvPieces = JSON.parse(d.ouvertures_description || '[]') } catch {}
+                            if (!Array.isArray(ouvPieces) || ouvPieces.length === 0) return <div style={{ fontSize: 13, color: '#888' }}>Aucune pièce renseignée</div>
                             return (
-                              <>
-                                <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '12px 0' }} />
-                                <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 6 }}>Pièces & Ouvertures</div>
-                                <div style={{ fontSize: 13, lineHeight: 1.8 }}>
-                                  {ouvPieces.map((piece, i) => (
-                                    <div key={i} style={{ marginBottom: i < ouvPieces.length - 1 ? 8 : 0 }}>
-                                      <strong>{piece.piece || 'Pièce sans nom'}</strong>{piece.longueur && piece.largeur ? ` — ${piece.longueur} × ${piece.largeur} m` : ''}
-                                      {(piece.ouvertures || []).map((o, j) => (
-                                        <div key={j} style={{ paddingLeft: 16, color: '#44433f' }}>
-                                          {o.largeur && o.hauteur ? `${o.largeur} × ${o.hauteur} cm` : '—'} — {label(o.type)}
-                                        </div>
-                                      ))}
-                                    </div>
-                                  ))}
-                                </div>
-                              </>
+                              <div style={{ fontSize: 13, lineHeight: 1.8 }}>
+                                {ouvPieces.map((piece, i) => (
+                                  <div key={i} style={{ marginBottom: i < ouvPieces.length - 1 ? 8 : 0 }}>
+                                    <strong>{piece.piece || 'Pièce sans nom'}</strong>{piece.longueur && piece.largeur ? ` — ${piece.longueur} × ${piece.largeur} m` : ''}
+                                    {(piece.ouvertures || []).map((o, j) => (
+                                      <div key={j} style={{ paddingLeft: 16, color: '#44433f' }}>
+                                        {o.largeur && o.hauteur ? `${o.largeur} × ${o.hauteur} cm` : '—'} — {label(o.type)}
+                                      </div>
+                                    ))}
+                                  </div>
+                                ))}
+                              </div>
                             )
                           })()}
 
@@ -604,7 +608,7 @@ export default function AdminPage() {
                             const allChecked = checkItems.every(c => cl[c.key])
                             return (
                               <>
-                                <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <div style={{ fontSize: 12, fontWeight: 600, color: '#1a5c3a', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
                                   Croquis ({croquis.length} fichier{croquis.length !== 1 ? 's' : ''})
                                   {croquis.length > 0 && !allChecked && (
                                     <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 8, background: '#fff3e0', color: '#e65100' }}>Potentiellement incomplet</span>
@@ -632,7 +636,7 @@ export default function AdminPage() {
 
                           {/* Chauffage et énergie */}
                           <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '12px 0' }} />
-                          <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 6 }}>Chauffage et énergie</div>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: '#1a5c3a', marginBottom: 6 }}>Chauffage et énergie</div>
                           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13 }}>
                             <div><strong>Chauffage principal :</strong> {label(d.chauffage_principal)}</div>
                             <div><strong>Eau chaude :</strong> {label(d.eau_chaude)}</div>
@@ -644,9 +648,13 @@ export default function AdminPage() {
 
                         {/* Groupe 3 — Terrain */}
                         <div style={{ background: '#fff', border: '1px solid #e8e7e4', borderRadius: 10, padding: 16, marginBottom: 12 }}>
-                          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 10, color: '#1a5c3a' }}>Terrain</div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                            <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#1a472a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>3</div>
+                            <div style={{ fontSize: 14, fontWeight: 700, color: '#1a5c3a' }}>Terrain</div>
+                          </div>
 
                           {/* Parcelle */}
+                          <div style={{ fontSize: 12, fontWeight: 600, color: '#1a5c3a', marginBottom: 6 }}>Parcelle</div>
                           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13 }}>
                             {d.parcelle_nsp ? (
                               <div style={{ gridColumn: '1 / -1' }}><strong>Parcelle :</strong> Non renseigné par le client</div>
@@ -657,6 +665,7 @@ export default function AdminPage() {
 
                           {/* Constructions existantes */}
                           <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '12px 0' }} />
+                          <div style={{ fontSize: 12, fontWeight: 600, color: '#1a5c3a', marginBottom: 6 }}>Constructions existantes</div>
                           <div style={{ fontSize: 13 }}>
                             <strong>Constructions existantes :</strong>{' '}
                             {d.constructions_existantes === true ? (() => {
@@ -679,6 +688,7 @@ export default function AdminPage() {
 
                           {/* Implantation, assainissement, raccordements */}
                           <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '12px 0' }} />
+                          <div style={{ fontSize: 12, fontWeight: 600, color: '#1a5c3a', marginBottom: 6 }}>Emplacement et raccordements</div>
                           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13 }}>
                             <div><strong>Assainissement :</strong> {label(d.assainissement)}</div>
                             <div><strong>Raccordements :</strong> {raccordements.length > 0 ? raccordements.join(', ') : '-'}</div>
@@ -689,7 +699,7 @@ export default function AdminPage() {
                           {photos.length > 0 && (
                             <>
                               <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '12px 0' }} />
-                              <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 6 }}>Photos terrain ({photos.length}/5)</div>
+                              <div style={{ fontSize: 12, fontWeight: 600, color: '#1a5c3a', marginBottom: 6 }}>Photos terrain ({photos.length}/5)</div>
                               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                                 {photos.map((photo, i) => (
                                   <a key={i} href={photo.url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: 80, height: 60, borderRadius: 6, overflow: 'hidden', border: '1px solid #e8e7e4' }}>
