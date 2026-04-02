@@ -533,118 +533,131 @@ export default function AdminPage() {
                           )}
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-                          <div style={{ fontSize: 14, fontWeight: 700 }}>Fiche technique client</div>
+                        {/* Groupe 1 — Informations client */}
+                        <div style={{ background: '#fff', border: '1px solid #e8e7e4', borderRadius: 10, padding: 16, marginBottom: 12 }}>
+                          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 10, color: '#1a5c3a' }}>Informations client</div>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13 }}>
+                            <div><strong>Identité :</strong> {[d.client_civilite === 'M' ? 'M.' : d.client_civilite, d.client_nom, d.client_prenom].filter(Boolean).join(' ') || '-'}</div>
+                            <div><strong>Date de naissance :</strong> {d.client_date_naissance || '-'}</div>
+                            <div><strong>Commune de naissance :</strong> {d.client_commune_naissance || '-'}</div>
+                            <div><strong>Département :</strong> {d.client_departement_naissance || '-'}</div>
+                            <div><strong>Téléphone :</strong> {d.client_telephone || '-'}</div>
+                            <div><strong>Email :</strong> {d.client_email || '-'}</div>
+                            {d.client_adresse_differente && <div style={{ gridColumn: '1 / -1' }}><strong>Adresse postale :</strong> {d.client_adresse || '-'}</div>}
+                            <div><strong>Réponse mairie par email :</strong> {d.client_reponse_mairie_email === false ? 'Non' : 'Oui'}</div>
+                          </div>
                         </div>
 
-                        {/* Bloc Coordonnées */}
-                        <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Coordonnées client</div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13, marginBottom: 16 }}>
-                          <div><strong>Identité :</strong> {[d.client_civilite === 'M' ? 'M.' : d.client_civilite, d.client_nom, d.client_prenom].filter(Boolean).join(' ') || '-'}</div>
-                          <div><strong>Date de naissance :</strong> {d.client_date_naissance || '-'}</div>
-                          <div><strong>Commune de naissance :</strong> {d.client_commune_naissance || '-'}</div>
-                          <div><strong>Département :</strong> {d.client_departement_naissance || '-'}</div>
-                          <div><strong>Téléphone :</strong> {d.client_telephone || '-'}</div>
-                          <div><strong>Email :</strong> {d.client_email || '-'}</div>
-                          {d.client_adresse_differente && <div style={{ gridColumn: '1 / -1' }}><strong>Adresse postale :</strong> {d.client_adresse || '-'}</div>}
-                          <div><strong>Réponse mairie par email :</strong> {d.client_reponse_mairie_email === false ? 'Non' : 'Oui'}</div>
-                        </div>
+                        {/* Groupe 2 — Construction */}
+                        <div style={{ background: '#fff', border: '1px solid #e8e7e4', borderRadius: 10, padding: 16, marginBottom: 12 }}>
+                          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 10, color: '#1a5c3a' }}>Construction</div>
 
-                        {/* Bloc Construction */}
-                        <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Construction</div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13, marginBottom: 16 }}>
-                          <div><strong>Dimensions :</strong> {d.dimensions_longueur && d.dimensions_largeur ? `${d.dimensions_longueur} × ${d.dimensions_largeur} m` : '-'}</div>
-                          <div><strong>Fondation :</strong> {label(d.fondation)}</div>
-                          <div><strong>Hauteur faîtage :</strong> {nspOrVal(d.hauteur_faitage, d.hauteur_faitage_nsp, 'm')}</div>
-                          <div><strong>Hauteur égout :</strong> {nspOrVal(d.hauteur_egout, d.hauteur_egout_nsp, 'm')}</div>
-                          <div><strong>Pente toiture :</strong> {nspOrVal(d.pente_toiture, d.pente_toiture_nsp, '°')}</div>
-                          <div><strong>Débord toit :</strong> {nspOrVal(d.debord_toit, d.debord_toit_nsp, 'cm')}</div>
-                          <div><strong>Façade :</strong> {label(d.materiau_facade)}{d.materiau_facade_detail ? ` (${d.materiau_facade_detail})` : ''}</div>
-                          <div><strong>Couverture :</strong> {label(d.materiau_couverture)}</div>
-                          <div><strong>Menuiseries :</strong> {label(d.menuiserie_materiau)}{d.menuiserie_couleur ? ` — ${d.menuiserie_couleur}` : ''}</div>
-                        </div>
+                          {/* Dimensions et matériaux */}
+                          <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 6 }}>Dimensions et matériaux</div>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13 }}>
+                            <div><strong>Dimensions :</strong> {d.dimensions_longueur && d.dimensions_largeur ? `${d.dimensions_longueur} × ${d.dimensions_largeur} m` : '-'}</div>
+                            <div><strong>Fondation :</strong> {label(d.fondation)}</div>
+                            <div><strong>Hauteur faîtage :</strong> {nspOrVal(d.hauteur_faitage, d.hauteur_faitage_nsp, 'm')}</div>
+                            <div><strong>Hauteur égout :</strong> {nspOrVal(d.hauteur_egout, d.hauteur_egout_nsp, 'm')}</div>
+                            <div><strong>Pente toiture :</strong> {nspOrVal(d.pente_toiture, d.pente_toiture_nsp, '°')}</div>
+                            <div><strong>Débord toit :</strong> {nspOrVal(d.debord_toit, d.debord_toit_nsp, 'cm')}</div>
+                            <div><strong>Façade :</strong> {label(d.materiau_facade)}{d.materiau_facade_detail ? ` (${d.materiau_facade_detail})` : ''}</div>
+                            <div><strong>Couverture :</strong> {label(d.materiau_couverture)}</div>
+                            <div><strong>Menuiseries :</strong> {label(d.menuiserie_materiau)}{d.menuiserie_couleur ? ` — ${d.menuiserie_couleur}` : ''}</div>
+                          </div>
 
-                        {/* Bloc Pièces & Ouvertures */}
-                        {d.ouvertures_description && (() => {
-                          let ouvPieces = []
-                          try { ouvPieces = JSON.parse(d.ouvertures_description) } catch {}
-                          if (!Array.isArray(ouvPieces) || ouvPieces.length === 0) return null
-                          return (
-                            <>
-                              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Pièces & Ouvertures</div>
-                              <div style={{ fontSize: 13, marginBottom: 16, lineHeight: 1.8 }}>
-                                {ouvPieces.map((piece, i) => (
-                                  <div key={i} style={{ marginBottom: i < ouvPieces.length - 1 ? 8 : 0 }}>
-                                    <strong>{piece.piece || 'Pièce sans nom'}</strong>{piece.longueur && piece.largeur ? ` — ${piece.longueur} × ${piece.largeur} m` : ''}
-                                    {(piece.ouvertures || []).map((o, j) => (
-                                      <div key={j} style={{ paddingLeft: 16, color: '#44433f' }}>
-                                        {o.largeur && o.hauteur ? `${o.largeur} × ${o.hauteur} cm` : '—'} — {label(o.type)}
-                                      </div>
-                                    ))}
-                                  </div>
-                                ))}
-                              </div>
-                            </>
-                          )
-                        })()}
-
-                        {/* Bloc Croquis */}
-                        {(() => {
-                          const cl = (() => { try { return JSON.parse(d.croquis_checklist || '{}') } catch { return {} } })()
-                          const checkItems = [
-                            { key: 'murs', label: 'Murs extérieurs' },
-                            { key: 'dimensions', label: 'Dimensions' },
-                            { key: 'ouvertures_placees', label: 'Ouvertures placées' },
-                            { key: 'ouvertures_dimensions', label: 'Dimensions ouvertures' },
-                          ]
-                          const allChecked = checkItems.every(c => cl[c.key])
-                          return (
-                            <>
-                              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a', display: 'flex', alignItems: 'center', gap: 8 }}>
-                                Croquis ({croquis.length} fichier{croquis.length !== 1 ? 's' : ''})
-                                {croquis.length > 0 && !allChecked && (
-                                  <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 8, background: '#fff3e0', color: '#e65100' }}>Potentiellement incomplet</span>
-                                )}
-                              </div>
-                              {croquis.length > 0 ? (
-                                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
-                                  {croquis.map((c, i) => (
-                                    <a key={i} href={c.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: '#1a5c3a', fontWeight: 600, textDecoration: 'none' }}>
-                                      {c.name.toLowerCase().endsWith('.pdf') ? '📄' : '🖼️'} {c.name}
-                                    </a>
+                          {/* Pièces & Ouvertures */}
+                          {d.ouvertures_description && (() => {
+                            let ouvPieces = []
+                            try { ouvPieces = JSON.parse(d.ouvertures_description) } catch {}
+                            if (!Array.isArray(ouvPieces) || ouvPieces.length === 0) return null
+                            return (
+                              <>
+                                <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '12px 0' }} />
+                                <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 6 }}>Pièces & Ouvertures</div>
+                                <div style={{ fontSize: 13, lineHeight: 1.8 }}>
+                                  {ouvPieces.map((piece, i) => (
+                                    <div key={i} style={{ marginBottom: i < ouvPieces.length - 1 ? 8 : 0 }}>
+                                      <strong>{piece.piece || 'Pièce sans nom'}</strong>{piece.longueur && piece.largeur ? ` — ${piece.longueur} × ${piece.largeur} m` : ''}
+                                      {(piece.ouvertures || []).map((o, j) => (
+                                        <div key={j} style={{ paddingLeft: 16, color: '#44433f' }}>
+                                          {o.largeur && o.hauteur ? `${o.largeur} × ${o.hauteur} cm` : '—'} — {label(o.type)}
+                                        </div>
+                                      ))}
+                                    </div>
                                   ))}
                                 </div>
-                              ) : (
-                                <div style={{ fontSize: 13, color: '#888', marginBottom: 8 }}>Aucun croquis uploadé</div>
-                              )}
-                              <div style={{ fontSize: 12, color: '#666', marginBottom: 16 }}>
-                                {checkItems.map(c => (
-                                  <span key={c.key} style={{ marginRight: 12 }}>{cl[c.key] ? '✓' : '✗'} {c.label}</span>
-                                ))}
-                              </div>
-                            </>
-                          )
-                        })()}
+                              </>
+                            )
+                          })()}
 
-                        {/* Bloc Chauffage et énergie */}
-                        <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Chauffage et énergie</div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13, marginBottom: 16 }}>
-                          <div><strong>Chauffage principal :</strong> {label(d.chauffage_principal)}</div>
-                          <div><strong>Eau chaude :</strong> {label(d.eau_chaude)}</div>
-                          <div><strong>Isolation :</strong> {label(d.isolation_type)}</div>
-                          {d.chauffage_appoint && <div><strong>Appoint :</strong> {d.chauffage_appoint}</div>}
-                          {d.energie_commentaire && <div style={{ gridColumn: '1 / -1' }}><strong>Commentaire :</strong> {d.energie_commentaire}</div>}
+                          {/* Croquis */}
+                          <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '12px 0' }} />
+                          {(() => {
+                            const cl = (() => { try { return JSON.parse(d.croquis_checklist || '{}') } catch { return {} } })()
+                            const checkItems = [
+                              { key: 'murs', label: 'Murs extérieurs' },
+                              { key: 'dimensions', label: 'Dimensions' },
+                              { key: 'ouvertures_placees', label: 'Ouvertures placées' },
+                              { key: 'ouvertures_dimensions', label: 'Dimensions ouvertures' },
+                            ]
+                            const allChecked = checkItems.every(c => cl[c.key])
+                            return (
+                              <>
+                                <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+                                  Croquis ({croquis.length} fichier{croquis.length !== 1 ? 's' : ''})
+                                  {croquis.length > 0 && !allChecked && (
+                                    <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 8, background: '#fff3e0', color: '#e65100' }}>Potentiellement incomplet</span>
+                                  )}
+                                </div>
+                                {croquis.length > 0 ? (
+                                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 6 }}>
+                                    {croquis.map((c, i) => (
+                                      <a key={i} href={c.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: '#1a5c3a', fontWeight: 600, textDecoration: 'none' }}>
+                                        {c.name.toLowerCase().endsWith('.pdf') ? '📄' : '🖼️'} {c.name}
+                                      </a>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <div style={{ fontSize: 13, color: '#888', marginBottom: 6 }}>Aucun croquis uploadé</div>
+                                )}
+                                <div style={{ fontSize: 12, color: '#666' }}>
+                                  {checkItems.map(c => (
+                                    <span key={c.key} style={{ marginRight: 12 }}>{cl[c.key] ? '✓' : '✗'} {c.label}</span>
+                                  ))}
+                                </div>
+                              </>
+                            )
+                          })()}
+
+                          {/* Chauffage et énergie */}
+                          <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '12px 0' }} />
+                          <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 6 }}>Chauffage et énergie</div>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13 }}>
+                            <div><strong>Chauffage principal :</strong> {label(d.chauffage_principal)}</div>
+                            <div><strong>Eau chaude :</strong> {label(d.eau_chaude)}</div>
+                            <div><strong>Isolation :</strong> {label(d.isolation_type)}</div>
+                            {d.chauffage_appoint && <div><strong>Appoint :</strong> {d.chauffage_appoint}</div>}
+                            {d.energie_commentaire && <div style={{ gridColumn: '1 / -1' }}><strong>Commentaire :</strong> {d.energie_commentaire}</div>}
+                          </div>
                         </div>
 
-                        {/* Bloc Terrain */}
-                        <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Terrain</div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13, marginBottom: 16 }}>
-                          {d.parcelle_nsp ? (
-                            <div style={{ gridColumn: '1 / -1' }}><strong>Parcelle :</strong> Non renseigné par le client</div>
-                          ) : (d.parcelle_section || d.parcelle_numero || d.parcelle_surface) ? (
-                            <div style={{ gridColumn: '1 / -1' }}><strong>Parcelle :</strong> {[d.parcelle_section ? `Section ${d.parcelle_section}` : null, d.parcelle_numero ? `n° ${d.parcelle_numero}` : null].filter(Boolean).join(', ')}{d.parcelle_surface ? ` — ${d.parcelle_surface}` : ''}</div>
-                          ) : null}
-                          <div style={{ gridColumn: '1 / -1' }}>
+                        {/* Groupe 3 — Terrain */}
+                        <div style={{ background: '#fff', border: '1px solid #e8e7e4', borderRadius: 10, padding: 16, marginBottom: 12 }}>
+                          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 10, color: '#1a5c3a' }}>Terrain</div>
+
+                          {/* Parcelle */}
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13 }}>
+                            {d.parcelle_nsp ? (
+                              <div style={{ gridColumn: '1 / -1' }}><strong>Parcelle :</strong> Non renseigné par le client</div>
+                            ) : (d.parcelle_section || d.parcelle_numero || d.parcelle_surface) ? (
+                              <div style={{ gridColumn: '1 / -1' }}><strong>Parcelle :</strong> {[d.parcelle_section ? `Section ${d.parcelle_section}` : null, d.parcelle_numero ? `n° ${d.parcelle_numero}` : null].filter(Boolean).join(', ')}{d.parcelle_surface ? ` — ${d.parcelle_surface}` : ''}</div>
+                            ) : null}
+                          </div>
+
+                          {/* Constructions existantes */}
+                          <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '12px 0' }} />
+                          <div style={{ fontSize: 13 }}>
                             <strong>Constructions existantes :</strong>{' '}
                             {d.constructions_existantes === true ? (() => {
                               let liste = []
@@ -663,24 +676,30 @@ export default function AdminPage() {
                               return d.constructions_existantes_detail ? `Oui — ${d.constructions_existantes_detail}` : 'Oui (aucune listée)'
                             })() : d.constructions_existantes === false ? 'Non' : '-'}
                           </div>
-                          <div><strong>Assainissement :</strong> {label(d.assainissement)}</div>
-                          <div><strong>Raccordements :</strong> {raccordements.length > 0 ? raccordements.join(', ') : '-'}</div>
-                          <div style={{ gridColumn: '1 / -1' }}><strong>Implantation :</strong> {d.implantation_description || '-'}</div>
-                        </div>
 
-                        {/* Photos terrain */}
-                        {photos.length > 0 && (
-                          <>
-                            <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Photos terrain ({photos.length}/5)</div>
-                            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                              {photos.map((photo, i) => (
-                                <a key={i} href={photo.url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: 80, height: 60, borderRadius: 6, overflow: 'hidden', border: '1px solid #e8e7e4' }}>
-                                  <img src={photo.url} alt={photo.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                                </a>
-                              ))}
-                            </div>
-                          </>
-                        )}
+                          {/* Implantation, assainissement, raccordements */}
+                          <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '12px 0' }} />
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13 }}>
+                            <div><strong>Assainissement :</strong> {label(d.assainissement)}</div>
+                            <div><strong>Raccordements :</strong> {raccordements.length > 0 ? raccordements.join(', ') : '-'}</div>
+                            <div style={{ gridColumn: '1 / -1' }}><strong>Implantation :</strong> {d.implantation_description || '-'}</div>
+                          </div>
+
+                          {/* Photos terrain */}
+                          {photos.length > 0 && (
+                            <>
+                              <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '12px 0' }} />
+                              <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 6 }}>Photos terrain ({photos.length}/5)</div>
+                              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                                {photos.map((photo, i) => (
+                                  <a key={i} href={photo.url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: 80, height: 60, borderRadius: 6, overflow: 'hidden', border: '1px solid #e8e7e4' }}>
+                                    <img src={photo.url} alt={photo.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                                  </a>
+                                ))}
+                              </div>
+                            </>
+                          )}
+                        </div>
                       </div>
                     )
                   })()}
