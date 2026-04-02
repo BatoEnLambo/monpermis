@@ -182,7 +182,14 @@ export default function AdminPage() {
       const ouv = JSON.parse(d.ouvertures_description || '[]')
       if (Array.isArray(ouv) && ouv.some(p => p.piece && p.longueur && p.largeur)) count++
     } catch { if (d.ouvertures_description) count++ }
-    if (d.constructions_existantes === true || d.constructions_existantes === false) count++
+    if (d.constructions_existantes === false) {
+      count++
+    } else if (d.constructions_existantes === true) {
+      try {
+        const liste = JSON.parse(d.constructions_existantes_liste || '[]')
+        if (Array.isArray(liste) && liste.some(item => item.nom)) count++
+      } catch { if (d.constructions_existantes_liste) count++ }
+    }
     if (d.implantation_description) count++
     if (d.assainissement) count++
     if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) count++
@@ -543,7 +550,25 @@ export default function AdminPage() {
                         {/* Bloc Terrain */}
                         <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Terrain</div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13, marginBottom: 16 }}>
-                          <div><strong>Constructions existantes :</strong> {d.constructions_existantes === true ? `Oui${d.constructions_existantes_detail ? ` — ${d.constructions_existantes_detail}` : ''}` : d.constructions_existantes === false ? 'Non' : '-'}</div>
+                          <div style={{ gridColumn: '1 / -1' }}>
+                            <strong>Constructions existantes :</strong>{' '}
+                            {d.constructions_existantes === true ? (() => {
+                              let liste = []
+                              try { liste = JSON.parse(d.constructions_existantes_liste || '[]') } catch {}
+                              if (Array.isArray(liste) && liste.length > 0) {
+                                return <div style={{ marginTop: 4 }}>{liste.map((c, i) => (
+                                  <div key={i} style={{ background: '#fafaf9', border: '1px solid #e8e7e4', borderRadius: 6, padding: '6px 10px', marginTop: 4, fontSize: 12 }}>
+                                    <strong>{c.nom || '(sans nom)'}</strong>
+                                    {c.surface ? ` — ${c.surface} m²` : ''}
+                                    {c.annee ? ` — ${c.annee}` : ''}
+                                    {c.cadastree === true ? ' — Cadastrée' : c.cadastree === false ? ' — Non cadastrée' : ''}
+                                    {c.notes ? ` — ${c.notes}` : ''}
+                                  </div>
+                                ))}</div>
+                              }
+                              return d.constructions_existantes_detail ? `Oui — ${d.constructions_existantes_detail}` : 'Oui (aucune listée)'
+                            })() : d.constructions_existantes === false ? 'Non' : '-'}
+                          </div>
                           <div><strong>Assainissement :</strong> {label(d.assainissement)}</div>
                           <div><strong>Raccordements :</strong> {raccordements.length > 0 ? raccordements.join(', ') : '-'}</div>
                           <div style={{ gridColumn: '1 / -1' }}><strong>Implantation :</strong> {d.implantation_description || '-'}</div>

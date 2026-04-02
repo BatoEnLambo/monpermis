@@ -1,9 +1,10 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect, useCallback } from 'react'
 
 const ACCENT = "#1a5c3a"
 const ACCENT_LIGHT = "#e8f5ee"
+const GRAY_50 = "#fafaf9"
 const GRAY_200 = "#e8e7e4"
 const GRAY_300 = "#d4d3d0"
 const GRAY_500 = "#8a8985"
@@ -84,12 +85,188 @@ function CheckboxStyled({ checked, onChange, label }) {
   )
 }
 
+function parseConstructions(raw) {
+  if (!raw) return []
+  try {
+    const parsed = JSON.parse(raw)
+    if (Array.isArray(parsed)) return parsed
+  } catch {}
+  return []
+}
+
+function ConstructionsExistantesList({ data, onFieldUpdate, oldDetail }) {
+  const [items, setItems] = useState(() => parseConstructions(data))
+
+  useEffect(() => {
+    setItems(parseConstructions(data))
+  }, [data])
+
+  const save = useCallback((updated) => {
+    setItems(updated)
+    onFieldUpdate('constructions_existantes_liste', updated.length > 0 ? JSON.stringify(updated) : null)
+  }, [onFieldUpdate])
+
+  const addItem = () => {
+    save([...items, { nom: '', surface: '', annee: '', cadastree: null, notes: '' }])
+  }
+
+  const removeItem = (idx) => {
+    save(items.filter((_, i) => i !== idx))
+  }
+
+  const updateItem = (idx, field, value) => {
+    const updated = items.map((item, i) => i === idx ? { ...item, [field]: value } : item)
+    save(updated)
+  }
+
+  return (
+    <div style={{ marginTop: 12 }}>
+      {items.map((item, idx) => (
+        <div key={idx} style={{
+          background: GRAY_50,
+          border: `1px solid ${GRAY_200}`,
+          borderRadius: 10,
+          padding: 16,
+          marginBottom: 12,
+          position: 'relative',
+        }}>
+          <button
+            type="button"
+            onClick={() => removeItem(idx)}
+            style={{
+              position: 'absolute', top: 10, right: 10,
+              width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+              border: `1px solid ${GRAY_300}`, background: WHITE,
+              color: GRAY_500, fontSize: 13, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = '#c0392b'; e.currentTarget.style.color = '#c0392b' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = GRAY_300; e.currentTarget.style.color = GRAY_500 }}
+            title="Supprimer"
+          >
+            ✕
+          </button>
+
+          {/* Nom + Surface */}
+          <div className="coordonnees-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10, paddingRight: 40 }}>
+            <div>
+              <label style={{ ...labelStyle, fontSize: 12 }}>Type / Nom</label>
+              <input
+                type="text"
+                value={item.nom || ''}
+                onChange={e => updateItem(idx, 'nom', e.target.value)}
+                placeholder="ex : Maison principale, Hangar, Garage..."
+                style={inputStyle}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+              />
+            </div>
+            <div>
+              <label style={{ ...labelStyle, fontSize: 12 }}>Surface approximative</label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="number"
+                  className="no-spinner"
+                  step={1}
+                  min={0}
+                  value={item.surface || ''}
+                  onChange={e => updateItem(idx, 'surface', e.target.value ? Number(e.target.value) : '')}
+                  placeholder="ex : 120"
+                  style={inputStyle}
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
+                />
+                <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 13, color: GRAY_500, pointerEvents: 'none' }}>m²</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Année + Cadastrée */}
+          <div className="coordonnees-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+            <div>
+              <label style={{ ...labelStyle, fontSize: 12 }}>Année de construction</label>
+              <input
+                type="text"
+                value={item.annee || ''}
+                onChange={e => updateItem(idx, 'annee', e.target.value)}
+                placeholder="ex : 1985, inconnue"
+                style={inputStyle}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+              />
+            </div>
+            <div>
+              <label style={{ ...labelStyle, fontSize: 12 }}>Cadastrée ?</label>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <ToggleButton
+                  selected={item.cadastree === true}
+                  label="Oui"
+                  onClick={() => updateItem(idx, 'cadastree', true)}
+                />
+                <ToggleButton
+                  selected={item.cadastree === false}
+                  label="Non"
+                  onClick={() => updateItem(idx, 'cadastree', false)}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Notes */}
+          <div>
+            <label style={{ ...labelStyle, fontSize: 12 }}>Notes</label>
+            <input
+              type="text"
+              value={item.notes || ''}
+              onChange={e => updateItem(idx, 'notes', e.target.value)}
+              placeholder="Précisions éventuelles — ex : en cours de démolition, PC déposé..."
+              style={inputStyle}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+            />
+          </div>
+        </div>
+      ))}
+
+      <button
+        type="button"
+        onClick={addItem}
+        style={{
+          padding: '10px 16px', borderRadius: 8,
+          border: `1px solid ${GRAY_300}`, background: WHITE,
+          fontSize: 13, fontWeight: 600, color: ACCENT,
+          cursor: 'pointer', transition: 'all 0.15s',
+          width: '100%',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = ACCENT; e.currentTarget.style.background = ACCENT_LIGHT }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = GRAY_300; e.currentTarget.style.background = WHITE }}
+      >
+        + Ajouter une construction existante
+      </button>
+
+      {/* Ancien format fallback */}
+      {items.length === 0 && oldDetail && (
+        <div style={{ marginTop: 12, padding: 12, background: '#fff9e6', border: '1px solid #f0d060', borderRadius: 8, fontSize: 13, color: GRAY_700, lineHeight: 1.5 }}>
+          <div style={{ fontWeight: 600, marginBottom: 4, fontSize: 12, color: '#b8860b' }}>Ancien format — ajoutez vos constructions via le bouton ci-dessus.</div>
+          {oldDetail}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function TerrainDetailsForm({ data, onFieldUpdate }) {
   const d = data || {}
 
   const filledCount = useMemo(() => {
     let count = 0
-    if (d.constructions_existantes === true || d.constructions_existantes === false) count++
+    if (d.constructions_existantes === false) {
+      count++
+    } else if (d.constructions_existantes === true) {
+      const liste = parseConstructions(d.constructions_existantes_liste)
+      if (liste.some(item => item.nom)) count++
+    }
     if (d.implantation_description) count++
     if (d.assainissement) count++
     if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) count++
@@ -124,21 +301,16 @@ export default function TerrainDetailsForm({ data, onFieldUpdate }) {
             onClick={() => {
               onFieldUpdate('constructions_existantes', false)
               onFieldUpdate('constructions_existantes_detail', null)
+              onFieldUpdate('constructions_existantes_liste', null)
             }}
           />
         </div>
         {d.constructions_existantes === true && (
-          <div style={{ marginTop: 8 }}>
-            <input
-              type="text"
-              value={d.constructions_existantes_detail || ''}
-              onChange={e => onFieldUpdate('constructions_existantes_detail', e.target.value || null)}
-              placeholder="Décrivez brièvement : maison principale, hangar, garage..."
-              style={inputStyle}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-            />
-          </div>
+          <ConstructionsExistantesList
+            data={d.constructions_existantes_liste}
+            onFieldUpdate={onFieldUpdate}
+            oldDetail={d.constructions_existantes_detail}
+          />
         )}
       </div>
 

@@ -194,7 +194,14 @@ function ProjetContent() {
       if (Array.isArray(ouv) && ouv.some(p => p.piece && p.longueur && p.largeur)) count++
     } catch { if (d.ouvertures_description) count++ }
     // Terrain (4)
-    if (d.constructions_existantes === true || d.constructions_existantes === false) count++
+    if (d.constructions_existantes === false) {
+      count++
+    } else if (d.constructions_existantes === true) {
+      try {
+        const liste = JSON.parse(d.constructions_existantes_liste || '[]')
+        if (Array.isArray(liste) && liste.some(item => item.nom)) count++
+      } catch { if (d.constructions_existantes_liste) count++ }
+    }
     if (d.implantation_description) count++
     if (d.assainissement) count++
     if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) count++
