@@ -433,6 +433,18 @@ function ProjetContent() {
               )
             })()}
 
+            {progress === 100 && (
+              <div style={{ background: '#e6f4ea', border: '1px solid #1a5c3a44', borderRadius: 14, padding: 24, marginBottom: 20, textAlign: 'center' }}>
+                <div style={{ fontSize: 36, marginBottom: 8 }}>✓</div>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1a5c3a', margin: '0 0 8px', letterSpacing: '-0.02em' }}>
+                  Votre fiche technique est complète !
+                </h3>
+                <p style={{ fontSize: 14, color: GRAY_700, margin: 0, lineHeight: 1.6 }}>
+                  Merci ! Nous avons toutes les informations nécessaires pour démarrer la réalisation de vos plans. Vous recevrez votre dossier complet sous 5 jours ouvrés. On vous tient au courant par email à chaque étape.
+                </p>
+              </div>
+            )}
+
             {/* Bloc ① Vos informations */}
             <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
