@@ -175,7 +175,7 @@ export default function AdminPage() {
     if (d.menuiserie_materiau || d.menuiserie_couleur) count++
     try {
       const ouv = JSON.parse(d.ouvertures_description || '[]')
-      if (Array.isArray(ouv) && ouv.some(p => p.ouvertures?.some(o => o.largeur && o.hauteur && o.type))) count++
+      if (Array.isArray(ouv) && ouv.some(p => p.piece && p.longueur && p.largeur)) count++
     } catch { if (d.ouvertures_description) count++ }
     if (d.constructions_existantes === true || d.constructions_existantes === false) count++
     if (d.implantation_description) count++
@@ -448,18 +448,18 @@ export default function AdminPage() {
                           <div><strong>Menuiseries :</strong> {label(d.menuiserie_materiau)}{d.menuiserie_couleur ? ` — ${d.menuiserie_couleur}` : ''}</div>
                         </div>
 
-                        {/* Bloc Ouvertures */}
+                        {/* Bloc Pièces & Ouvertures */}
                         {d.ouvertures_description && (() => {
                           let ouvPieces = []
                           try { ouvPieces = JSON.parse(d.ouvertures_description) } catch {}
                           if (!Array.isArray(ouvPieces) || ouvPieces.length === 0) return null
                           return (
                             <>
-                              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Ouvertures</div>
+                              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#1a5c3a' }}>Pièces & Ouvertures</div>
                               <div style={{ fontSize: 13, marginBottom: 16, lineHeight: 1.8 }}>
                                 {ouvPieces.map((piece, i) => (
                                   <div key={i} style={{ marginBottom: i < ouvPieces.length - 1 ? 8 : 0 }}>
-                                    <strong>{piece.piece || 'Pièce sans nom'}</strong>
+                                    <strong>{piece.piece || 'Pièce sans nom'}</strong>{piece.longueur && piece.largeur ? ` — ${piece.longueur} × ${piece.largeur} m` : ''}
                                     {(piece.ouvertures || []).map((o, j) => (
                                       <div key={j} style={{ paddingLeft: 16, color: '#44433f' }}>
                                         {o.largeur && o.hauteur ? `${o.largeur} × ${o.hauteur} cm` : '—'} — {label(o.type)}

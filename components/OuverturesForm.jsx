@@ -65,7 +65,7 @@ export default function OuverturesForm({ data, onFieldUpdate }) {
   }, [onFieldUpdate])
 
   const addPiece = () => {
-    save([...pieces, { piece: '', ouvertures: [{ largeur: '', hauteur: '', type: '' }] }])
+    save([...pieces, { piece: '', longueur: '', largeur: '', ouvertures: [{ largeur: '', hauteur: '', type: '' }] }])
   }
 
   const removePiece = (pi) => {
@@ -74,6 +74,11 @@ export default function OuverturesForm({ data, onFieldUpdate }) {
 
   const updatePieceName = (pi, name) => {
     const updated = pieces.map((p, i) => i === pi ? { ...p, piece: name } : p)
+    save(updated)
+  }
+
+  const updatePieceDimension = (pi, field, value) => {
+    const updated = pieces.map((p, i) => i === pi ? { ...p, [field]: value } : p)
     save(updated)
   }
 
@@ -104,7 +109,7 @@ export default function OuverturesForm({ data, onFieldUpdate }) {
     <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <h3 style={{ fontSize: 15, fontWeight: 600, color: GRAY_900, margin: 0, letterSpacing: '-0.02em' }}>
-          Vos ouvertures
+          Vos pièces
         </h3>
         <span style={{ fontSize: 12, fontWeight: 500, color: GRAY_500 }}>
           {pieceCount} pièce{pieceCount !== 1 ? 's' : ''}
@@ -146,6 +151,44 @@ export default function OuverturesForm({ data, onFieldUpdate }) {
             >
               ✕
             </button>
+          </div>
+
+          {/* Dimensions de la pièce */}
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: GRAY_500, marginBottom: 6 }}>Dimensions approximatives de la pièce</label>
+            <div className="coordonnees-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, color: GRAY_500, marginBottom: 4 }}>Longueur (m)</label>
+                <input
+                  type="number"
+                  className="no-spinner"
+                  step={0.1}
+                  min={0}
+                  value={piece.longueur || ''}
+                  onChange={e => updatePieceDimension(pi, 'longueur', e.target.value ? Number(e.target.value) : '')}
+                  placeholder="ex : 4.8"
+                  style={{ ...inputStyle, width: '100%' }}
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, color: GRAY_500, marginBottom: 4 }}>Largeur (m)</label>
+                <input
+                  type="number"
+                  className="no-spinner"
+                  step={0.1}
+                  min={0}
+                  value={piece.largeur || ''}
+                  onChange={e => updatePieceDimension(pi, 'largeur', e.target.value ? Number(e.target.value) : '')}
+                  placeholder="ex : 3.0"
+                  style={{ ...inputStyle, width: '100%' }}
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
+                />
+              </div>
+            </div>
+            <p style={{ fontSize: 11, color: GRAY_500, margin: '4px 0 0', lineHeight: 1.4 }}>Pas besoin d'être précis au centimètre, on ajustera ensemble.</p>
           </div>
 
           {/* Ouvertures list */}
@@ -245,9 +288,9 @@ export default function OuverturesForm({ data, onFieldUpdate }) {
 
       {pieceCount === 0 && (
         <p style={{ fontSize: 13, color: GRAY_500, margin: '12px 0 0', lineHeight: 1.5, textAlign: 'center' }}>
-          Ajoutez chaque pièce de votre maison et ses ouvertures (fenêtres, baies vitrées, portes).
+          Ajoutez chaque pièce de votre maison avec ses dimensions et ses ouvertures (fenêtres, baies vitrées, portes).
           <br />
-          Exemple : Salon → 1 baie vitrée 300 × 215 cm coulissante.
+          Exemple : Salon 4,8 × 3,0 m → 1 baie vitrée 300 × 215 cm coulissante.
         </p>
       )}
     </div>

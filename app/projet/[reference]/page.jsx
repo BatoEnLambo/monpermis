@@ -185,10 +185,10 @@ function ProjetContent() {
     if (d.materiau_facade) count++
     if (d.materiau_couverture) count++
     if (d.menuiserie_materiau || d.menuiserie_couleur) count++
-    // Ouvertures (1)
+    // Pièces (1)
     try {
       const ouv = JSON.parse(d.ouvertures_description || '[]')
-      if (Array.isArray(ouv) && ouv.some(p => p.ouvertures?.some(o => o.largeur && o.hauteur && o.type))) count++
+      if (Array.isArray(ouv) && ouv.some(p => p.piece && p.longueur && p.largeur)) count++
     } catch { if (d.ouvertures_description) count++ }
     // Terrain (4)
     if (d.constructions_existantes === true || d.constructions_existantes === false) count++
