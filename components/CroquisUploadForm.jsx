@@ -153,56 +153,144 @@ export default function CroquisUploadForm({ projectId, details, onFieldUpdate, o
       {/* Exemple visuel */}
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
         <div style={{ fontSize: 12, color: GRAY_500, marginBottom: 8 }}>Exemple de croquis</div>
-        <svg viewBox="0 0 500 320" style={{ width: '100%', maxWidth: 500, height: 'auto' }} xmlns="http://www.w3.org/2000/svg">
-          {/* Fond */}
-          <rect x="80" y="60" width="300" height="200" fill="#fafafa" stroke="#333" strokeWidth="3" />
+        <svg width="100%" viewBox="0 0 680 560" xmlns="http://www.w3.org/2000/svg">
+          <style>{`
+            .wall { fill: #2C2C2A; opacity: 0.85; }
+            .room-label { font-family: sans-serif; font-size: 14px; font-weight: 500; fill: #5F5E5A; }
+            .room-size { font-family: sans-serif; font-size: 11px; fill: #888780; }
+            .dim { font-family: sans-serif; font-size: 12px; font-weight: 500; fill: #D85A30; }
+            .dim-line { stroke: #D85A30; stroke-width: 1; }
+            .win { fill: #5DCAA5; opacity: 0.7; }
+            .door-arc { fill: none; stroke: #888780; stroke-width: 0.7; stroke-dasharray: 2 2; }
+            .annot { font-family: sans-serif; font-size: 10.5px; fill: #0F6E56; }
+            .caption { font-family: sans-serif; font-size: 13px; fill: #5F5E5A; font-style: italic; }
+            .legend { font-family: sans-serif; font-size: 11px; fill: #888780; }
+          `}</style>
 
-          {/* Ouverture haut — Porte d'entrée */}
-          <rect x="200" y="58" width="50" height="5" fill="#fafafa" />
-          <line x1="200" y1="60" x2="200" y2="55" stroke="#333" strokeWidth="2" />
-          <line x1="250" y1="60" x2="250" y2="55" stroke="#333" strokeWidth="2" />
-          <text x="225" y="48" textAnchor="middle" fontSize="9" fill="#555" fontFamily="sans-serif">Porte 100 × 215</text>
+          {/* MURS EXTÉRIEURS */}
+          <rect className="wall" x="90" y="70" width="460" height="8"/>
+          <rect className="wall" x="90" y="422" width="460" height="8"/>
+          <rect className="wall" x="90" y="70" width="8" height="360"/>
+          <rect className="wall" x="542" y="70" width="8" height="360"/>
 
-          {/* Ouverture bas — Baie vitrée */}
-          <rect x="170" y="258" width="100" height="5" fill="#fafafa" />
-          <line x1="170" y1="260" x2="170" y2="265" stroke="#333" strokeWidth="2" />
-          <line x1="270" y1="260" x2="270" y2="265" stroke="#333" strokeWidth="2" />
-          <text x="220" y="282" textAnchor="middle" fontSize="9" fill="#555" fontFamily="sans-serif">Baie vitrée 300 × 215</text>
+          {/* MUR HORIZONTAL MILIEU */}
+          <rect className="wall" x="90" y="260" width="460" height="8"/>
 
-          {/* Ouverture gauche — Fenêtre */}
-          <rect x="78" y="130" width="5" height="50" fill="#fafafa" />
-          <line x1="80" y1="130" x2="75" y2="130" stroke="#333" strokeWidth="2" />
-          <line x1="80" y1="180" x2="75" y2="180" stroke="#333" strokeWidth="2" />
-          <text x="70" y="160" textAnchor="end" fontSize="9" fill="#555" fontFamily="sans-serif">Fenêtre</text>
-          <text x="70" y="172" textAnchor="end" fontSize="9" fill="#555" fontFamily="sans-serif">180 × 80</text>
+          {/* MUR VERTICAL HAUT : Salon | Cuisine */}
+          <rect className="wall" x="360" y="70" width="8" height="198"/>
 
-          {/* Ouverture droite — Fenêtre */}
-          <rect x="378" y="130" width="5" height="50" fill="#fafafa" />
-          <line x1="380" y1="130" x2="385" y2="130" stroke="#333" strokeWidth="2" />
-          <line x1="380" y1="180" x2="385" y2="180" stroke="#333" strokeWidth="2" />
-          <text x="392" y="160" textAnchor="start" fontSize="9" fill="#555" fontFamily="sans-serif">Fenêtre</text>
-          <text x="392" y="172" textAnchor="start" fontSize="9" fill="#555" fontFamily="sans-serif">180 × 80</text>
+          {/* MURS VERTICAUX BAS */}
+          <rect className="wall" x="268" y="268" width="8" height="162"/>
+          <rect className="wall" x="388" y="268" width="8" height="162"/>
 
-          {/* Cotation haut — longueur */}
-          <line x1="80" y1="40" x2="380" y2="40" stroke="#1a5c3a" strokeWidth="1" />
-          <line x1="80" y1="35" x2="80" y2="45" stroke="#1a5c3a" strokeWidth="1" />
-          <line x1="380" y1="35" x2="380" y2="45" stroke="#1a5c3a" strokeWidth="1" />
-          <text x="230" y="35" textAnchor="middle" fontSize="11" fill="#1a5c3a" fontWeight="600" fontFamily="sans-serif">10,00 m</text>
+          {/* PORTE ENTRÉE — mur haut côté cuisine */}
+          <rect x="430" y="66" width="50" height="16" fill="#fff"/>
+          <path className="door-arc" d="M480 78 A48 48 0 0 1 432 126"/>
 
-          {/* Cotation droite — largeur */}
-          <line x1="420" y1="60" x2="420" y2="260" stroke="#1a5c3a" strokeWidth="1" />
-          <line x1="415" y1="60" x2="425" y2="60" stroke="#1a5c3a" strokeWidth="1" />
-          <line x1="415" y1="260" x2="425" y2="260" stroke="#1a5c3a" strokeWidth="1" />
-          <text x="440" y="165" textAnchor="middle" fontSize="11" fill="#1a5c3a" fontWeight="600" fontFamily="sans-serif" transform="rotate(90, 440, 165)">8,00 m</text>
+          {/* PORTE Salon → Cuisine */}
+          <rect x="356" y="170" width="16" height="44" fill="#fff"/>
+          <path className="door-arc" d="M368 214 A42 42 0 0 0 410 172"/>
 
-          {/* Noms de pièces */}
-          <text x="155" y="110" textAnchor="middle" fontSize="11" fill="#999" fontFamily="sans-serif">Chambre</text>
-          <text x="230" y="170" textAnchor="middle" fontSize="12" fill="#999" fontFamily="sans-serif">Salon</text>
-          <text x="310" y="230" textAnchor="middle" fontSize="11" fill="#999" fontFamily="sans-serif">Cuisine</text>
+          {/* PORTE Salon → Chambre 1 */}
+          <rect x="155" y="256" width="44" height="16" fill="#fff"/>
+          <path className="door-arc" d="M199 268 A42 42 0 0 1 157 310"/>
+
+          {/* PORTE Cuisine → SDB */}
+          <rect x="320" y="256" width="44" height="16" fill="#fff"/>
+          <path className="door-arc" d="M320 268 A42 42 0 0 0 362 310"/>
+
+          {/* PORTE SDB → Chambre 2 */}
+          <rect x="384" y="330" width="16" height="40" fill="#fff"/>
+          <path className="door-arc" d="M396 330 A38 38 0 0 1 434 368"/>
+
+          {/* BAIE VITRÉE Salon — mur NORD, 3m = ~138px */}
+          <rect x="140" y="66" width="142" height="16" fill="#fff"/>
+          <rect className="win" x="142" y="68" width="138" height="12" rx="2"/>
+
+          {/* FENÊTRE Salon — mur gauche, 1.80m = ~83px */}
+          <rect x="86" y="150" width="16" height="83" fill="#fff"/>
+          <rect className="win" x="88" y="152" width="12" height="79" rx="2"/>
+
+          {/* FENÊTRE Cuisine — mur droit, 1.80m = ~83px */}
+          <rect x="538" y="130" width="16" height="83" fill="#fff"/>
+          <rect className="win" x="540" y="132" width="12" height="79" rx="2"/>
+
+          {/* FENÊTRE Chambre 1 — mur gauche, 1.80m = ~83px */}
+          <rect x="86" y="310" width="16" height="83" fill="#fff"/>
+          <rect className="win" x="88" y="312" width="12" height="79" rx="2"/>
+
+          {/* FENÊTRE Chambre 1 — mur bas, 1.20m = ~55px */}
+          <rect x="145" y="418" width="55" height="16" fill="#fff"/>
+          <rect className="win" x="147" y="420" width="51" height="12" rx="2"/>
+
+          {/* FENÊTRE Chambre 2 — mur droit, 1.80m = ~83px */}
+          <rect x="538" y="310" width="16" height="83" fill="#fff"/>
+          <rect className="win" x="540" y="312" width="12" height="79" rx="2"/>
+
+          {/* FENÊTRE Chambre 2 — mur bas, 1.20m = ~55px */}
+          <rect x="435" y="418" width="55" height="16" fill="#fff"/>
+          <rect className="win" x="437" y="420" width="51" height="12" rx="2"/>
+
+          {/* ANNOTATIONS OUVERTURES (vert) */}
+          <text className="annot" x="211" y="58" textAnchor="middle">Baie vitrée 300 × 215</text>
+
+          <text className="annot" x="34" y="194" textAnchor="middle">Fenêtre</text>
+          <text className="annot" x="34" y="206" textAnchor="middle">180 × 80</text>
+
+          <text className="annot" x="606" y="174" textAnchor="middle">Fenêtre</text>
+          <text className="annot" x="606" y="186" textAnchor="middle">180 × 80</text>
+
+          <text className="annot" x="34" y="354" textAnchor="middle">Fenêtre</text>
+          <text className="annot" x="34" y="366" textAnchor="middle">180 × 80</text>
+
+          <text className="annot" x="172" y="455" textAnchor="middle">Fenêtre 120 × 80</text>
+
+          <text className="annot" x="606" y="354" textAnchor="middle">Fenêtre</text>
+          <text className="annot" x="606" y="366" textAnchor="middle">180 × 80</text>
+
+          <text className="annot" x="462" y="455" textAnchor="middle">Fenêtre 120 × 80</text>
+
+          <text className="annot" x="455" y="58" textAnchor="middle">Porte d&#39;entrée 90 × 215</text>
+
+          {/* LABELS PIÈCES */}
+          <text className="room-label" x="220" y="170" textAnchor="middle">Salon / Séjour</text>
+          <text className="room-size" x="220" y="188" textAnchor="middle">6,00 × 4,30 m</text>
+
+          <text className="room-label" x="448" y="170" textAnchor="middle">Cuisine</text>
+          <text className="room-size" x="448" y="188" textAnchor="middle">4,00 × 4,30 m</text>
+
+          <text className="room-label" x="178" y="350" textAnchor="middle">Chambre 1</text>
+          <text className="room-size" x="178" y="368" textAnchor="middle">4,00 × 3,50 m</text>
+
+          <text className="room-label" x="330" y="350" textAnchor="middle">SDB</text>
+          <text className="room-size" x="330" y="368" textAnchor="middle">2,70 × 3,50 m</text>
+
+          <text className="room-label" x="468" y="350" textAnchor="middle">Chambre 2</text>
+          <text className="room-size" x="468" y="368" textAnchor="middle">3,50 × 3,50 m</text>
+
+          {/* COTATIONS ORANGE */}
+          <line className="dim-line" x1="90" y1="42" x2="550" y2="42"/>
+          <line className="dim-line" x1="90" y1="34" x2="90" y2="50"/>
+          <line className="dim-line" x1="550" y1="34" x2="550" y2="50"/>
+          <text className="dim" x="320" y="37" textAnchor="middle">10,00 m</text>
+
+          <line className="dim-line" x1="575" y1="70" x2="575" y2="430"/>
+          <line className="dim-line" x1="567" y1="70" x2="583" y2="70"/>
+          <line className="dim-line" x1="567" y1="430" x2="583" y2="430"/>
+          <text className="dim" x="597" y="255" textAnchor="middle" transform="rotate(90,597,255)">8,00 m</text>
+
+          {/* LÉGENDE 3 LIGNES */}
+          <text className="caption" x="340" y="488" textAnchor="middle">Votre croquis peut ressembler à ça, même dessiné à main levée !</text>
+
+          <rect className="win" x="220" y="506" width="16" height="8" rx="2"/>
+          <text className="legend" x="242" y="514">Ouvertures</text>
+
+          <rect x="220" y="522" width="16" height="8" rx="1" fill="#D85A30"/>
+          <text className="legend" x="242" y="530">Dimensions du bâtiment et des pièces</text>
+
+          <rect x="220" y="538" width="16" height="8" rx="1" fill="#2C2C2A" opacity="0.85"/>
+          <text className="legend" x="242" y="546">Murs et cloisons</text>
         </svg>
-        <div style={{ fontSize: 12, color: GRAY_500, marginTop: 6, fontStyle: 'italic' }}>
-          Votre croquis peut ressembler à ça, même dessiné à la main !
-        </div>
       </div>
 
       {/* Upload zone */}
