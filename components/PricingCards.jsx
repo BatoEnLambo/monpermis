@@ -60,7 +60,7 @@ export default function PricingCards() {
         <strong>Option RE2020 : +250 €</strong> — Attestation thermique obligatoire pour toute construction neuve, réalisée par notre partenaire certifié.
       </p>
       <p className="pricing-compare" style={{ fontSize: 13, color: GRAY_500, marginTop: 12 }}>
-        Un dessinateur facture 600 à 2 000€ et livre en 2 à 6 semaines. Un architecte, 1 500 à 4 000€.
+        Un architecte facture 1 500 à 4 000€ et livre en 2 à 6 semaines.
       </p>
     </div>
   )
