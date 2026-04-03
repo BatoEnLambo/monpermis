@@ -200,7 +200,7 @@ export default function AdminPage() {
       let checklistOk = false
       try {
         const cl = JSON.parse(d.croquis_checklist || '{}')
-        checklistOk = cl.murs && cl.dimensions && cl.ouvertures_placees && cl.ouvertures_dimensions
+        checklistOk = cl.murs && cl.pieces && cl.ouvertures && cl.dimensions_batiment
       } catch {}
       croquisStatus = checklistOk ? 'complete' : 'partial'
     }
@@ -600,10 +600,10 @@ export default function AdminPage() {
                           {(() => {
                             const cl = (() => { try { return JSON.parse(d.croquis_checklist || '{}') } catch { return {} } })()
                             const checkItems = [
-                              { key: 'murs', label: 'Murs extérieurs' },
-                              { key: 'dimensions', label: 'Dimensions' },
-                              { key: 'ouvertures_placees', label: 'Ouvertures placées' },
-                              { key: 'ouvertures_dimensions', label: 'Dimensions ouvertures' },
+                              { key: 'murs', label: 'Murs ext. et int.' },
+                              { key: 'pieces', label: 'Pièces nommées et dimensionnées' },
+                              { key: 'ouvertures', label: 'Ouvertures placées avec dimensions' },
+                              { key: 'dimensions_batiment', label: 'Dimensions extérieures' },
                             ]
                             const allChecked = checkItems.every(c => cl[c.key])
                             return (

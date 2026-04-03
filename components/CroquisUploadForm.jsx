@@ -22,17 +22,17 @@ function getExt(filename) {
 }
 
 function parseChecklist(raw) {
-  if (!raw) return { murs: false, dimensions: false, ouvertures_placees: false, ouvertures_dimensions: false }
+  if (!raw) return { murs: false, pieces: false, ouvertures: false, dimensions_batiment: false }
   try {
     const parsed = JSON.parse(raw)
     return {
       murs: !!parsed.murs,
-      dimensions: !!parsed.dimensions,
-      ouvertures_placees: !!parsed.ouvertures_placees,
-      ouvertures_dimensions: !!parsed.ouvertures_dimensions,
+      pieces: !!parsed.pieces,
+      ouvertures: !!parsed.ouvertures,
+      dimensions_batiment: !!parsed.dimensions_batiment,
     }
   } catch {
-    return { murs: false, dimensions: false, ouvertures_placees: false, ouvertures_dimensions: false }
+    return { murs: false, pieces: false, ouvertures: false, dimensions_batiment: false }
   }
 }
 
@@ -126,7 +126,7 @@ export default function CroquisUploadForm({ projectId, details, onFieldUpdate, o
     onFieldUpdate('croquis_checklist', JSON.stringify(updated))
   }, [checklist, onFieldUpdate])
 
-  const checkedCount = [checklist.murs, checklist.dimensions, checklist.ouvertures_placees, checklist.ouvertures_dimensions].filter(Boolean).length
+  const checkedCount = [checklist.murs, checklist.pieces, checklist.ouvertures, checklist.dimensions_batiment].filter(Boolean).length
   const isPdf = (name) => name.toLowerCase().endsWith('.pdf')
 
   return (
@@ -139,10 +139,12 @@ export default function CroquisUploadForm({ projectId, details, onFieldUpdate, o
         </p>
         <p style={{ fontSize: 13, color: GRAY_700, lineHeight: 1.6, margin: '0 0 10px' }}>Votre croquis doit montrer :</p>
         <div style={{ fontSize: 13, color: GRAY_700, lineHeight: 1.8 }}>
-          <div>✓ Les murs extérieurs (la forme générale de la construction)</div>
-          <div>✓ Les dimensions principales en mètres (longueur, largeur)</div>
-          <div>✓ L'emplacement des fenêtres, portes et baies vitrées sur chaque mur</div>
+          <div>✓ Les murs extérieurs et intérieurs (la forme générale + les cloisons entre les pièces)</div>
+          <div>✓ Le nom et les dimensions de chaque pièce (longueur × largeur en mètres)</div>
+          <div>✓ Les fenêtres, baies vitrées et portes positionnées sur les murs</div>
           <div>✓ Les dimensions de chaque ouverture (largeur × hauteur en cm)</div>
+          <div>✓ Les portes intérieures entre les pièces</div>
+          <div>✓ Les dimensions extérieures du bâtiment (longueur × largeur totale)</div>
           <div>✓ Si 2 étages : un croquis par étage</div>
         </div>
         <p style={{ fontSize: 13, color: GRAY_700, lineHeight: 1.6, margin: '12px 0 0' }}>
@@ -384,22 +386,22 @@ export default function CroquisUploadForm({ projectId, details, onFieldUpdate, o
             <CheckboxStyled
               checked={checklist.murs}
               onChange={v => updateChecklist('murs', v)}
-              label="Mon croquis montre les murs extérieurs"
+              label="Les murs extérieurs et intérieurs sont dessinés"
             />
             <CheckboxStyled
-              checked={checklist.dimensions}
-              onChange={v => updateChecklist('dimensions', v)}
-              label="Les dimensions principales sont notées (en mètres)"
+              checked={checklist.pieces}
+              onChange={v => updateChecklist('pieces', v)}
+              label="Le nom et les dimensions de chaque pièce sont notés"
             />
             <CheckboxStyled
-              checked={checklist.ouvertures_placees}
-              onChange={v => updateChecklist('ouvertures_placees', v)}
-              label="Les fenêtres et portes sont placées"
+              checked={checklist.ouvertures}
+              onChange={v => updateChecklist('ouvertures', v)}
+              label="Les ouvertures (fenêtres, baies vitrées, portes) sont placées avec leurs dimensions"
             />
             <CheckboxStyled
-              checked={checklist.ouvertures_dimensions}
-              onChange={v => updateChecklist('ouvertures_dimensions', v)}
-              label="Les dimensions des ouvertures sont notées (largeur × hauteur en cm)"
+              checked={checklist.dimensions_batiment}
+              onChange={v => updateChecklist('dimensions_batiment', v)}
+              label="Les dimensions extérieures du bâtiment sont indiquées"
             />
           </div>
           {checkedCount === 4 && (
