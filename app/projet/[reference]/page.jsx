@@ -25,18 +25,48 @@ const GRAY_700 = "#44433f"
 const GRAY_900 = "#1c1c1a"
 const WHITE = "#ffffff"
 
-const PHASES = [
+const TIMELINE_STEPS = [
   { id: "paid", label: "Paiement reçu", desc: "Votre paiement a bien été enregistré" },
-  { id: "in_progress", label: "Dossier en cours", desc: "Vos plans et votre dossier sont en cours de réalisation" },
-  { id: "review", label: "Votre relecture", desc: "Vérifiez le dossier, demandez des ajustements si besoin" },
-  { id: "delivered", label: "Dossier livré ✓", desc: "Votre dossier complet est prêt à déposer en mairie" },
-  { id: "deposited", label: "Déposé en mairie", desc: "Le dossier a été déposé, en attente de réponse" },
-  { id: "accepted", label: "Permis accepté ✓", desc: "Félicitations, votre permis est accepté !" },
+  { id: "info", label: "Vos informations", descActive: "Remplissez votre fiche technique ci-dessous", descDone: "Fiche technique complète !" },
+  { id: "plans", label: "Plans en cours", desc: "Nous réalisons vos plans et votre dossier", descWaiting: "En attente de votre fiche technique" },
+  { id: "review", label: "Votre relecture", desc: "Vérifiez vos plans avant finalisation" },
+  { id: "delivered", label: "Dossier livré", desc: "Votre dossier complet est prêt" },
 ]
 
-function getPhaseIndex(status) {
-  const idx = PHASES.findIndex(p => p.id === status)
-  return idx >= 0 ? idx : 0
+function getTimelineStates(status, ficheComplete) {
+  // Map project status to step states
+  // Status flow: paid → in_progress → review → delivered
+  const statusOrder = ['paid', 'in_progress', 'review', 'delivered']
+  const statusIdx = statusOrder.indexOf(status)
+
+  return TIMELINE_STEPS.map((step, i) => {
+    if (i === 0) {
+      // Step 1: Paiement — always done
+      return 'done'
+    }
+    if (i === 1) {
+      // Step 2: Vos informations — linked to completion_percentage
+      return ficheComplete ? 'done' : 'active'
+    }
+    if (i === 2) {
+      // Step 3: Plans en cours
+      if (statusIdx >= 2) return 'done' // review or delivered
+      if (statusIdx >= 1 && ficheComplete) return 'active' // in_progress + fiche complete
+      return 'future' // waiting
+    }
+    if (i === 3) {
+      // Step 4: Votre relecture
+      if (statusIdx >= 3) return 'done' // delivered
+      if (statusIdx >= 2) return 'active' // review
+      return 'future'
+    }
+    if (i === 4) {
+      // Step 5: Dossier livré
+      if (statusIdx >= 3) return 'active' // delivered
+      return 'future'
+    }
+    return 'future'
+  })
 }
 
 function ProjetContent() {
@@ -244,7 +274,6 @@ function ProjetContent() {
     )
   }
 
-  const currentPhase = getPhaseIndex(project.status)
   const adminDocs = documents.filter(d => d.uploaded_by === 'admin')
 
   const handleSendMessage = async () => {
@@ -279,59 +308,84 @@ function ProjetContent() {
       </div>
 
       {/* 2. Timeline avancement */}
-      <div className="dash-progress" style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
-        <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 20px", color: GRAY_900 }}>Avancement du dossier</h3>
-        <div style={{ position: "relative" }}>
-          {PHASES.map((phase, i) => {
-            const isActive = i === currentPhase
-            const isDone = i < currentPhase
-            const isFuture = i > currentPhase
-            return (
-              <div key={phase.id} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: 24 }}>
-                  <div style={{
-                    width: 24, height: 24, borderRadius: "50%",
-                    background: isDone ? ACCENT : isActive ? ACCENT : GRAY_200,
-                    border: isActive ? `3px solid ${ACCENT_LIGHT}` : "none",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    transition: "all 0.3s",
-                    boxShadow: isActive ? `0 0 0 3px ${ACCENT}33` : "none",
-                  }}>
-                    {isDone && <span style={{ color: WHITE, fontSize: 12 }}>✓</span>}
-                    {isActive && <div style={{ width: 8, height: 8, borderRadius: "50%", background: WHITE }} />}
-                  </div>
-                  {i < PHASES.length - 1 && (
-                    <div style={{ width: 2, height: 32, background: isDone ? ACCENT : GRAY_200, transition: "background 0.3s" }} />
-                  )}
-                </div>
-                <div style={{ paddingBottom: i < PHASES.length - 1 ? 14 : 0, paddingTop: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: isActive ? 600 : 500, color: isFuture ? GRAY_500 : GRAY_900 }}>
-                    {phase.label}
-                  </div>
-                  {(isActive || isDone) && (
-                    <div style={{ fontSize: 12, color: GRAY_500, marginTop: 2 }}>{phase.desc}</div>
-                  )}
-                  {phase.id === 'delivered' && (isDone || isActive) && adminDocs.length > 0 && (
-                    <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 6 }}>
-                      {adminDocs.map((doc) => (
-                        <a key={doc.id} href={doc.file_url} target="_blank" rel="noopener noreferrer"
-                          style={{
-                            display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px',
-                            background: ACCENT, color: WHITE, borderRadius: 8, textDecoration: 'none',
-                            fontSize: 13, fontWeight: 600, width: 'fit-content',
-                          }}>
-                          📦 Télécharger votre dossier
-                        </a>
-                      ))}
+      {(() => {
+        const ficheComplete = details ? computeProgress() === 100 : false
+        const states = getTimelineStates(project.status, ficheComplete)
+        return (
+          <div className="dash-progress" style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
+            <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 20px", color: GRAY_900 }}>Avancement du dossier</h3>
+            <div style={{ position: "relative" }}>
+              {TIMELINE_STEPS.map((step, i) => {
+                const state = states[i]
+                const isDone = state === 'done'
+                const isActive = state === 'active'
+                const isFuture = state === 'future'
+
+                // Determine description text
+                let desc = step.desc || ''
+                if (step.id === 'info') {
+                  desc = isDone ? step.descDone : step.descActive
+                } else if (step.id === 'plans' && isFuture && !ficheComplete && ['in_progress', 'review', 'delivered'].includes(project.status) === false) {
+                  desc = step.descWaiting
+                } else if (step.id === 'plans' && isFuture && !ficheComplete) {
+                  desc = step.descWaiting
+                }
+
+                return (
+                  <div key={step.id} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: 24 }}>
+                      <div style={{
+                        width: 24, height: 24, borderRadius: "50%",
+                        background: isDone ? ACCENT : isActive ? ACCENT : GRAY_200,
+                        border: isActive ? `3px solid ${ACCENT_LIGHT}` : "none",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        transition: "all 0.3s",
+                        boxShadow: isActive ? `0 0 0 3px ${ACCENT}33` : "none",
+                      }}>
+                        {isDone && <span style={{ color: WHITE, fontSize: 12 }}>✓</span>}
+                        {isActive && <div style={{ width: 8, height: 8, borderRadius: "50%", background: WHITE }} />}
+                      </div>
+                      {i < TIMELINE_STEPS.length - 1 && (
+                        <div style={{ width: 2, height: 32, background: isDone ? ACCENT : GRAY_200, transition: "background 0.3s" }} />
+                      )}
                     </div>
-                  )}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-        <p style={{ fontSize: 13, color: GRAY_500, fontStyle: "italic", margin: "16px 0 0" }}>Si la mairie demande des modifications après votre dépôt, on corrige et on vous renvoie le dossier gratuitement.</p>
-      </div>
+                    <div style={{ paddingBottom: i < TIMELINE_STEPS.length - 1 ? 14 : 0, paddingTop: 1 }}>
+                      <div style={{ fontSize: 14, fontWeight: isActive ? 600 : 500, color: isFuture ? GRAY_500 : GRAY_900 }}>
+                        {step.label}
+                      </div>
+                      {(isActive || isDone) && (
+                        <div style={{ fontSize: 12, color: GRAY_500, marginTop: 2 }}>{desc}</div>
+                      )}
+                      {isFuture && step.id === 'plans' && !ficheComplete && (
+                        <div style={{ fontSize: 12, color: GRAY_500, marginTop: 2, fontStyle: 'italic' }}>{step.descWaiting}</div>
+                      )}
+                      {step.id === 'delivered' && (isDone || isActive) && (
+                        adminDocs.length > 0 ? (
+                          <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                            {adminDocs.map((doc) => (
+                              <a key={doc.id} href={doc.file_url} target="_blank" rel="noopener noreferrer"
+                                style={{
+                                  display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px',
+                                  background: ACCENT, color: WHITE, borderRadius: 8, textDecoration: 'none',
+                                  fontSize: 13, fontWeight: 600, width: 'fit-content',
+                                }}>
+                                📦 Télécharger votre dossier
+                              </a>
+                            ))}
+                          </div>
+                        ) : (
+                          <div style={{ fontSize: 12, color: GRAY_500, marginTop: 6, fontStyle: 'italic' }}>Votre dossier sera disponible ici</div>
+                        )
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            <p style={{ fontSize: 13, color: GRAY_500, fontStyle: "italic", margin: "16px 0 0" }}>Si la mairie demande des modifications après votre dépôt, on corrige et on vous renvoie le dossier gratuitement.</p>
+          </div>
+        )
+      })()}
 
       {/* Fiche technique — Maison neuve uniquement */}
       {project.project_type?.startsWith('Maison neuve') && details && (() => {

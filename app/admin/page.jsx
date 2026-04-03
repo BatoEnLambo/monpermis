@@ -14,11 +14,9 @@ const STATUS_LABELS = {
   in_progress: '🔵 En cours',
   review: '🟣 En relecture',
   delivered: '📦 Livré',
-  deposited: '📬 Déposé en mairie',
-  accepted: '✅ Accepté',
 }
 
-const STATUS_OPTIONS = ['pending', 'paid', 'in_progress', 'review', 'delivered', 'deposited', 'accepted']
+const STATUS_OPTIONS = ['pending', 'paid', 'in_progress', 'review', 'delivered']
 
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false)
