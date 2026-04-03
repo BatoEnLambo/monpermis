@@ -23,24 +23,16 @@ const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 const PC_INCLUDES = ["Plans complets (PCMI1 à PCMI8)", "Notice descriptive", "CERFA rempli", "Insertion paysagère", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"]
 const DP_INCLUDES = ["Plans complets (DP1 à DP8)", "Notice descriptive", "CERFA rempli", "Document graphique", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"]
 
-const PC_DOSSIER_INCLUDES = ["Dossier PC complet (PCMI1 à PCMI8)", "Notice descriptive", "CERFA rempli", "Insertion paysagère", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"]
-
-function getPricing(projectType, floors) {
+function getPricing(projectType) {
   switch (projectType) {
-    case "Piscine": return { price: 390, label: "Déclaration préalable — Piscine", delay: "3 jours ouvrés", includes: DP_INCLUDES }
-    case "Garage / Carport": return { price: 390, label: "Déclaration préalable — Garage / Carport", delay: "3 jours ouvrés", includes: DP_INCLUDES }
-    case "Terrasse / Pergola": return { price: 390, label: "Déclaration préalable — Terrasse / Pergola", delay: "3 jours ouvrés", includes: DP_INCLUDES }
-    case "Extension / Agrandissement": return { price: 790, label: "Permis de construire — Extension", delay: "5 jours ouvrés", includes: PC_INCLUDES }
-    case "Surélévation": return { price: 790, label: "Permis de construire — Surélévation", delay: "5 jours ouvrés", includes: PC_INCLUDES }
-    case "Maison neuve — Dossier PC": return { price: 590, label: "Permis de construire — Maison neuve (dossier)", delay: "5 jours ouvrés", includes: PC_DOSSIER_INCLUDES }
-    case "Maison neuve — Plans + Dossier PC":
-      if (floors === "1 (plain-pied)") return { price: 990, label: "Permis de construire — Maison neuve + plans (plain-pied)", delay: "5 jours ouvrés", includes: PC_INCLUDES }
-      return { price: 1190, label: "Permis de construire — Maison neuve + plans (R+1)", delay: "5 jours ouvrés", includes: PC_INCLUDES }
-    case "Maison neuve":
-      if (floors === "1 (plain-pied)") return { price: 990, label: "Permis de construire — Maison plain-pied", delay: "5 jours ouvrés", includes: PC_INCLUDES }
-      return { price: 1190, label: "Permis de construire — Maison R+1 ou plus", delay: "5 jours ouvrés", includes: PC_INCLUDES }
-    case "Autre": return { price: 790, label: "Projet sur mesure", delay: "5 jours ouvrés", includes: PC_INCLUDES }
-    default: return { price: 790, label: "Projet sur mesure", delay: "5 jours ouvrés", includes: PC_INCLUDES }
+    case "Piscine": return { price: 350, label: "Déclaration préalable — Piscine", delay: "3 jours ouvrés", includes: DP_INCLUDES }
+    case "Garage / Carport": return { price: 350, label: "Déclaration préalable — Garage / Carport", delay: "3 jours ouvrés", includes: DP_INCLUDES }
+    case "Terrasse / Pergola": return { price: 350, label: "Déclaration préalable — Terrasse / Pergola", delay: "3 jours ouvrés", includes: DP_INCLUDES }
+    case "Extension / Agrandissement": return { price: 490, label: "Permis de construire — Extension", delay: "5 jours ouvrés", includes: PC_INCLUDES }
+    case "Surélévation": return { price: 490, label: "Permis de construire — Surélévation", delay: "5 jours ouvrés", includes: PC_INCLUDES }
+    case "Maison neuve": return { price: 690, label: "Permis de construire — Maison neuve", delay: "5 jours ouvrés", includes: PC_INCLUDES }
+    case "Autre": return { price: 490, label: "Projet sur mesure", delay: "5 jours ouvrés", includes: PC_INCLUDES }
+    default: return { price: 490, label: "Projet sur mesure", delay: "5 jours ouvrés", includes: PC_INCLUDES }
   }
 }
 
@@ -59,7 +51,9 @@ export default function PaiementPage() {
 
   if (!form) return null
 
-  const pricing = getPricing(form.projectType, form.floors)
+  const pricing = getPricing(form.projectType)
+  const re2020 = !!form.re2020
+  const totalPrice = re2020 ? pricing.price + 250 : pricing.price
 
   const projectData = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('projectData') || '{}') : {}
 
@@ -86,6 +80,12 @@ export default function PaiementPage() {
               {item}
             </div>
           ))}
+          {re2020 && (
+            <div className="pay-includes-item" style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", fontSize: 13, color: GRAY_700 }}>
+              <span className="pay-check" style={{ color: ACCENT, fontSize: 14 }}>✓</span>
+              Attestation RE2020 (Bbio) par partenaire certifié
+            </div>
+          )}
           <div className="pay-delivery" style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", fontSize: 13, color: ACCENT, fontWeight: 500, marginTop: 4 }}>
             <span style={{ fontSize: 14 }}>⚡</span>
             Livraison en {pricing.delay}
@@ -103,16 +103,21 @@ export default function PaiementPage() {
         <div className="payment-card-price" style={{ padding: "24px 28px", background: GRAY_50, textAlign: "center" }}>
           {pricing.price ? (
             <>
-              <div className="pay-amount-row" style={{ marginBottom: 20 }}>
-                <span className="pay-amount" style={{ fontSize: 36, fontWeight: 700, color: GRAY_900, letterSpacing: "-0.03em" }}>{pricing.price} €</span>
+              <div className="pay-amount-row" style={{ marginBottom: re2020 ? 8 : 20 }}>
+                <span className="pay-amount" style={{ fontSize: 36, fontWeight: 700, color: GRAY_900, letterSpacing: "-0.03em" }}>{totalPrice} €</span>
                 <span style={{ fontSize: 14, color: GRAY_500, marginLeft: 4 }}>TTC</span>
               </div>
+              {re2020 && (
+                <div style={{ fontSize: 12, color: GRAY_500, marginBottom: 16 }}>
+                  {pricing.price} € (dossier) + 250 € (RE2020)
+                </div>
+              )}
 
               <form method="POST" action="/api/checkout">
                 <input type="hidden" name="projectId" value={projectData?.id || ''} />
                 <input type="hidden" name="reference" value={projectData?.reference || ''} />
-                <input type="hidden" name="price" value={pricing.price} />
-                <input type="hidden" name="label" value={pricing.label} />
+                <input type="hidden" name="price" value={totalPrice} />
+                <input type="hidden" name="label" value={re2020 ? `${pricing.label} + RE2020` : pricing.label} />
                 <input type="hidden" name="email" value={form?.email || projectData?.email || ''} />
                 <button type="submit"
                   style={{
@@ -124,7 +129,7 @@ export default function PaiementPage() {
                   }}
                   onMouseOver={e => e.currentTarget.style.background = ACCENT_HOVER}
                   onMouseOut={e => e.currentTarget.style.background = ACCENT}>
-                  🔒 Payer {pricing.price} € — dossier livré en 5 jours ouvrés
+                  🔒 Payer {totalPrice} € — dossier livré en 5 jours ouvrés
                 </button>
               </form>
 

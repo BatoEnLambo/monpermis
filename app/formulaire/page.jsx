@@ -18,27 +18,21 @@ const GRAY_900 = "#1c1c1a"
 const WHITE = "#ffffff"
 const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 
-const PROJECT_TYPES = ["Extension / Agrandissement", "Piscine", "Garage / Carport", "Maison neuve — Dossier PC", "Maison neuve — Plans + Dossier PC", "Terrasse / Pergola", "Surélévation", "Autre"]
-const MAISON_TYPES = ["Maison neuve — Dossier PC", "Maison neuve — Plans + Dossier PC"]
+const PROJECT_TYPES = ["Extension / Agrandissement", "Piscine", "Garage / Carport", "Maison neuve", "Terrasse / Pergola", "Surélévation", "Autre"]
+const MAISON_TYPES = ["Maison neuve"]
 const ROOF_TYPES = ["Toit plat", "Toit 2 pans", "Toit 4 pans", "Toit monopente", "Je ne sais pas encore"]
 const STYLES = ["Moderne / Contemporain", "Traditionnel", "Ossature bois", "Cubique / Toit plat", "Autre"]
 
-function getPricing(projectType, floors) {
+function getPricing(projectType) {
   switch (projectType) {
-    case "Piscine": return { price: 390, label: "Déclaration préalable — Piscine", delay: "3 jours ouvrés" }
-    case "Garage / Carport": return { price: 390, label: "Déclaration préalable — Garage / Carport", delay: "3 jours ouvrés" }
-    case "Terrasse / Pergola": return { price: 390, label: "Déclaration préalable — Terrasse / Pergola", delay: "3 jours ouvrés" }
-    case "Extension / Agrandissement": return { price: 790, label: "Permis de construire — Extension", delay: "5 jours ouvrés" }
-    case "Surélévation": return { price: 790, label: "Permis de construire — Surélévation", delay: "5 jours ouvrés" }
-    case "Maison neuve — Dossier PC": return { price: 590, label: "Permis de construire — Maison neuve (dossier)", delay: "5 jours ouvrés" }
-    case "Maison neuve — Plans + Dossier PC":
-      if (floors === "1 (plain-pied)") return { price: 990, label: "Permis de construire — Maison neuve + plans (plain-pied)", delay: "5 jours ouvrés" }
-      return { price: 1190, label: "Permis de construire — Maison neuve + plans (R+1)", delay: "5 jours ouvrés" }
-    case "Maison neuve":
-      if (floors === "1 (plain-pied)") return { price: 990, label: "Permis de construire — Maison plain-pied", delay: "5 jours ouvrés" }
-      return { price: 1190, label: "Permis de construire — Maison R+1 ou plus", delay: "5 jours ouvrés" }
-    case "Autre": return { price: 790, label: "Projet sur mesure", delay: "5 jours ouvrés" }
-    default: return { price: 790, label: "Projet sur mesure", delay: "5 jours ouvrés" }
+    case "Piscine": return { price: 350, label: "Déclaration préalable — Piscine", delay: "3 jours ouvrés" }
+    case "Garage / Carport": return { price: 350, label: "Déclaration préalable — Garage / Carport", delay: "3 jours ouvrés" }
+    case "Terrasse / Pergola": return { price: 350, label: "Déclaration préalable — Terrasse / Pergola", delay: "3 jours ouvrés" }
+    case "Extension / Agrandissement": return { price: 490, label: "Permis de construire — Extension", delay: "5 jours ouvrés" }
+    case "Surélévation": return { price: 490, label: "Permis de construire — Surélévation", delay: "5 jours ouvrés" }
+    case "Maison neuve": return { price: 690, label: "Permis de construire — Maison neuve", delay: "5 jours ouvrés" }
+    case "Autre": return { price: 490, label: "Projet sur mesure", delay: "5 jours ouvrés" }
+    default: return { price: 490, label: "Projet sur mesure", delay: "5 jours ouvrés" }
   }
 }
 
@@ -119,7 +113,7 @@ function FormulaireContent() {
     firstName: "", lastName: "", email: "", phone: "",
     projectType: "", address: "", city: "Paris", postalCode: "75000",
     surface: "", floors: "1", rooms: "3", roofType: "", style: "",
-    description: "", deadline: "", budget: "", poolType: "",
+    description: "", deadline: "", budget: "", poolType: "", re2020: false,
   })
 
   useEffect(() => {
@@ -177,13 +171,14 @@ function FormulaireContent() {
     return true
   }
 
-  const pricing = form.projectType ? getPricing(form.projectType, form.floors) : null
+  const pricing = form.projectType ? getPricing(form.projectType) : null
 
   const submitProject = async () => {
     const reference = 'PC-' + Date.now().toString(36).toUpperCase()
     const token = generateToken()
-    const currentPricing = form.projectType ? getPricing(form.projectType, form.floors) : null
-    const price = currentPricing ? currentPricing.price : null
+    const currentPricing = form.projectType ? getPricing(form.projectType) : null
+    const basePrice = currentPricing ? currentPricing.price : null
+    const price = basePrice && form.re2020 ? basePrice + 250 : basePrice
 
     const fullDescription = form.poolType
       ? `Type de piscine : ${form.poolType}. ${form.description}`.trim()
@@ -220,7 +215,7 @@ function FormulaireContent() {
       return
     }
 
-    localStorage.setItem('projectData', JSON.stringify({ ...form, id: data.id, reference: data.reference, token: data.token, price }))
+    localStorage.setItem('projectData', JSON.stringify({ ...form, id: data.id, reference: data.reference, token: data.token, price, re2020: !!form.re2020 }))
     router.push('/paiement')
   }
 
@@ -242,7 +237,22 @@ function FormulaireContent() {
           <div>
             <h2 className="form-title" style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Votre projet</h2>
             <p className="form-subtitle" style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Décrivez-nous ce que vous souhaitez réaliser</p>
-            <SelectInput label="Type de projet" options={PROJECT_TYPES} value={form.projectType} onChange={v => updateForm("projectType", v)} />
+            <SelectInput label="Type de projet" options={PROJECT_TYPES} value={form.projectType} onChange={v => { updateForm("projectType", v); if (v !== "Maison neuve") updateForm("re2020", false) }} />
+            {form.projectType === "Maison neuve" && (
+              <div style={{ background: '#fff8e1', border: '1px solid #ffe082', borderRadius: 10, padding: 16, marginTop: 14 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: GRAY_900, marginBottom: 8, lineHeight: 1.5 }}>
+                  ⚠️ Construction neuve : l'attestation RE2020 (Bbio) est obligatoire pour déposer votre permis en mairie. Si vous ne l'avez pas déjà, ajoutez-la ici.
+                </div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', padding: '6px 0' }}>
+                  <input type="checkbox" checked={form.re2020} onChange={e => updateForm("re2020", e.target.checked)}
+                    style={{ width: 18, height: 18, accentColor: ACCENT, cursor: 'pointer' }} />
+                  <span style={{ fontSize: 14, fontWeight: 600, color: GRAY_900 }}>Ajouter l'attestation RE2020 (+250 €)</span>
+                </label>
+                <div style={{ fontSize: 12, color: GRAY_500, marginTop: 6, lineHeight: 1.5 }}>
+                  ℹ️ Vous avez déjà votre attestation RE2020 ? Vous pourrez passer cette étape.
+                </div>
+              </div>
+            )}
             <div style={{ marginTop: 14 }}>
               <Input label="Adresse du terrain" value={form.address} onChange={v => updateForm("address", v)} placeholder="12 rue des Lilas" />
             </div>
@@ -446,18 +456,32 @@ function FormulaireContent() {
 
             {/* Prix estimé */}
             {pricing && (
-              <div className="recap-price" style={{ marginTop: 20, padding: 16, background: ACCENT_LIGHT, borderRadius: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div>
-                  <div className="recap-price-label" style={{ fontSize: 13, fontWeight: 600, color: ACCENT }}>{pricing.label}</div>
-                  <div className="recap-price-delay" style={{ fontSize: 12, color: GRAY_500, marginTop: 2 }}>Livraison en {pricing.delay}</div>
+              <div className="recap-price" style={{ marginTop: 20, padding: 16, background: ACCENT_LIGHT, borderRadius: 10 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div>
+                    <div className="recap-price-label" style={{ fontSize: 13, fontWeight: 600, color: ACCENT }}>{pricing.label}</div>
+                    <div className="recap-price-delay" style={{ fontSize: 12, color: GRAY_500, marginTop: 2 }}>Livraison en {pricing.delay}</div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    {pricing.price ? (
+                      <span className="recap-price-amount" style={{ fontSize: 24, fontWeight: 700, color: ACCENT }}>{pricing.price} €<span style={{ fontSize: 12, fontWeight: 400, color: GRAY_500, marginLeft: 2 }}>TTC</span></span>
+                    ) : (
+                      <span style={{ fontSize: 14, fontWeight: 600, color: ACCENT }}>Sur devis</span>
+                    )}
+                  </div>
                 </div>
-                <div style={{ textAlign: "right" }}>
-                  {pricing.price ? (
-                    <span className="recap-price-amount" style={{ fontSize: 24, fontWeight: 700, color: ACCENT }}>{pricing.price} €<span style={{ fontSize: 12, fontWeight: 400, color: GRAY_500, marginLeft: 2 }}>TTC</span></span>
-                  ) : (
-                    <span style={{ fontSize: 14, fontWeight: 600, color: ACCENT }}>Sur devis</span>
-                  )}
-                </div>
+                {form.re2020 && (
+                  <div style={{ borderTop: `1px solid ${ACCENT}33`, marginTop: 10, paddingTop: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ fontSize: 12, color: ACCENT }}>+ Option RE2020 (attestation Bbio)</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: ACCENT }}>+250 €</div>
+                  </div>
+                )}
+                {form.re2020 && pricing.price && (
+                  <div style={{ borderTop: `1px solid ${ACCENT}33`, marginTop: 8, paddingTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: ACCENT }}>Total</div>
+                    <span style={{ fontSize: 20, fontWeight: 700, color: ACCENT }}>{pricing.price + 250} € <span style={{ fontSize: 12, fontWeight: 400, color: GRAY_500 }}>TTC</span></span>
+                  </div>
+                )}
               </div>
             )}
           </div>

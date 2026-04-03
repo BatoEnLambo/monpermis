@@ -1,8 +1,8 @@
 /* Cartes tarifs */
 .pricing-grid {
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 1rem;
-  max-width: 600px;
+  max-width: 720px;
   margin: 0 auto;
 }
 .pricing-card {
@@ -135,8 +135,8 @@
     padding-top: 2rem !important;
   }
   .pricing-grid {
-    grid-template-columns: 1fr 1fr !important;
-    gap: 0.5rem !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
   }
   .pricing-card {
     padding: 0.85rem !important;

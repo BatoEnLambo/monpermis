@@ -12,10 +12,9 @@ const WHITE = "#ffffff"
 const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 
 const cards = [
-  { title: "Piscine / Garage / Terrasse", sub: "Déclaration préalable", price: "390€", detail: "Dossier DP complet", projectType: "Piscine" },
-  { title: "Extension / Surélévation", sub: "DP ou permis de construire", price: "790€", detail: "Plans + dossier complet", popular: true, projectType: "Extension / Agrandissement" },
-  { title: "Maison neuve", sub: "Permis de construire", price: "590€", detail: "Dossier PC complet", projectType: "Maison neuve — Dossier PC" },
-  { title: "Maison neuve + plans", sub: "Permis de construire", price: "À partir de 990€", detail: "Plans complets + dossier PC", projectType: "Maison neuve — Plans + Dossier PC" },
+  { title: "Piscine / Garage / Terrasse", sub: "Déclaration préalable", price: "350€", detail: "Dossier DP complet", projectType: "Piscine" },
+  { title: "Extension / Surélévation", sub: "DP ou permis de construire", price: "490€", detail: "Plans + dossier complet", projectType: "Extension / Agrandissement" },
+  { title: "Maison neuve", sub: "Permis de construire", price: "690€", detail: "Plans + dossier PC complet", popular: true, projectType: "Maison neuve" },
 ]
 
 export default function PricingCards() {
