@@ -30,7 +30,7 @@ function getPricing(projectType) {
     case "Terrasse / Pergola": return { price: 350, label: "Déclaration préalable — Terrasse / Pergola", delay: "3 jours ouvrés", includes: DP_INCLUDES }
     case "Extension / Agrandissement": return { price: 490, label: "Permis de construire — Extension", delay: "5 jours ouvrés", includes: PC_INCLUDES }
     case "Surélévation": return { price: 490, label: "Permis de construire — Surélévation", delay: "5 jours ouvrés", includes: PC_INCLUDES }
-    case "Maison neuve": return { price: 690, label: "Permis de construire — Maison neuve", delay: "5 jours ouvrés", includes: PC_INCLUDES }
+    case "Maison neuve": return { price: 590, label: "Permis de construire — Maison neuve", delay: "5 jours ouvrés", includes: PC_INCLUDES }
     case "Autre": return { price: 490, label: "Projet sur mesure", delay: "5 jours ouvrés", includes: PC_INCLUDES }
     default: return { price: 490, label: "Projet sur mesure", delay: "5 jours ouvrés", includes: PC_INCLUDES }
   }
@@ -53,7 +53,7 @@ export default function PaiementPage() {
 
   const pricing = getPricing(form.projectType)
   const re2020 = !!form.re2020
-  const totalPrice = re2020 ? pricing.price + 250 : pricing.price
+  const totalPrice = re2020 ? pricing.price + 200 : pricing.price
 
   const projectData = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('projectData') || '{}') : {}
 
@@ -109,7 +109,7 @@ export default function PaiementPage() {
               </div>
               {re2020 && (
                 <div style={{ fontSize: 12, color: GRAY_500, marginBottom: 16 }}>
-                  {pricing.price} € (dossier) + 250 € (RE2020)
+                  {pricing.price} € (dossier) + 200 € (RE2020)
                 </div>
               )}
 

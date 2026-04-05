@@ -30,7 +30,7 @@ function getPricing(projectType) {
     case "Terrasse / Pergola": return { price: 350, label: "Déclaration préalable — Terrasse / Pergola", delay: "3 jours ouvrés" }
     case "Extension / Agrandissement": return { price: 490, label: "Permis de construire — Extension", delay: "5 jours ouvrés" }
     case "Surélévation": return { price: 490, label: "Permis de construire — Surélévation", delay: "5 jours ouvrés" }
-    case "Maison neuve": return { price: 690, label: "Permis de construire — Maison neuve", delay: "5 jours ouvrés" }
+    case "Maison neuve": return { price: 590, label: "Permis de construire — Maison neuve", delay: "5 jours ouvrés" }
     case "Autre": return { price: 490, label: "Projet sur mesure", delay: "5 jours ouvrés" }
     default: return { price: 490, label: "Projet sur mesure", delay: "5 jours ouvrés" }
   }
@@ -178,7 +178,7 @@ function FormulaireContent() {
     const token = generateToken()
     const currentPricing = form.projectType ? getPricing(form.projectType) : null
     const basePrice = currentPricing ? currentPricing.price : null
-    const price = basePrice && form.re2020 ? basePrice + 250 : basePrice
+    const price = basePrice && form.re2020 ? basePrice + 200 : basePrice
 
     const fullDescription = form.poolType
       ? `Type de piscine : ${form.poolType}. ${form.description}`.trim()
@@ -246,7 +246,7 @@ function FormulaireContent() {
                 <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', padding: '6px 0' }}>
                   <input type="checkbox" checked={form.re2020} onChange={e => updateForm("re2020", e.target.checked)}
                     style={{ width: 18, height: 18, accentColor: ACCENT, cursor: 'pointer' }} />
-                  <span style={{ fontSize: 14, fontWeight: 600, color: GRAY_900 }}>Ajouter l'attestation RE2020 (+250 €)</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: GRAY_900 }}>Ajouter l'attestation RE2020 (+200 €)</span>
                 </label>
                 <div style={{ fontSize: 12, color: GRAY_500, marginTop: 6, lineHeight: 1.5 }}>
                   ℹ️ Vous avez déjà votre attestation RE2020 ? Vous pourrez passer cette étape.
@@ -473,13 +473,13 @@ function FormulaireContent() {
                 {form.re2020 && (
                   <div style={{ borderTop: `1px solid ${ACCENT}33`, marginTop: 10, paddingTop: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div style={{ fontSize: 12, color: ACCENT }}>+ Option RE2020 (attestation Bbio)</div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: ACCENT }}>+250 €</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: ACCENT }}>+200 €</div>
                   </div>
                 )}
                 {form.re2020 && pricing.price && (
                   <div style={{ borderTop: `1px solid ${ACCENT}33`, marginTop: 8, paddingTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div style={{ fontSize: 13, fontWeight: 700, color: ACCENT }}>Total</div>
-                    <span style={{ fontSize: 20, fontWeight: 700, color: ACCENT }}>{pricing.price + 250} € <span style={{ fontSize: 12, fontWeight: 400, color: GRAY_500 }}>TTC</span></span>
+                    <span style={{ fontSize: 20, fontWeight: 700, color: ACCENT }}>{pricing.price + 200} € <span style={{ fontSize: 12, fontWeight: 400, color: GRAY_500 }}>TTC</span></span>
                   </div>
                 )}
               </div>
