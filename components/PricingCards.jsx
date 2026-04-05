@@ -14,7 +14,7 @@ const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 const cards = [
   { title: "Piscine / Garage / Terrasse", sub: "Déclaration préalable", price: "350€", detail: "Dossier DP complet", projectType: "Piscine" },
   { title: "Extension / Surélévation", sub: "DP ou permis de construire", price: "490€", detail: "Plans + dossier complet", projectType: "Extension / Agrandissement" },
-  { title: "Maison neuve", sub: "Permis de construire", price: "590€", detail: "Plans + dossier PC complet", popular: true, projectType: "Maison neuve" },
+  { title: "Maison neuve", sub: "Permis de construire", price: "490€", detail: "Plans + dossier PC complet", popular: true, projectType: "Maison neuve" },
 ]
 
 export default function PricingCards() {

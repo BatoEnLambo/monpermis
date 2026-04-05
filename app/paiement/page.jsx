@@ -30,7 +30,7 @@ function getPricing(projectType) {
     case "Terrasse / Pergola": return { price: 350, label: "Déclaration préalable — Terrasse / Pergola", delay: "3 jours ouvrés", includes: DP_INCLUDES }
     case "Extension / Agrandissement": return { price: 490, label: "Permis de construire — Extension", delay: "5 jours ouvrés", includes: PC_INCLUDES }
     case "Surélévation": return { price: 490, label: "Permis de construire — Surélévation", delay: "5 jours ouvrés", includes: PC_INCLUDES }
-    case "Maison neuve": return { price: 590, label: "Permis de construire — Maison neuve", delay: "5 jours ouvrés", includes: PC_INCLUDES }
+    case "Maison neuve": return { price: 490, label: "Permis de construire — Maison neuve", delay: "5 jours ouvrés", includes: PC_INCLUDES }
     case "Autre": return { price: 490, label: "Projet sur mesure", delay: "5 jours ouvrés", includes: PC_INCLUDES }
     default: return { price: 490, label: "Projet sur mesure", delay: "5 jours ouvrés", includes: PC_INCLUDES }
   }
