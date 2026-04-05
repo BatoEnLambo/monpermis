@@ -243,9 +243,16 @@ function FormulaireContent() {
                 <div style={{ fontSize: 13, fontWeight: 600, color: GRAY_900, marginBottom: 8, lineHeight: 1.5 }}>
                   ⚠️ Construction neuve : l'attestation RE2020 (Bbio) est obligatoire pour déposer votre permis en mairie. Si vous ne l'avez pas déjà, ajoutez-la ici.
                 </div>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', padding: '6px 0' }}>
-                  <input type="checkbox" checked={form.re2020} onChange={e => updateForm("re2020", e.target.checked)}
-                    style={{ width: 18, height: 18, accentColor: ACCENT, cursor: 'pointer' }} />
+                <label onClick={() => updateForm("re2020", !form.re2020)} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', padding: '8px 0' }}>
+                  <div style={{
+                    width: 22, height: 22, borderRadius: 5, flexShrink: 0,
+                    border: form.re2020 ? `2px solid ${ACCENT}` : `2px solid ${GRAY_300}`,
+                    background: form.re2020 ? ACCENT : WHITE,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'all 0.15s',
+                  }}>
+                    {form.re2020 && <span style={{ color: WHITE, fontSize: 14, fontWeight: 700, lineHeight: 1 }}>✓</span>}
+                  </div>
                   <span style={{ fontSize: 14, fontWeight: 600, color: GRAY_900 }}>Ajouter l'attestation RE2020 (+200 €)</span>
                 </label>
                 <div style={{ fontSize: 12, color: GRAY_500, marginTop: 6, lineHeight: 1.5 }}>
@@ -258,9 +265,16 @@ function FormulaireContent() {
                 <div style={{ fontSize: 13, fontWeight: 600, color: GRAY_900, marginBottom: 8, lineHeight: 1.5 }}>
                   ℹ️ Extension de plus de 50 m² : une attestation RE2020 peut être obligatoire selon la surface de votre projet. Si vous ne l'avez pas déjà, vous pouvez l'ajouter ici.
                 </div>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', padding: '6px 0' }}>
-                  <input type="checkbox" checked={form.re2020} onChange={e => updateForm("re2020", e.target.checked)}
-                    style={{ width: 18, height: 18, accentColor: ACCENT, cursor: 'pointer' }} />
+                <label onClick={() => updateForm("re2020", !form.re2020)} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', padding: '8px 0' }}>
+                  <div style={{
+                    width: 22, height: 22, borderRadius: 5, flexShrink: 0,
+                    border: form.re2020 ? `2px solid ${ACCENT}` : `2px solid ${GRAY_300}`,
+                    background: form.re2020 ? ACCENT : WHITE,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'all 0.15s',
+                  }}>
+                    {form.re2020 && <span style={{ color: WHITE, fontSize: 14, fontWeight: 700, lineHeight: 1 }}>✓</span>}
+                  </div>
                   <span style={{ fontSize: 14, fontWeight: 600, color: GRAY_900 }}>Ajouter l'attestation RE2020 (+200 €)</span>
                 </label>
                 <div style={{ fontSize: 12, color: GRAY_500, marginTop: 6, lineHeight: 1.5 }}>
