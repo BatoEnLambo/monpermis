@@ -237,7 +237,7 @@ function FormulaireContent() {
           <div>
             <h2 className="form-title" style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Votre projet</h2>
             <p className="form-subtitle" style={{ fontSize: 14, color: GRAY_500, margin: "0 0 24px" }}>Décrivez-nous ce que vous souhaitez réaliser</p>
-            <SelectInput label="Type de projet" options={PROJECT_TYPES} value={form.projectType} onChange={v => { updateForm("projectType", v); if (v !== "Maison neuve") updateForm("re2020", false) }} />
+            <SelectInput label="Type de projet" options={PROJECT_TYPES} value={form.projectType} onChange={v => { updateForm("projectType", v); if (!["Maison neuve", "Extension / Agrandissement", "Surélévation"].includes(v)) updateForm("re2020", false) }} />
             {form.projectType === "Maison neuve" && (
               <div style={{ background: '#fff8e1', border: '1px solid #ffe082', borderRadius: 10, padding: 16, marginTop: 14 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: GRAY_900, marginBottom: 8, lineHeight: 1.5 }}>
@@ -249,7 +249,22 @@ function FormulaireContent() {
                   <span style={{ fontSize: 14, fontWeight: 600, color: GRAY_900 }}>Ajouter l'attestation RE2020 (+200 €)</span>
                 </label>
                 <div style={{ fontSize: 12, color: GRAY_500, marginTop: 6, lineHeight: 1.5 }}>
-                  ℹ️ Vous avez déjà votre attestation RE2020 ? Vous pourrez passer cette étape.
+                  ℹ️ Vous avez déjà votre attestation RE2020 ? Si oui, vous pouvez passer cette étape.
+                </div>
+              </div>
+            )}
+            {(form.projectType === "Extension / Agrandissement" || form.projectType === "Surélévation") && (
+              <div style={{ background: '#f0f7ff', border: '1px solid #b3d4fc', borderRadius: 10, padding: 16, marginTop: 14 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: GRAY_900, marginBottom: 8, lineHeight: 1.5 }}>
+                  ℹ️ Extension de plus de 50 m² : une attestation RE2020 peut être obligatoire selon la surface de votre projet. Si vous ne l'avez pas déjà, vous pouvez l'ajouter ici.
+                </div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', padding: '6px 0' }}>
+                  <input type="checkbox" checked={form.re2020} onChange={e => updateForm("re2020", e.target.checked)}
+                    style={{ width: 18, height: 18, accentColor: ACCENT, cursor: 'pointer' }} />
+                  <span style={{ fontSize: 14, fontWeight: 600, color: GRAY_900 }}>Ajouter l'attestation RE2020 (+200 €)</span>
+                </label>
+                <div style={{ fontSize: 12, color: GRAY_500, marginTop: 6, lineHeight: 1.5 }}>
+                  ℹ️ Vous avez déjà votre attestation RE2020 ou votre extension fait moins de 50 m² ? Si oui, vous pouvez passer cette étape.
                 </div>
               </div>
             )}
