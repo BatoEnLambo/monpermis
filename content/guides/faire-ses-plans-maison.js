@@ -7,7 +7,7 @@ export const faireSesPlans = {
   category: "Démarches",
   readingTime: "14 min",
   image: null,
-  relatedArticles: ["plan-de-masse", "plan-de-situation", "emprise-au-sol-surface-de-plancher", "permis-construire-refuse", "prix-permis-construire"],
+  relatedArticles: ["plan-de-masse", "plan-de-situation", "emprise-au-sol-surface-de-plancher", "permis-construire-refuse", "prix-permis-construire", "dessinateur-en-batiment"],
   content: `
 <p>Oui, vous avez le droit de faire vos plans vous-même et de déposer votre dossier en mairie sans architecte — à condition que la surface de plancher totale de votre projet ne dépasse pas 150 m². C'est la loi.</p>
 

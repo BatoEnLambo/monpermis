@@ -7,7 +7,7 @@ export const prixPermisConstruire = {
   category: "Démarches",
   readingTime: "9 min",
   image: null,
-  relatedArticles: ["declaration-prealable-travaux", "faire-ses-plans-maison", "emprise-au-sol-surface-de-plancher"],
+  relatedArticles: ["declaration-prealable-travaux", "faire-ses-plans-maison", "emprise-au-sol-surface-de-plancher", "dessinateur-en-batiment"],
   content: `
 <p>Le dépôt d'un permis de construire en mairie est <strong>gratuit</strong>. Ce qui coûte, c'est la production du dossier : entre <strong>0 €</strong> si vous faites tout vous-même et <strong>3 500 €</strong> si vous passez par un architecte. Pour la majorité des projets de moins de 150 m², un dessinateur en ligne comme PermisClair revient à <strong>350-490 €</strong> — dossier complet, livré en 5 jours. Voici le détail poste par poste.</p>
 

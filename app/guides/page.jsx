@@ -41,6 +41,7 @@ const SECTION_ORDER = {
     'cerfa-declaration-prealable',
     'etude-re2020-permis-construire',
     'prix-permis-construire',
+    'dessinateur-en-batiment',
   ],
   projets: [
     'piscine-declaration-prealable',
