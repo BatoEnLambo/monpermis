@@ -137,7 +137,7 @@ export const planDeMasse = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Votre plan de masse doit être irréprochable dès le premier dépôt</div>
   <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">PermisClair réalise vos plans et votre dossier complet, prêt à déposer en mairie. Livré en 5 jours ouvrés.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Décrire mon projet — Dès 390 €</a>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 350 €</a>
 </div>
 
 <h2>Les erreurs qui font refuser un plan de masse</h2>
@@ -196,7 +196,7 @@ export const planDeMasse = {
 
 <p>Le géomètre réalise le relevé terrain (limites, altimétrie, position des bâtiments existants), puis un dessinateur en bâtiment produit le plan de masse à partir de ces données. C'est la méthode traditionnelle, et elle offre une précision professionnelle. Le délai est en revanche plus long (2 à 6 semaines) et le coût plus élevé, surtout si vous avez besoin du relevé géomètre en plus du dessin.</p>
 
-<h3>Option 3 — Service en ligne clé en main (dès 390 €)</h3>
+<h3>Option 3 — Service en ligne clé en main (dès 350 €)</h3>
 
 <p>C'est ce que propose PermisClair : on réalise votre plan de masse ET tout le reste du dossier (plan de situation, plan de coupe, notice descriptive, formulaire CERFA, insertion paysagère). Vous décrivez votre projet, vous envoyez les informations de votre terrain, et vous recevez un dossier complet prêt à déposer en mairie. Prix fixe, délai garanti.</p>
 
@@ -209,14 +209,14 @@ export const planDeMasse = {
 <tbody>
 <tr><td><strong>Faire soi-même</strong></td><td>0 – 100 €</td><td>Variable</td><td>Non</td><td>Élevé</td></tr>
 <tr><td><strong>Géomètre + dessinateur</strong></td><td>500 – 2 000 €</td><td>2 à 6 semaines</td><td>Selon le prestataire</td><td>Faible</td></tr>
-<tr><td><strong>Service en ligne (PermisClair)</strong></td><td>Dès 390 €</td><td>5 jours ouvrés</td><td>Oui, dossier complet</td><td>Très faible</td></tr>
+<tr><td><strong>Service en ligne (PermisClair)</strong></td><td>Dès 350 €</td><td>5 jours ouvrés</td><td>Oui, dossier complet</td><td>Très faible</td></tr>
 </tbody>
 </table>
 
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Le plan de masse est le plan le plus technique du dossier</div>
   <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Confiez-le à quelqu'un qui en fait tous les jours. Plans + dossier complet, livré en 5 jours ouvrés.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Décrire mon projet — Dès 390 €</a>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 350 €</a>
 </div>
 
 <h2>Résumé — La checklist avant de déposer votre plan de masse</h2>
@@ -241,7 +241,7 @@ export const planDeMasse = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Votre dossier doit être complet et conforme dès le premier dépôt</div>
   <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Décrivez votre projet en 5 minutes — on réalise tous vos plans sur mesure et votre dossier complet. Livré en 5 jours ouvrés.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Décrire mon projet — Dès 390 €</a>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 350 €</a>
 </div>
 `,
 }

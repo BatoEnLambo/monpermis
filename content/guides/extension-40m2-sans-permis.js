@@ -210,7 +210,7 @@ export const extension40m2SansPermis = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
 <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Votre dossier d'extension complet</div>
 <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Plan de masse, plan de coupe, insertion paysagère, CERFA : on monte votre dossier de déclaration préalable de A à Z. Livré en 5 jours ouvrés.</p>
-<a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Décrire mon projet — Dès 790 €</a>
+<a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 490 €</a>
 </div>
 
 <h2>Ce qui arrive si vous ne déclarez pas</h2>
@@ -230,7 +230,7 @@ export const extension40m2SansPermis = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
 <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Sans permis, oui. Sans dossier, non.</div>
 <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Votre déclaration préalable montée par un professionnel, avec tous les plans conformes aux exigences de votre mairie. Livré en 5 jours ouvrés.</p>
-<a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Décrire mon projet — Dès 790 €</a>
+<a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 490 €</a>
 </div>
 `
 }

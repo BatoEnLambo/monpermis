@@ -1,7 +1,7 @@
 export const planExtensionMaison = {
   slug: "plan-extension-maison",
   title: "Plan extension maison : les plans à fournir et comment les obtenir (2026)",
-  description: "Plan extension maison 2026 : la liste complète des plans à fournir (DP ou PC), les spécificités extension, et comment les faire faire. Dès 790€.",
+  description: "Plan extension maison 2026 : la liste complète des plans à fournir (DP ou PC), les spécificités extension, et comment les faire faire. Dès 490€.",
   publishedAt: "2026-03-30",
   updatedAt: "2026-03-30",
   category: "Extension",
@@ -235,7 +235,7 @@ export const planExtensionMaison = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
 <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Vos plans d'extension, conformes et complets</div>
 <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Le plan de masse, le plan de coupe, les façades, l'insertion — tout doit être cohérent et conforme au PLU. PermisClair réalise tous vos plans d'extension et votre dossier complet. Livré en 5 jours ouvrés.</p>
-<a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Décrire mon projet — Dès 790 €</a>
+<a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 490 €</a>
 </div>
 
 <h2>Ce que votre extension implique sur les plans</h2>
@@ -306,7 +306,7 @@ export const planExtensionMaison = {
 </tr>
 <tr style="background:#fafaf9">
 <td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;color:#1c1c1a;font-weight:600">PermisClair</td>
-<td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;color:#1c1c1a;font-weight:600">790 €</td>
+<td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;color:#1c1c1a;font-weight:600">490 €</td>
 <td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;color:#1c1c1a;font-weight:600">5 jours</td>
 <td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;color:#1c1c1a;font-weight:600">Oui — tous les plans + CERFA + notice descriptive</td>
 <td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;color:#44433f">Extension simple ou complexe. Vous décrivez votre projet, on produit le dossier complet.</td>
@@ -361,7 +361,7 @@ export const planExtensionMaison = {
 
 <p>Chez PermisClair, le processus est simple : vous décrivez votre projet (dimensions, emplacement, matériaux souhaités) via notre formulaire en ligne, vous envoyez des photos de votre maison et quelques mesures de base. Nous produisons l'intégralité du dossier — tous les plans conformes, le CERFA pré-rempli, la notice descriptive, l'insertion paysagère — prêt à déposer en mairie.</p>
 
-<p>Le tarif est fixe : 790 €, quel que soit le type d'extension. Le délai est de 5 jours ouvrés. Si la mairie demande des pièces complémentaires (ça arrive, même avec un dossier bien fait), nous les produisons sans surcoût.</p>
+<p>Le tarif est fixe : 490 €, quel que soit le type d'extension. Le délai est de 5 jours ouvrés. Si la mairie demande des pièces complémentaires (ça arrive, même avec un dossier bien fait), nous les produisons sans surcoût.</p>
 
 <p>Pour un comparatif détaillé des coûts : <a href="/guides/extension-maison-prix">Extension maison : combien ça coûte en 2026 ?</a></p>
 
@@ -382,7 +382,7 @@ export const planExtensionMaison = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
 <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Vos plans d'extension sur mesure + votre dossier complet</div>
 <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">PermisClair produit tous vos plans d'extension, le CERFA, la notice descriptive et l'insertion paysagère. Conforme au PLU de votre commune. Livré en 5 jours ouvrés.</p>
-<a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Décrire mon projet — Dès 790 €</a>
+<a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 490 €</a>
 </div>
 `
 }

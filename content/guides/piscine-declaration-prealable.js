@@ -196,7 +196,7 @@ export const piscineDeclarationPrealable = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
 <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Votre dossier de piscine complet</div>
 <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Plans sur mesure + formulaire CERFA + toutes les pièces. Un dossier prêt à déposer, sans erreur. Livré en 5 jours ouvrés.</p>
-<a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Décrire mon projet — Dès 390 €</a>
+<a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 350 €</a>
 </div>
 
 <h2>Les distances aux limites — ce que dit le PLU</h2>
@@ -274,7 +274,7 @@ export const piscineDeclarationPrealable = {
 
 <p><strong>La prescription :</strong> les poursuites pénales se prescrivent après 6 ans. Mais la régularisation administrative, elle, <strong>ne se prescrit pas</strong>. La mairie peut vous demander de démolir votre piscine non déclarée à tout moment, même 10 ou 20 ans après sa construction.</p>
 
-<p>Mettons les chiffres en perspective : déclarer une piscine de 32 m², c'est <strong>390 € de dossier + 440 € de taxe d'aménagement</strong>, soit 830 € tout compris. Ne pas la déclarer, c'est risquer jusqu'à 192 000 € d'amende, la démolition, un redressement fiscal et un blocage à la revente.</p>
+<p>Mettons les chiffres en perspective : déclarer une piscine de 32 m², c'est <strong>350 € de dossier + 440 € de taxe d'aménagement</strong>, soit 830 € tout compris. Ne pas la déclarer, c'est risquer jusqu'à 192 000 € d'amende, la démolition, un redressement fiscal et un blocage à la revente.</p>
 
 <p>Le choix est vite fait.</p>
 
@@ -299,7 +299,7 @@ export const piscineDeclarationPrealable = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
 <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Votre piscine mérite un dossier qui passe du premier coup</div>
 <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Plans sur mesure + formulaire CERFA + toutes les pièces. Prêt à déposer, sans allers-retours avec la mairie. Livré en 5 jours ouvrés.</p>
-<a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Décrire mon projet — Dès 390 €</a>
+<a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 350 €</a>
 </div>
 `
 }

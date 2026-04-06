@@ -29,7 +29,7 @@ export default function GuideCTA({ title, text, price }) {
         fontFamily: FONT,
         transition: 'background 0.15s',
       }}>
-        {price ? `Décrire mon projet — Dès ${price}` : 'Décrire mon projet →'}
+        {price ? `Commencer mon dossier — Dès ${price}` : 'Commencer mon dossier →'}
       </Link>
     </div>
   )
