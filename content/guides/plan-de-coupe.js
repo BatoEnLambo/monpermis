@@ -176,7 +176,7 @@ export const planDeCoupe = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Le plan de coupe est un document technique</div>
   <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Il doit être cohérent avec votre plan de masse. PermisClair réalise tous vos plans et votre dossier complet. Livré en 5 jours ouvrés.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 350 €</a>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 350 €</a>
 </div>
 
 <h2>Les erreurs qui font refuser un plan de coupe</h2>
@@ -222,7 +222,7 @@ export const planDeCoupe = {
 <tbody>
 <tr><td><strong>Faire soi-même</strong> (QCAD, SketchUp, papier millimétré)</td><td>0 – 100 €</td><td>Variable (quelques heures à plusieurs jours)</td><td>Non</td><td>Personnes à l'aise avec le dessin technique, terrain plat et simple</td></tr>
 <tr><td><strong>Dessinateur indépendant</strong></td><td>100 – 300 € (plan de coupe seul)</td><td>1 à 3 semaines</td><td>Selon prestataire (souvent non)</td><td>Projets complexes, terrain en forte pente</td></tr>
-<tr><td><strong>Service en ligne (PermisClair)</strong></td><td>Dès 350 €</td><td>5 jours ouvrés</td><td><strong>Oui</strong> — tous les plans + dossier complet prêt à déposer</td><td>Tout projet, sans exception</td></tr>
+<tr><td><strong>Service en ligne (PermisClair)</strong></td><td>350 €</td><td>5 jours ouvrés</td><td><strong>Oui</strong> — tous les plans + dossier complet prêt à déposer</td><td>Tout projet, sans exception</td></tr>
 </tbody>
 </table>
 
@@ -235,7 +235,7 @@ export const planDeCoupe = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Le plan de coupe fait partie d'un dossier complet</div>
   <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Décrivez votre projet en 5 minutes — on réalise tous vos plans et votre dossier, prêt à déposer en mairie. Livré en 5 jours ouvrés.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 350 €</a>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 350 €</a>
 </div>
 `,
 }

@@ -159,7 +159,7 @@ export const extensionMaisonPrix = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Vos plans d'extension + votre dossier complet, prêt à déposer en mairie</div>
   <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Plans sur mesure + dossier prêt à déposer pour votre extension. Livré en 5 jours ouvrés.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 490 €</a>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 490 €</a>
 </div>
 
 <p>Pour savoir si votre projet nécessite une déclaration préalable ou un permis de construire, consultez notre <a href="/guides/extension-maison">guide complet extension maison</a>. Et si vous avez un doute sur le <a href="/guides/cerfa-declaration-prealable">formulaire CERFA à utiliser</a>, on a aussi un guide pour ça.</p>
@@ -298,7 +298,7 @@ export const extensionMaisonPrix = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Vous connaissez le prix de votre extension. Maintenant, il faut le dossier pour la mairie.</div>
   <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Décrivez votre projet en 5 minutes — on s'occupe des plans et du dossier complet (DP ou PC). Livré en 5 jours ouvrés.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 490 €</a>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 490 €</a>
 </div>
 `,
 }

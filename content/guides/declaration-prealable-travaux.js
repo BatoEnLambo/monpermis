@@ -125,7 +125,7 @@ export const declarationPrealableTravaux = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Monter un dossier de DP complet prend du temps et exige de la précision</div>
   <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">PermisClair réalise vos plans et votre dossier, prêt à déposer en mairie. Livré en 5 jours ouvrés.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 350 €</a>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 350 €</a>
 </div>
 
 <h2>Comment déposer votre dossier</h2>
@@ -182,7 +182,7 @@ export const declarationPrealableTravaux = {
 <tbody>
 <tr><td>Faire soi-même</td><td>0 €</td><td>Variable</td><td>Vous réalisez tout : formulaire, plans, photos. Risque d'erreur élevé.</td><td>Personnes très à l'aise avec les plans</td></tr>
 <tr><td>DIY assisté (outil en ligne)</td><td>~89 €</td><td>Immédiat</td><td>Vous faites les plans via un outil guidé en ligne</td><td>Projets très simples (clôture, petit abri)</td></tr>
-<tr><td><strong>Service clé en main (PermisClair)</strong></td><td><strong>Dès 350 €</strong></td><td><strong>5 jours ouvrés</strong></td><td>Plans sur mesure + dossier complet prêt à déposer</td><td>Tout projet nécessitant des plans techniques</td></tr>
+<tr><td><strong>Service clé en main (PermisClair)</strong></td><td><strong>350 €</strong></td><td><strong>5 jours ouvrés</strong></td><td>Plans sur mesure + dossier complet prêt à déposer</td><td>Tout projet nécessitant des plans techniques</td></tr>
 <tr><td>Dessinateur indépendant</td><td>600 – 2 000 €</td><td>2 à 6 semaines</td><td>Plans + dossier</td><td>Projets complexes, délai variable</td></tr>
 <tr><td>Architecte</td><td>1 500 – 4 000 €</td><td>4 à 8 semaines</td><td>Plans + suivi complet</td><td>Obligatoire si surface totale > 150 m²</td></tr>
 </tbody>
@@ -193,7 +193,7 @@ export const declarationPrealableTravaux = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Votre dossier de DP doit être complet dès le premier dépôt</div>
   <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Plans sur mesure + dossier prêt à déposer pour éviter les allers-retours avec la mairie. Livré en 5 jours ouvrés.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 350 €</a>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 350 €</a>
 </div>
 
 <h2>Après l'obtention : affichage, recours, validité</h2>
@@ -259,7 +259,7 @@ Mon premier dossier de DP a été retoqué pour des plans incomplets. Le plan de
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Vous n'êtes pas sûr que votre projet nécessite une DP ?</div>
   <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Décrivez votre projet en 5 minutes — on vous dit exactement ce qu'il faut et on s'en occupe. Livré en 5 jours ouvrés.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 350 €</a>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 350 €</a>
 </div>
 `,
 }

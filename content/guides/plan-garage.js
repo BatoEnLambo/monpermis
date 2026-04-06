@@ -1,7 +1,7 @@
 export const planGarage = {
   slug: "plan-garage",
   title: "Plan de garage : ce qu'il faut pour la mairie (DP ou permis, guide 2026)",
-  description: "Garage 2026 : DP ou permis ? Plans à fournir, piège de l'emprise au sol, carport, construction en limite. Guide complet + dossier dès 350€.",
+  description: "Garage 2026 : DP ou permis ? Plans à fournir, piège de l'emprise au sol, carport, construction en limite. Guide complet + dossier 350€.",
   publishedAt: "2026-03-30",
   updatedAt: "2026-03-30",
   category: "Garage",
@@ -190,7 +190,7 @@ export const planGarage = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
 <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Votre dossier de garage complet</div>
 <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Plans + CERFA + toutes les pièces. Conforme aux exigences de votre mairie. Livré en 5 jours ouvrés.</p>
-<a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 350 €</a>
+<a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 350 €</a>
 </div>
 
 <h2>Construire un garage en limite de propriété</h2>
@@ -267,7 +267,7 @@ export const planGarage = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
 <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Dossier garage complet</div>
 <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Plans conformes, CERFA pré-rempli, toutes les pièces pour votre mairie. Livré en 5 jours ouvrés.</p>
-<a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 350 €</a>
+<a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 350 €</a>
 </div>
 `
 }

@@ -164,7 +164,7 @@ export const cerfaDeclarationPrealable = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Le formulaire CERFA, c'est la partie facile</div>
   <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Les plans cotés, l'insertion paysagère et le plan de masse coté en 3 dimensions, c'est autre chose. PermisClair fait tout pour vous.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 350 €</a>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 350 €</a>
 </div>
 
 <h2>Les 5 erreurs de remplissage les plus fréquentes</h2>
@@ -230,7 +230,7 @@ export const cerfaDeclarationPrealable = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Le formulaire CERFA + les plans + le dossier complet</div>
   <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Prêt à déposer en mairie. Décrivez votre projet en 5 minutes. Livré en 5 jours ouvrés.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — Dès 350 €</a>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 350 €</a>
 </div>
 `,
 }
