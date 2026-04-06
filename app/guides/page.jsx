@@ -40,6 +40,7 @@ const SECTION_ORDER = {
     'emprise-au-sol-surface-de-plancher',
     'cerfa-declaration-prealable',
     'etude-re2020-permis-construire',
+    'prix-permis-construire',
   ],
   projets: [
     'piscine-declaration-prealable',

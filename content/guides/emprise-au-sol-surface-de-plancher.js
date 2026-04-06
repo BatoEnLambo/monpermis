@@ -7,7 +7,7 @@ export const empriseAuSolSurfaceDePlancher = {
   category: "Démarches",
   readingTime: "14 min",
   image: null,
-  relatedArticles: ["extension-maison", "extension-maison-prix", "declaration-prealable-travaux", "faire-ses-plans-maison"],
+  relatedArticles: ["extension-maison", "extension-maison-prix", "declaration-prealable-travaux", "faire-ses-plans-maison", "prix-permis-construire"],
   content: `
 <p>L'emprise au sol, c'est l'ombre que votre maison projette au sol — vue du ciel. La surface de plancher, c'est l'espace intérieur habitable de tous les niveaux cumulés. Ces deux notions ne mesurent pas la même chose, mais elles déterminent <strong>ensemble</strong> si vous avez besoin d'une <a href="/guides/declaration-prealable-travaux">déclaration préalable ou d'un permis de construire</a>, et si un architecte est obligatoire.</p>
 
