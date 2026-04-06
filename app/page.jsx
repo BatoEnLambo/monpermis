@@ -16,7 +16,7 @@ export default function HomePage() {
 
       <div className="video-section" style={{ background: '#f5f4f2', borderRadius: 16, padding: '48px 24px', marginTop: 28, textAlign: 'center' }}>
         <h2 style={{ fontSize: 28, fontWeight: 700, margin: '0 0 32px', letterSpacing: '-0.02em', color: '#1c1c1a' }}>
-          Découvrez PermisClair en 1 minute
+          Baptiste vous explique en 1 minute
         </h2>
         <div style={{ maxWidth: 640, margin: '0 auto', background: '#ffffff', borderRadius: 16, boxShadow: '0 2px 12px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
           <video controls preload="metadata" playsInline style={{ width: '100%', borderRadius: 0 }}>

@@ -18,10 +18,10 @@ export default function HeroSection() {
         Extension, garage, piscine, maison : on s'occupe de vos plans et de votre dossier.
       </h1>
       <p className="hero-subtitle" style={{ fontSize: 16, fontWeight: 400, color: GRAY_500, lineHeight: 1.7, maxWidth: 540, margin: "0 auto 32px" }}>
-        Décrivez votre projet en 5 minutes. Prix fixe, dossier accepté en mairie ou corrigé gratuitement.
+        Plans sur mesure + dossier complet, prêt à déposer en mairie. Dès 350€, accepté du premier coup ou corrigé gratuitement.
       </p>
       <Link href="/formulaire" className="cta-btn" style={{ display: "inline-block", background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", textDecoration: "none" }}>
-        Décrire mon projet →
+        Commencer mon dossier →
       </Link>
     </div>
   )

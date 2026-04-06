@@ -35,7 +35,7 @@ export default function HowItWorks() {
       </div>
       <div className="steps-cta" style={{ textAlign: "center", marginTop: 36 }}>
         <Link href="/formulaire" className="cta-btn" style={{ display: "inline-block", background: ACCENT, color: WHITE, border: "none", padding: "14px 32px", borderRadius: 10, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: FONT, transition: "all 0.15s", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", textDecoration: "none" }}>
-          Décrire mon projet →
+          Commencer mon dossier →
         </Link>
       </div>
     </div>
