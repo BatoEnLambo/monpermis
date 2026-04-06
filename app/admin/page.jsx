@@ -563,7 +563,8 @@ export default function AdminPage() {
                             <div><strong>Fondation :</strong> {label(d.fondation)}</div>
                             <div><strong>Hauteur faîtage :</strong> {nspOrVal(d.hauteur_faitage, d.hauteur_faitage_nsp, 'm')}</div>
                             <div><strong>Hauteur égout :</strong> {nspOrVal(d.hauteur_egout, d.hauteur_egout_nsp, 'm')}</div>
-                            <div><strong>Pente toiture :</strong> {nspOrVal(d.pente_toiture, d.pente_toiture_nsp, '°')}</div>
+                            <div><strong>Type toiture :</strong> {d.roof_type ? (d.roof_type === 'autre' ? `Autre${d.roof_type_other ? ` (${d.roof_type_other})` : ''}` : label(d.roof_type)) : '-'}</div>
+                            {d.roof_type !== 'plat' && <div><strong>Pente toiture :</strong> {nspOrVal(d.pente_toiture, d.pente_toiture_nsp, '°')}</div>}
                             <div><strong>Débord toit :</strong> {nspOrVal(d.debord_toit, d.debord_toit_nsp, 'cm')}</div>
                             <div><strong>Façade :</strong> {label(d.materiau_facade)}{d.materiau_facade_detail ? ` (${d.materiau_facade_detail})` : ''}</div>
                             <div><strong>Couverture :</strong> {label(d.materiau_couverture)}</div>

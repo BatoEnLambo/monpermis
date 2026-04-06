@@ -36,6 +36,17 @@ const COUVERTURE_OPTIONS = [
   { value: 'autre', label: 'Autre' },
 ]
 
+const ROOF_TYPE_OPTIONS = [
+  { value: '2_pans', label: 'Toit 2 pans (classique)' },
+  { value: '2_pans_asymetriques', label: 'Toit 2 pans asymétriques' },
+  { value: '4_pans', label: 'Toit 4 pans (croupe)' },
+  { value: 'pavillon', label: 'Toit pavillon (4 pans égaux)' },
+  { value: 'monopente', label: 'Toit monopente (appentis)' },
+  { value: 'mansarde', label: 'Toit mansardé (Mansart)' },
+  { value: 'plat', label: 'Toit plat (terrasse)' },
+  { value: 'autre', label: 'Autre (préciser)' },
+]
+
 const MENUISERIE_OPTIONS = [
   { value: 'pvc', label: 'PVC' },
   { value: 'aluminium', label: 'Aluminium' },
@@ -129,7 +140,8 @@ export default function ConstructionDetailsForm({ data, onFieldUpdate }) {
     if (d.fondation) count++
     if (d.hauteur_faitage || d.hauteur_faitage_nsp) count++
     if (d.hauteur_egout || d.hauteur_egout_nsp) count++
-    if (d.pente_toiture || d.pente_toiture_nsp) count++
+    if (d.roof_type) count++
+    if (d.roof_type !== 'plat' && (d.pente_toiture || d.pente_toiture_nsp)) count++
     if (d.debord_toit || d.debord_toit_nsp) count++
     if (d.materiau_facade) count++
     if (d.materiau_couverture) count++
@@ -191,7 +203,35 @@ export default function ConstructionDetailsForm({ data, onFieldUpdate }) {
 
       <NumberWithNsp label="Hauteur au faîtage" field="hauteur_faitage" nspField="hauteur_faitage_nsp" value={d.hauteur_faitage} nspValue={d.hauteur_faitage_nsp} unit="m" step={0.01} onFieldUpdate={onFieldUpdate} />
       <NumberWithNsp label="Hauteur à l'égout" field="hauteur_egout" nspField="hauteur_egout_nsp" value={d.hauteur_egout} nspValue={d.hauteur_egout_nsp} unit="m" step={0.01} onFieldUpdate={onFieldUpdate} />
-      <NumberWithNsp label="Pente de toiture" field="pente_toiture" nspField="pente_toiture_nsp" value={d.pente_toiture} nspValue={d.pente_toiture_nsp} unit="°" step={1} onFieldUpdate={onFieldUpdate} />
+      {/* Type de toiture */}
+      <div style={{ marginTop: 16 }}>
+        <label style={labelStyle}>Type de toiture</label>
+        <select
+          value={d.roof_type || ''}
+          onChange={e => onFieldUpdate('roof_type', e.target.value || null)}
+          style={selectStyle}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+        >
+          <option value="">Sélectionner...</option>
+          {ROOF_TYPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </select>
+        {d.roof_type === 'autre' && (
+          <input
+            type="text"
+            value={d.roof_type_other || ''}
+            onChange={e => onFieldUpdate('roof_type_other', e.target.value || null)}
+            placeholder="Précisez le type de toiture"
+            style={{ ...inputStyle, marginTop: 8 }}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+          />
+        )}
+      </div>
+
+      {d.roof_type !== 'plat' && (
+        <NumberWithNsp label="Pente de toiture" field="pente_toiture" nspField="pente_toiture_nsp" value={d.pente_toiture} nspValue={d.pente_toiture_nsp} unit="°" step={1} onFieldUpdate={onFieldUpdate} />
+      )}
       <NumberWithNsp label="Débords de toit" field="debord_toit" nspField="debord_toit_nsp" value={d.debord_toit} nspValue={d.debord_toit_nsp} unit="cm" step={1} onFieldUpdate={onFieldUpdate} />
 
       {/* Matériau de façade */}

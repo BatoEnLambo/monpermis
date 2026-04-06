@@ -204,13 +204,14 @@ function ProjetContent() {
     if (d.client_departement_naissance) count++
     if (d.client_telephone) count++
     if (d.client_email) count++
-    // Construction (10)
+    // Construction (11)
     if (d.dimensions_longueur) count++
     if (d.dimensions_largeur) count++
     if (d.fondation) count++
     if (d.hauteur_faitage || d.hauteur_faitage_nsp) count++
     if (d.hauteur_egout || d.hauteur_egout_nsp) count++
-    if (d.pente_toiture || d.pente_toiture_nsp) count++
+    if (d.roof_type) count++
+    if (d.roof_type !== 'plat' && (d.pente_toiture || d.pente_toiture_nsp)) count++
     if (d.debord_toit || d.debord_toit_nsp) count++
     if (d.materiau_facade) count++
     if (d.materiau_couverture) count++
@@ -241,7 +242,7 @@ function ProjetContent() {
     if (d.isolation_type) count++
     // Photos
     count += photoCount
-    return Math.round((count / 33) * 100)
+    return Math.round((count / 34) * 100)
   }, [details, photoCount, croquisCount])
 
   // Sauvegarde du pourcentage en DB pour l'admin et les relances
