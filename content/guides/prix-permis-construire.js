@@ -9,7 +9,7 @@ export const prixPermisConstruire = {
   image: null,
   relatedArticles: ["declaration-prealable-travaux", "faire-ses-plans-maison", "emprise-au-sol-surface-de-plancher", "dessinateur-en-batiment"],
   content: `
-<p>Le dépôt d'un permis de construire en mairie est <strong>gratuit</strong>. Ce qui coûte, c'est la production du dossier : entre <strong>0 €</strong> si vous faites tout vous-même et <strong>3 500 €</strong> si vous passez par un architecte. Pour la majorité des projets de moins de 150 m², un dessinateur en ligne comme PermisClair revient à <strong>350-490 €</strong> — dossier complet, livré en 5 jours. Voici le détail poste par poste.</p>
+<p>Le dépôt d'un permis de construire en mairie est <strong>gratuit</strong>. Ce qui coûte, c'est la production du dossier : entre <strong>0 €</strong> si vous faites tout vous-même et <strong>3 500 €</strong> si vous passez par un architecte. Pour la majorité des projets de moins de 150 m², un dessinateur en ligne comme PermisClair revient à <strong>350-590 €</strong> — dossier complet, livré en 5 jours. Voici le détail poste par poste.</p>
 
 <h2>Le permis de construire lui-même est gratuit</h2>
 
@@ -64,7 +64,7 @@ export const prixPermisConstruire = {
 
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Votre dossier complet, prêt à déposer</div>
-  <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Décrivez votre projet en 5 minutes — on s'occupe des plans et du dossier. Piscine, garage, terrasse : 350 €. Extension ou maison neuve : 490 €. Livré en 5 jours ouvrés.</p>
+  <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Décrivez votre projet en 5 minutes — on s'occupe des plans et du dossier. Piscine, garage, terrasse : 350 €. Extension ou maison neuve : 590 €. Livré en 5 jours ouvrés.</p>
   <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 350 €</a>
 </div>
 
@@ -168,8 +168,8 @@ export const prixPermisConstruire = {
 
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Le dossier est le poste que vous maîtrisez</div>
-  <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Taxes et assurances, vous ne choisissez pas. Le dossier, si. Chez PermisClair : 350 € (DP) ou 490 € (PC), prix fixe, livré en 5 jours. Modifications gratuites si la mairie demande des corrections.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 490 €</a>
+  <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Taxes et assurances, vous ne choisissez pas. Le dossier, si. Chez PermisClair : 350 € (DP) ou 590 € (PC), prix fixe, livré en 5 jours. Modifications gratuites si la mairie demande des corrections.</p>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 590 €</a>
 </div>
 
 <h2>Comment réduire le coût de votre permis</h2>
@@ -208,7 +208,7 @@ export const prixPermisConstruire = {
 </thead>
 <tbody>
 <tr><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Dépôt en mairie</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;font-weight:600">0 €</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Au dépôt</td></tr>
-<tr><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Dossier (dessinateur en ligne)</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;font-weight:600">490 €</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Avant le dépôt</td></tr>
+<tr><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Dossier (dessinateur en ligne)</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;font-weight:600">590 €</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Avant le dépôt</td></tr>
 <tr><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Attestation Bbio (RE2020)</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;font-weight:600">200 €</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Avant le dépôt</td></tr>
 <tr><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Taxe d'aménagement</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;font-weight:600">≈ 4 683 €</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Après achèvement</td></tr>
 <tr><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">RAP</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;font-weight:600">≈ 500 €</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Après achèvement</td></tr>
@@ -220,8 +220,8 @@ export const prixPermisConstruire = {
 
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Prêt à lancer votre permis de construire ?</div>
-  <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Décrivez votre projet en 5 minutes. PermisClair s'occupe des plans et du dossier complet. Prix fixe : 350 € (DP) ou 490 € (PC). Livré en 5 jours ouvrés. Modifications gratuites.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 490 €</a>
+  <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Décrivez votre projet en 5 minutes. PermisClair s'occupe des plans et du dossier complet. Prix fixe : 350 € (DP) ou 590 € (PC). Livré en 5 jours ouvrés. Modifications gratuites.</p>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 590 €</a>
 </div>
 
 <p><em>Vous n'avez pas besoin d'un permis de construire ? <a href="/guides/declaration-prealable-travaux">Vérifiez si une déclaration préalable suffit</a>.</em></p>

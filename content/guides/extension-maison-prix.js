@@ -97,7 +97,7 @@ export const extensionMaisonPrix = {
 </thead>
 <tbody>
 <tr><td>Construction (ossature bois, 30 m² × 1 800 €/m²)</td><td>54 000 €</td></tr>
-<tr><td>Plans + dossier d'urbanisme (PermisClair)</td><td>490 €</td></tr>
+<tr><td>Plans + dossier d'urbanisme (PermisClair)</td><td>590 €</td></tr>
 <tr><td>Taxe d'aménagement (30 m² × 892 € × 5,5 %)</td><td>1 472 €</td></tr>
 <tr><td>Étude de sol (G2 AVP)</td><td>2 000 €</td></tr>
 <tr><td>Raccordement électrique</td><td>800 €</td></tr>
@@ -123,7 +123,7 @@ export const extensionMaisonPrix = {
 </thead>
 <tbody>
 <tr><td>Faire soi-même</td><td>0 €</td><td>Variable</td><td>Si vous maîtrisez le dessin technique et le PLU</td><td>Formulaire + plans faits maison — risque de refus élevé</td></tr>
-<tr><td><strong>PermisClair</strong></td><td><strong>490 €</strong></td><td><strong>5 jours ouvrés</strong></td><td>Extension ou surélévation, tout niveau de complexité</td><td>Plans sur mesure + dossier complet prêt à déposer</td></tr>
+<tr><td><strong>PermisClair</strong></td><td><strong>590 €</strong></td><td><strong>5 jours ouvrés</strong></td><td>Extension ou surélévation, tout niveau de complexité</td><td>Plans sur mesure + dossier complet prêt à déposer</td></tr>
 <tr><td>Dessinateur indépendant</td><td>600 – 2 000 €</td><td>2 à 6 semaines</td><td>Projets complexes, relation locale</td><td>Plans + dossier (qualité variable selon le prestataire)</td></tr>
 <tr><td>Architecte</td><td>1 500 – 4 000 € (plans seuls) ou 8-10 % du montant travaux (mission complète)</td><td>4 à 8 semaines</td><td>Obligatoire si surface totale après travaux > 150 m²</td><td>Plans + suivi de chantier (mission complète)</td></tr>
 </tbody>
@@ -133,7 +133,7 @@ export const extensionMaisonPrix = {
 
 <p>L'architecte n'est obligatoire que dans un seul cas : si la surface de plancher totale de votre maison <strong>après travaux</strong> dépasse 150 m². Exemple : votre maison fait 120 m² et vous ajoutez 40 m² → total 160 m² → architecte obligatoire.</p>
 
-<p>Si votre maison fait 100 m² et que vous ajoutez 30 m² → total 130 m² → vous avez le choix de l'option. Dans ce cas, payer un architecte 3 000 à 4 000 € pour les plans seuls alors que le dossier peut être réalisé pour 490 € mérite réflexion.</p>
+<p>Si votre maison fait 100 m² et que vous ajoutez 30 m² → total 130 m² → vous avez le choix de l'option. Dans ce cas, payer un architecte 3 000 à 4 000 € pour les plans seuls alors que le dossier peut être réalisé pour 590 € mérite réflexion.</p>
 
 <h3>Le vrai calcul : plans vs budget total</h3>
 
@@ -145,7 +145,7 @@ export const extensionMaisonPrix = {
 </thead>
 <tbody>
 <tr><td>Faire soi-même</td><td>0 €</td><td>0 % — mais un refus de dossier coûte 2 à 6 mois de retard</td></tr>
-<tr><td>PermisClair</td><td>490 €</td><td>1,6 %</td></tr>
+<tr><td>PermisClair</td><td>590 €</td><td>1,2 %</td></tr>
 <tr><td>Dessinateur</td><td>1 500 €</td><td>3 %</td></tr>
 <tr><td>Architecte (plans seuls)</td><td>3 000 €</td><td>6 %</td></tr>
 <tr><td>Architecte (mission complète 8 %)</td><td>4 000 €</td><td>8 %</td></tr>
@@ -159,7 +159,7 @@ export const extensionMaisonPrix = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Vos plans d'extension + votre dossier complet, prêt à déposer en mairie</div>
   <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Plans sur mesure + dossier prêt à déposer pour votre extension. Livré en 5 jours ouvrés.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 490 €</a>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 590 €</a>
 </div>
 
 <p>Pour savoir si votre projet nécessite une déclaration préalable ou un permis de construire, consultez notre <a href="/guides/extension-maison">guide complet extension maison</a>. Et si vous avez un doute sur le <a href="/guides/cerfa-declaration-prealable">formulaire CERFA à utiliser</a>, on a aussi un guide pour ça.</p>
@@ -265,7 +265,7 @@ export const extensionMaisonPrix = {
 
 <p><strong>Réaliser les finitions soi-même.</strong> Peinture, pose de sol (parquet flottant, carrelage), pose de plinthes — ces postes représentent 15 à 20 % du budget total. Si vous avez le temps et un minimum d'habileté manuelle, c'est l'économie la plus directe. Demandez à votre constructeur un devis « hors d'eau, hors d'air + cloisonnement » et gérez les finitions vous-même.</p>
 
-<p><strong>Ne pas négliger le poste plans et permis.</strong> Un dossier mal monté qui revient en mairie avec des demandes de pièces complémentaires, c'est 2 à 4 mois de retard. Pendant ce temps, vos devis expirent, les prix des matériaux bougent, et vos artisans se sont engagés sur d'autres chantiers. Investir 490 € dans un dossier professionnel qui passe du premier coup est l'une des meilleures économies que vous puissiez faire.</p>
+<p><strong>Ne pas négliger le poste plans et permis.</strong> Un dossier mal monté qui revient en mairie avec des demandes de pièces complémentaires, c'est 2 à 4 mois de retard. Pendant ce temps, vos devis expirent, les prix des matériaux bougent, et vos artisans se sont engagés sur d'autres chantiers. Investir 590 € dans un dossier professionnel qui passe du premier coup est l'une des meilleures économies que vous puissiez faire.</p>
 
 <p>En combinant plusieurs de ces leviers, une économie de 15 à 25 % sur le budget total est réaliste. Sur une extension à 60 000 €, cela représente 9 000 à 15 000 € — de quoi financer la totalité des postes « invisibles » (plans, taxe, frais annexes) sans dépasser votre enveloppe initiale.</p>
 
@@ -298,7 +298,7 @@ export const extensionMaisonPrix = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Vous connaissez le prix de votre extension. Maintenant, il faut le dossier pour la mairie.</div>
   <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Décrivez votre projet en 5 minutes — on s'occupe des plans et du dossier complet (DP ou PC). Livré en 5 jours ouvrés.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 490 €</a>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 590 €</a>
 </div>
 `,
 }

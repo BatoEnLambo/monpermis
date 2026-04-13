@@ -177,7 +177,7 @@ export const faireSesPlans = {
 </thead>
 <tbody>
 <tr><td><strong>Projet simple</strong> (clôture, abri de jardin < 20 m²) sur terrain plat</td><td>✅ Oui — faisable avec ArchiFacile en quelques heures</td><td>Pas nécessaire</td></tr>
-<tr><td><strong>Extension < 40 m²</strong> sur terrain plat, vous maîtrisez SketchUp ou QCAD</td><td>⚠️ Possible — mais comptez 20 à 40 heures de travail</td><td>Recommandé si votre temps vaut plus que 350-490 €</td></tr>
+<tr><td><strong>Extension < 40 m²</strong> sur terrain plat, vous maîtrisez SketchUp ou QCAD</td><td>⚠️ Possible — mais comptez 20 à 40 heures de travail</td><td>Recommandé si votre temps vaut plus que 350-590 €</td></tr>
 <tr><td><strong>Extension sur terrain en pente</strong></td><td>❌ Risqué — les cotes NGF et le plan de coupe sont complexes</td><td>✅ Fortement recommandé</td></tr>
 <tr><td><strong>Maison neuve</strong> < 150 m²</td><td>❌ Très risqué — le dossier PC est nettement plus exigeant qu'une <a href="/guides/declaration-prealable-travaux">déclaration préalable</a></td><td>✅ Indispensable (ou architecte si > 150 m²)</td></tr>
 <tr><td><strong>Zone ABF</strong> (périmètre monument historique)</td><td>❌ L'ABF est très exigeant sur la qualité graphique des plans</td><td>✅ Indispensable</td></tr>
@@ -186,7 +186,7 @@ export const faireSesPlans = {
 
 <h3>Le calcul économique</h3>
 
-<p>Soyons concrets. Si votre temps vaut plus de 15 €/h, déléguer un dossier à 490 € est rentable dès que le DIY dépasse 50 heures de travail. Et pour un permis de construire complet fait seul, 50 heures est une estimation <strong>basse</strong> — beaucoup de particuliers y passent 60 à 80 heures en comptant l'apprentissage du logiciel, les allers-retours avec la mairie, et les corrections.</p>
+<p>Soyons concrets. Si votre temps vaut plus de 15 €/h, déléguer un dossier à 590 € est rentable dès que le DIY dépasse 50 heures de travail. Et pour un permis de construire complet fait seul, 50 heures est une estimation <strong>basse</strong> — beaucoup de particuliers y passent 60 à 80 heures en comptant l'apprentissage du logiciel, les allers-retours avec la mairie, et les corrections.</p>
 
 <p>Et on ne parle même pas du coût d'un refus : 4 à 8 semaines de retard sur votre projet, avec les conséquences en chaîne sur vos artisans, votre prêt, et votre calendrier de travaux. Un artisan qui a réservé un créneau pour vos travaux et qui doit décaler de 2 mois, c'est un devis qui peut augmenter — voire un artisan qui ne sera plus disponible.</p>
 

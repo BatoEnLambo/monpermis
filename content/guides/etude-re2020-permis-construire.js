@@ -137,7 +137,7 @@ export const etudeRe2020PermisConstruire = {
 
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Plans + dossier PC + étude RE2020 : tout en un</div>
-  <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">PermisClair réalise vos plans et votre dossier de permis de construire. Un thermicien partenaire certifié s'occupe de l'étude RE2020. Vous recevez un dossier complet, prêt à déposer. 490 € — Livré en 5 jours ouvrés.</p>
+  <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">PermisClair réalise vos plans et votre dossier de permis de construire. Un thermicien partenaire certifié s'occupe de l'étude RE2020. Vous recevez un dossier complet, prêt à déposer. 590 € — Livré en 5 jours ouvrés.</p>
   <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier</a>
 </div>
 
@@ -291,7 +291,7 @@ export const etudeRe2020PermisConstruire = {
 
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Votre permis de construire complet, RE2020 incluse</div>
-  <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">PermisClair s'occupe de vos plans et de votre dossier de permis. Un thermicien partenaire certifié réalise l'étude RE2020. Vous recevez tout, prêt à déposer — sans risque de pièce manquante. 490 € — Livré en 5 jours ouvrés.</p>
+  <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">PermisClair s'occupe de vos plans et de votre dossier de permis. Un thermicien partenaire certifié réalise l'étude RE2020. Vous recevez tout, prêt à déposer — sans risque de pièce manquante. 590 € — Livré en 5 jours ouvrés.</p>
   <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier</a>
 </div>
 
@@ -314,14 +314,14 @@ export const etudeRe2020PermisConstruire = {
 
 <h3>Ce que ça coûte</h3>
 
-<p>Le tarif dépend de votre projet. Pour une construction neuve ou une <a href="/guides/extension-maison">extension de maison</a> nécessitant un permis de construire avec RE2020, comptez 490 € pour l'ensemble plans + dossier PC + étude RE2020.</p>
+<p>Le tarif dépend de votre projet. Pour une construction neuve ou une <a href="/guides/extension-maison">extension de maison</a> nécessitant un permis de construire avec RE2020, comptez 590 € pour l'ensemble plans + dossier PC + étude RE2020.</p>
 
 <p>Décrivez votre projet via le formulaire, nous vous envoyons un devis détaillé sous 48 heures avec le périmètre exact de la prestation.</p>
 
 
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Plans + dossier PC + RE2020 : tout en un</div>
-  <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Un seul interlocuteur pour votre permis de construire complet. Plans, dossier administratif et étude RE2020 coordonnés ensemble. 490 € — Devis sous 48h.</p>
+  <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Un seul interlocuteur pour votre permis de construire complet. Plans, dossier administratif et étude RE2020 coordonnés ensemble. 590 € — Devis sous 48h.</p>
   <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier</a>
 </div>
 

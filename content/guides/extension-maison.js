@@ -99,7 +99,7 @@ export const extensionMaison = {
 <tr><td>Architecte</td><td>1 500 – 4 000 €</td><td>4 à 8 semaines</td><td>Plans + suivi de chantier éventuel</td></tr>
 <tr><td>Maître d'œuvre</td><td>1 000 – 3 000 €</td><td>3 à 6 semaines</td><td>Plans + coordination des artisans</td></tr>
 <tr><td>Dessinateur indépendant</td><td>600 – 2 000 €</td><td>2 à 6 semaines</td><td>Plans + dossier administratif</td></tr>
-<tr><td>Service en ligne (PermisClair)</td><td>490 €</td><td>5 jours ouvrés</td><td>Plans sur mesure + dossier complet prêt à déposer</td></tr>
+<tr><td>Service en ligne (PermisClair)</td><td>590 €</td><td>5 jours ouvrés</td><td>Plans sur mesure + dossier complet prêt à déposer</td></tr>
 <tr><td>Faire soi-même</td><td>0 – 100 €</td><td>Variable</td><td>Risque d'erreur élevé, refus fréquents</td></tr>
 </tbody>
 </table>
@@ -109,7 +109,7 @@ export const extensionMaison = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Vous ne voulez pas gérer la partie plans et dossier ?</div>
   <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Décrivez votre projet en 5 minutes, on s'occupe du reste. Plans sur mesure + dossier complet prêt à déposer en mairie. Livré en 5 jours ouvrés.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 490 €</a>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 590 €</a>
 </div>
 
 <h3>La taxe d'aménagement : le coût caché</h3>
@@ -188,7 +188,7 @@ export const extensionMaison = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Pas envie de vous battre avec les plans de coupe et l'insertion paysagère ?</div>
   <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">On réalise vos plans sur mesure et votre dossier complet, prêt à déposer en mairie. Livré en 5 jours ouvrés.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 490 €</a>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 590 €</a>
 </div>
 
 <h2>Les règles du PLU à vérifier avant de dessiner</h2>
@@ -300,7 +300,7 @@ export const extensionMaison = {
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Votre projet d'extension mérite un dossier solide dès le premier dépôt</div>
   <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Décrivez votre projet en 5 minutes — on réalise vos plans sur mesure et votre dossier complet, prêt à déposer en mairie. Livré en 5 jours ouvrés.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 490 €</a>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 590 €</a>
 </div>
 `,
 }

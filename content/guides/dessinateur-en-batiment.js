@@ -81,7 +81,7 @@ export const desssinateurEnBatiment = {
 
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Votre projet fait moins de 150 m² ?</div>
-  <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Décrivez votre projet en 5 minutes — on s'occupe des plans et du dossier complet. Extension 490 €, maison neuve 490 €, DP 350 €. Livré en 5 jours ouvrés.</p>
+  <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Décrivez votre projet en 5 minutes — on s'occupe des plans et du dossier complet. Extension 590 €, maison neuve 590 €, DP 350 €. Livré en 5 jours ouvrés.</p>
   <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 350 €</a>
 </div>
 
@@ -120,8 +120,8 @@ export const desssinateurEnBatiment = {
 
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Des prix fixes, sans surprise</div>
-  <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Chez PermisClair : DP 350 €, extension ou surélévation 490 €, maison neuve 490 €. Pas de devis, pas de supplément. Vous savez ce que vous payez avant de commencer.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 490 €</a>
+  <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">Chez PermisClair : DP 350 €, extension ou surélévation 590 €, maison neuve 590 €. Pas de devis, pas de supplément. Vous savez ce que vous payez avant de commencer.</p>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 590 €</a>
 </div>
 
 <h2>Dans quels cas choisir un dessinateur ?</h2>
@@ -138,11 +138,11 @@ export const desssinateurEnBatiment = {
 </thead>
 <tbody>
 <tr><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Piscine</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4"><a href="/guides/declaration-prealable-travaux">Déclaration préalable</a></td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;font-weight:600">350 €</td></tr>
-<tr><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Garage ou carport</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">DP ou PC selon surface</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;font-weight:600">350 – 490 €</td></tr>
+<tr><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Garage ou carport</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">DP ou PC selon surface</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;font-weight:600">350 – 590 €</td></tr>
 <tr><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Terrasse couverte</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Déclaration préalable</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;font-weight:600">350 €</td></tr>
-<tr><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Extension &lt; 150 m² total</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Permis de construire</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;font-weight:600">490 €</td></tr>
-<tr><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Surélévation</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Permis de construire</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;font-weight:600">490 €</td></tr>
-<tr><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Maison neuve &lt; 150 m²</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Permis de construire</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;font-weight:600">490 €</td></tr>
+<tr><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Extension &lt; 150 m² total</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Permis de construire</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;font-weight:600">590 €</td></tr>
+<tr><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Surélévation</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Permis de construire</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;font-weight:600">590 €</td></tr>
+<tr><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Maison neuve &lt; 150 m²</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4">Permis de construire</td><td style="padding:10px 14px;border-bottom:1px solid #e8e7e4;font-weight:600">590 €</td></tr>
 </tbody>
 </table>
 
@@ -196,8 +196,8 @@ export const desssinateurEnBatiment = {
 
 <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:10px;padding:20px 24px;margin:28px 0">
   <div style="font-size:15px;font-weight:700;color:#1c1c1a;margin-bottom:6px">Plans + dossier complet à prix fixe</div>
-  <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">DP 350 €. Extension ou surélévation 490 €. Maison neuve 490 €. Prêt en 5 jours ouvrés. Modifications gratuites si la mairie en demande.</p>
-  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 490 €</a>
+  <p style="font-size:14px;color:#44433f;line-height:1.6;margin:0 0 14px">DP 350 €. Extension ou surélévation 590 €. Maison neuve 590 €. Prêt en 5 jours ouvrés. Modifications gratuites si la mairie en demande.</p>
+  <a href="/formulaire" style="display:inline-block;background:#1a5c3a;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none">Commencer mon dossier — 590 €</a>
 </div>
 `
 }
