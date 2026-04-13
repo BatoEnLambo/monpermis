@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import '../../styles/form.css'
 import { supabase } from '../../lib/supabase'
 import { generateToken } from '../../lib/token'
+import { getProjectPricing, computePrice, OPTIONS } from '../../src/config/pricing'
 
 const ACCENT = "#1a5c3a"
 const ACCENT_LIGHT = "#e8f5ee"
@@ -23,18 +24,7 @@ const MAISON_TYPES = ["Maison neuve"]
 const ROOF_TYPES = ["Toit plat", "Toit 2 pans", "Toit 4 pans", "Toit monopente", "Je ne sais pas encore"]
 const STYLES = ["Moderne / Contemporain", "Traditionnel", "Ossature bois", "Cubique / Toit plat", "Autre"]
 
-function getPricing(projectType) {
-  switch (projectType) {
-    case "Piscine": return { price: 350, label: "Déclaration préalable — Piscine", delay: "3 jours ouvrés" }
-    case "Garage / Carport": return { price: 350, label: "Déclaration préalable — Garage / Carport", delay: "3 jours ouvrés" }
-    case "Terrasse / Pergola": return { price: 350, label: "Déclaration préalable — Terrasse / Pergola", delay: "3 jours ouvrés" }
-    case "Extension / Agrandissement": return { price: 490, label: "Permis de construire — Extension", delay: "5 jours ouvrés" }
-    case "Surélévation": return { price: 490, label: "Permis de construire — Surélévation", delay: "5 jours ouvrés" }
-    case "Maison neuve": return { price: 490, label: "Permis de construire — Maison neuve", delay: "5 jours ouvrés" }
-    case "Autre": return { price: 490, label: "Projet sur mesure", delay: "5 jours ouvrés" }
-    default: return { price: 490, label: "Projet sur mesure", delay: "5 jours ouvrés" }
-  }
-}
+// getPricing remplacé par getProjectPricing depuis src/config/pricing.js
 
 function Input({ label, value, onChange, placeholder, type = "text", max }) {
   return (
@@ -171,14 +161,15 @@ function FormulaireContent() {
     return true
   }
 
-  const pricing = form.projectType ? getPricing(form.projectType) : null
+  const pricing = form.projectType ? getProjectPricing(form.projectType) : null
 
   const submitProject = async () => {
     const reference = 'PC-' + Date.now().toString(36).toUpperCase()
     const token = generateToken()
-    const currentPricing = form.projectType ? getPricing(form.projectType) : null
+    const currentPricing = form.projectType ? getProjectPricing(form.projectType) : null
     const basePrice = currentPricing ? currentPricing.price : null
-    const price = basePrice && form.re2020 ? basePrice + 200 : basePrice
+    const activeOptions = form.re2020 ? ['RE2020'] : []
+    const price = basePrice ? computePrice({ category: currentPricing.category, options: activeOptions }) : basePrice
 
     const fullDescription = form.poolType
       ? `Type de piscine : ${form.poolType}. ${form.description}`.trim()
@@ -253,7 +244,7 @@ function FormulaireContent() {
                   }}>
                     {form.re2020 && <span style={{ color: WHITE, fontSize: 14, fontWeight: 700, lineHeight: 1 }}>✓</span>}
                   </div>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: GRAY_900 }}>Ajouter l'attestation RE2020 (+200 €)</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: GRAY_900 }}>Ajouter l'attestation RE2020 (+{OPTIONS.RE2020.price} €)</span>
                 </label>
                 <div style={{ fontSize: 12, color: GRAY_500, marginTop: 6, lineHeight: 1.5 }}>
                   ℹ️ Vous avez déjà votre attestation RE2020 ? Si oui, vous pouvez passer cette étape.
@@ -275,7 +266,7 @@ function FormulaireContent() {
                   }}>
                     {form.re2020 && <span style={{ color: WHITE, fontSize: 14, fontWeight: 700, lineHeight: 1 }}>✓</span>}
                   </div>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: GRAY_900 }}>Ajouter l'attestation RE2020 (+200 €)</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: GRAY_900 }}>Ajouter l'attestation RE2020 (+{OPTIONS.RE2020.price} €)</span>
                 </label>
                 <div style={{ fontSize: 12, color: GRAY_500, marginTop: 6, lineHeight: 1.5 }}>
                   ℹ️ Vous avez déjà votre attestation RE2020 ou votre extension fait moins de 50 m² ? Si oui, vous pouvez passer cette étape.
@@ -502,13 +493,13 @@ function FormulaireContent() {
                 {form.re2020 && (
                   <div style={{ borderTop: `1px solid ${ACCENT}33`, marginTop: 10, paddingTop: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div style={{ fontSize: 12, color: ACCENT }}>+ Option RE2020 (attestation Bbio)</div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: ACCENT }}>+200 €</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: ACCENT }}>+{OPTIONS.RE2020.price} €</div>
                   </div>
                 )}
                 {form.re2020 && pricing.price && (
                   <div style={{ borderTop: `1px solid ${ACCENT}33`, marginTop: 8, paddingTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div style={{ fontSize: 13, fontWeight: 700, color: ACCENT }}>Total</div>
-                    <span style={{ fontSize: 20, fontWeight: 700, color: ACCENT }}>{pricing.price + 200} € <span style={{ fontSize: 12, fontWeight: 400, color: GRAY_500 }}>TTC</span></span>
+                    <span style={{ fontSize: 20, fontWeight: 700, color: ACCENT }}>{pricing.price + OPTIONS.RE2020.price} € <span style={{ fontSize: 12, fontWeight: 400, color: GRAY_500 }}>TTC</span></span>
                   </div>
                 )}
               </div>

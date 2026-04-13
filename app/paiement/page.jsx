@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import '../../styles/payment.css'
 import { supabase } from '../../lib/supabase'
+import { getProjectPricing, computePrice, OPTIONS } from '../../src/config/pricing'
 
 const ACCENT = "#1a5c3a"
 const ACCENT_LIGHT = "#e8f5ee"
@@ -20,21 +21,7 @@ const SUCCESS = "#1a7a3a"
 const SUCCESS_BG = "#eefbf2"
 const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 
-const PC_INCLUDES = ["Plans complets (PCMI1 à PCMI8)", "Notice descriptive", "CERFA rempli", "Insertion paysagère", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"]
-const DP_INCLUDES = ["Plans complets (DP1 à DP8)", "Notice descriptive", "CERFA rempli", "Document graphique", "Dossier assemblé prêt à déposer", "Corrections illimitées jusqu'à acceptation"]
-
-function getPricing(projectType) {
-  switch (projectType) {
-    case "Piscine": return { price: 350, label: "Déclaration préalable — Piscine", delay: "3 jours ouvrés", includes: DP_INCLUDES }
-    case "Garage / Carport": return { price: 350, label: "Déclaration préalable — Garage / Carport", delay: "3 jours ouvrés", includes: DP_INCLUDES }
-    case "Terrasse / Pergola": return { price: 350, label: "Déclaration préalable — Terrasse / Pergola", delay: "3 jours ouvrés", includes: DP_INCLUDES }
-    case "Extension / Agrandissement": return { price: 490, label: "Permis de construire — Extension", delay: "5 jours ouvrés", includes: PC_INCLUDES }
-    case "Surélévation": return { price: 490, label: "Permis de construire — Surélévation", delay: "5 jours ouvrés", includes: PC_INCLUDES }
-    case "Maison neuve": return { price: 490, label: "Permis de construire — Maison neuve", delay: "5 jours ouvrés", includes: PC_INCLUDES }
-    case "Autre": return { price: 490, label: "Projet sur mesure", delay: "5 jours ouvrés", includes: PC_INCLUDES }
-    default: return { price: 490, label: "Projet sur mesure", delay: "5 jours ouvrés", includes: PC_INCLUDES }
-  }
-}
+// getPricing, PC_INCLUDES, DP_INCLUDES remplacés par getProjectPricing depuis src/config/pricing.js
 
 export default function PaiementPage() {
   const router = useRouter()
@@ -51,9 +38,10 @@ export default function PaiementPage() {
 
   if (!form) return null
 
-  const pricing = getPricing(form.projectType)
+  const pricing = getProjectPricing(form.projectType)
   const re2020 = !!form.re2020
-  const totalPrice = re2020 ? pricing.price + 200 : pricing.price
+  const activeOptions = re2020 ? ['RE2020'] : []
+  const totalPrice = computePrice({ category: pricing.category, options: activeOptions })
 
   const projectData = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('projectData') || '{}') : {}
 
@@ -109,14 +97,15 @@ export default function PaiementPage() {
               </div>
               {re2020 && (
                 <div style={{ fontSize: 12, color: GRAY_500, marginBottom: 16 }}>
-                  {pricing.price} € (dossier) + 200 € (RE2020)
+                  {pricing.price} € (dossier) + {OPTIONS.RE2020.price} € (RE2020)
                 </div>
               )}
 
               <form method="POST" action="/api/checkout">
                 <input type="hidden" name="projectId" value={projectData?.id || ''} />
                 <input type="hidden" name="reference" value={projectData?.reference || ''} />
-                <input type="hidden" name="price" value={totalPrice} />
+                <input type="hidden" name="category" value={pricing.category} />
+                <input type="hidden" name="options" value={JSON.stringify(activeOptions)} />
                 <input type="hidden" name="label" value={re2020 ? `${pricing.label} + RE2020` : pricing.label} />
                 <input type="hidden" name="email" value={form?.email || projectData?.email || ''} />
                 <button type="submit"

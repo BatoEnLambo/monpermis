@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
+import { computePrice } from '../../../src/config/pricing'
+import { supabase } from '../../../lib/supabase'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
@@ -8,20 +10,54 @@ export async function POST(request) {
     const formData = await request.formData()
     const projectId = formData.get('projectId')
     const reference = formData.get('reference')
-    const price = Number(formData.get('price'))
+    const category = formData.get('category')
+    const options = JSON.parse(formData.get('options') || '[]')
     const label = formData.get('label')
     const email = formData.get('email')
 
-    console.log('Checkout request:', { projectId, reference, price, label, email })
-
-    if (!price || !projectId) {
-      console.error('Missing data:', { price, projectId })
+    if (!projectId || !category) {
+      console.error('Missing data:', { projectId, category })
       return NextResponse.json({ error: 'Données manquantes' }, { status: 400 })
     }
 
-    const origin = request.headers.get('origin') || request.headers.get('referer')?.replace(/\/[^/]*$/, '') || 'https://www.permisclair.fr'
+    // Recalculer le prix côté serveur (source de vérité)
+    let price
+    try {
+      price = computePrice({ category, options })
+    } catch (err) {
+      console.error('INVALID PRICING:', { category, options, error: err.message })
+      return NextResponse.json({ error: 'Catégorie de prix invalide' }, { status: 400 })
+    }
 
-    console.log('Using origin:', origin)
+    // Vérifier la cohérence avec le prix stocké en Supabase
+    const { data: project, error: dbError } = await supabase
+      .from('projects')
+      .select('price')
+      .eq('id', projectId)
+      .single()
+
+    if (dbError) {
+      console.error('Supabase lookup error:', dbError)
+      return NextResponse.json({ error: 'Projet introuvable' }, { status: 400 })
+    }
+
+    if (project.price !== price) {
+      console.error('PRICE MISMATCH ATTEMPT:', {
+        projectId,
+        reference,
+        supabasePrice: project.price,
+        computedPrice: price,
+        category,
+        options,
+        email,
+        timestamp: new Date().toISOString(),
+      })
+      return NextResponse.json({ error: 'Le prix ne correspond pas. Veuillez recommencer.' }, { status: 400 })
+    }
+
+    console.log('Checkout request:', { projectId, reference, price, category, options, label, email })
+
+    const origin = request.headers.get('origin') || request.headers.get('referer')?.replace(/\/[^/]*$/, '') || 'https://www.permisclair.fr'
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
