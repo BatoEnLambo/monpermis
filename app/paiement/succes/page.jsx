@@ -41,6 +41,7 @@ function SuccesContent() {
               token: projectData.token,
               projectType: projectData.project_type,
               price: projectData.price,
+              options: projectData.options || [],
             }),
           })
 

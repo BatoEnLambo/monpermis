@@ -6,7 +6,7 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 export async function POST(request) {
   try {
     const body = await request.json()
-    const { email, firstName, reference, token, projectType, price } = body
+    const { email, firstName, reference, token, projectType, price, options = [] } = body
 
     if (!email || !reference || !token) {
       return NextResponse.json({ error: 'Données manquantes' }, { status: 400 })
@@ -32,7 +32,7 @@ export async function POST(request) {
               Merci ${firstName || ''} ! Votre dossier est lancé.
             </h1>
             <p style="font-size: 15px; color: #666; margin: 0 0 24px; line-height: 1.6;">
-              Nous avons bien reçu votre paiement de <strong>${price} €</strong> pour votre projet <strong>${projectType}</strong>. Votre référence est <strong>${reference}</strong>.
+              Nous avons bien reçu votre paiement de <strong>${price} €</strong> pour votre projet <strong>${projectType}</strong>. Votre référence est <strong>${reference}</strong>.${options.includes('SECOND_DOSSIER') ? '<br><br>Votre commande inclut un <strong>2e dossier sur la même parcelle</strong>.' : ''}
             </p>
 
             <div style="background: #e8f5ee; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
@@ -88,7 +88,7 @@ export async function POST(request) {
               <tr><td style="padding: 6px 0; color: #888;">Référence</td><td style="padding: 6px 0; font-weight: 600;">${reference}</td></tr>
               <tr><td style="padding: 6px 0; color: #888;">Client</td><td style="padding: 6px 0;">${firstName || ''} (${email})</td></tr>
               <tr><td style="padding: 6px 0; color: #888;">Projet</td><td style="padding: 6px 0;">${projectType}</td></tr>
-              <tr><td style="padding: 6px 0; color: #888;">Montant</td><td style="padding: 6px 0; font-weight: 700; color: #1a5c3a;">${price} €</td></tr>
+              <tr><td style="padding: 6px 0; color: #888;">Montant</td><td style="padding: 6px 0; font-weight: 700; color: #1a5c3a;">${price} €</td></tr>${options.length > 0 ? `<tr><td style="padding: 6px 0; color: #888;">Options</td><td style="padding: 6px 0;">${options.includes('RE2020') ? 'RE2020' : ''}${options.includes('RE2020') && options.includes('SECOND_DOSSIER') ? ', ' : ''}${options.includes('SECOND_DOSSIER') ? '2e dossier' : ''}</td></tr>` : ''}
             </table>
             <div style="margin-top: 20px;">
               <a href="https://www.permisclair.fr/admin" style="display: inline-block; padding: 12px 24px; background: #1a5c3a; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600;">Voir dans l'admin →</a>

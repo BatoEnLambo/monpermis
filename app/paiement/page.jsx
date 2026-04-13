@@ -26,6 +26,7 @@ const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 export default function PaiementPage() {
   const router = useRouter()
   const [form, setForm] = useState(null)
+  const [secondDossier, setSecondDossier] = useState(false)
 
   useEffect(() => {
     const data = localStorage.getItem('projectData')
@@ -40,7 +41,7 @@ export default function PaiementPage() {
 
   const pricing = getProjectPricing(form.projectType)
   const re2020 = !!form.re2020
-  const activeOptions = re2020 ? ['RE2020'] : []
+  const activeOptions = [...(re2020 ? ['RE2020'] : []), ...(secondDossier ? ['SECOND_DOSSIER'] : [])]
   const totalPrice = computePrice({ category: pricing.category, options: activeOptions })
 
   const projectData = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('projectData') || '{}') : {}
@@ -74,6 +75,12 @@ export default function PaiementPage() {
               Attestation RE2020 (Bbio) par partenaire certifié
             </div>
           )}
+          {secondDossier && (
+            <div className="pay-includes-item" style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", fontSize: 13, color: GRAY_700 }}>
+              <span className="pay-check" style={{ color: ACCENT, fontSize: 14 }}>✓</span>
+              2e dossier sur même parcelle
+            </div>
+          )}
           <div className="pay-delivery" style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", fontSize: 13, color: ACCENT, fontWeight: 500, marginTop: 4 }}>
             <span style={{ fontSize: 14 }}>⚡</span>
             Livraison en {pricing.delay}
@@ -88,16 +95,37 @@ export default function PaiementPage() {
           </div>
         </div>
 
+        <div className="payment-card-options" style={{ padding: "20px 28px", borderBottom: `1px solid ${GRAY_100}` }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: GRAY_700, marginBottom: 12 }}>Options supplémentaires :</div>
+          <label onClick={() => setSecondDossier(!secondDossier)} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', padding: '8px 0' }}>
+            <div style={{
+              width: 22, height: 22, borderRadius: 5, flexShrink: 0, marginTop: 1,
+              border: secondDossier ? `2px solid ${ACCENT}` : `2px solid ${GRAY_300}`,
+              background: secondDossier ? ACCENT : WHITE,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'all 0.15s',
+            }}>
+              {secondDossier && <span style={{ color: WHITE, fontSize: 14, fontWeight: 700, lineHeight: 1 }}>✓</span>}
+            </div>
+            <div>
+              <span style={{ fontSize: 14, fontWeight: 600, color: GRAY_900 }}>2e dossier sur même parcelle (+{OPTIONS.SECOND_DOSSIER.price} €)</span>
+              <div style={{ fontSize: 12, color: GRAY_500, marginTop: 4, lineHeight: 1.5 }}>
+                Cochez si votre projet comprend deux constructions distinctes sur la même parcelle (ex : maison + garage indépendant, ou deux dossiers DP).
+              </div>
+            </div>
+          </label>
+        </div>
+
         <div className="payment-card-price" style={{ padding: "24px 28px", background: GRAY_50, textAlign: "center" }}>
           {pricing.price ? (
             <>
-              <div className="pay-amount-row" style={{ marginBottom: re2020 ? 8 : 20 }}>
+              <div className="pay-amount-row" style={{ marginBottom: (re2020 || secondDossier) ? 8 : 20 }}>
                 <span className="pay-amount" style={{ fontSize: 36, fontWeight: 700, color: GRAY_900, letterSpacing: "-0.03em" }}>{totalPrice} €</span>
                 <span style={{ fontSize: 14, color: GRAY_500, marginLeft: 4 }}>TTC</span>
               </div>
-              {re2020 && (
+              {(re2020 || secondDossier) && (
                 <div style={{ fontSize: 12, color: GRAY_500, marginBottom: 16 }}>
-                  {pricing.price} € (dossier) + {OPTIONS.RE2020.price} € (RE2020)
+                  {pricing.price} € (dossier){re2020 ? ` + ${OPTIONS.RE2020.price} € (RE2020)` : ''}{secondDossier ? ` + ${OPTIONS.SECOND_DOSSIER.price} € (2e dossier)` : ''}
                 </div>
               )}
 
@@ -106,7 +134,7 @@ export default function PaiementPage() {
                 <input type="hidden" name="reference" value={projectData?.reference || ''} />
                 <input type="hidden" name="category" value={pricing.category} />
                 <input type="hidden" name="options" value={JSON.stringify(activeOptions)} />
-                <input type="hidden" name="label" value={re2020 ? `${pricing.label} + RE2020` : pricing.label} />
+                <input type="hidden" name="label" value={`${pricing.label}${re2020 ? ' + RE2020' : ''}${secondDossier ? ' + 2e dossier' : ''}`} />
                 <input type="hidden" name="email" value={form?.email || projectData?.email || ''} />
                 <button type="submit"
                   style={{

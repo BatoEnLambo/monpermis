@@ -29,10 +29,21 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Catégorie de prix invalide' }, { status: 400 })
     }
 
-    // Vérifier la cohérence avec le prix stocké en Supabase
+    // Mettre à jour le prix et les options dans Supabase (options choisies sur /paiement)
+    const { error: updateError } = await supabase
+      .from('projects')
+      .update({ price, options })
+      .eq('id', projectId)
+
+    if (updateError) {
+      console.error('Supabase update error:', updateError)
+      return NextResponse.json({ error: 'Erreur de mise à jour du projet' }, { status: 500 })
+    }
+
+    // Vérification de cohérence : relire et recomparer
     const { data: project, error: dbError } = await supabase
       .from('projects')
-      .select('price')
+      .select('price, options')
       .eq('id', projectId)
       .single()
 
