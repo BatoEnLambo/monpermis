@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import '../styles/landing.css'
+import { PRICING, OPTIONS } from '../src/config/pricing'
 
 const ACCENT = "#1a5c3a"
 const GRAY_200 = "#e8e7e4"
@@ -12,9 +13,9 @@ const WHITE = "#ffffff"
 const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 
 const cards = [
-  { title: "Piscine / Garage / Terrasse", sub: "Déclaration préalable", price: "350€", detail: "Dossier DP complet", projectType: "Piscine" },
-  { title: "Extension / Surélévation", sub: "DP ou permis de construire", price: "490€", detail: "Plans + dossier complet", projectType: "Extension / Agrandissement" },
-  { title: "Maison neuve", sub: "Permis de construire", price: "490€", detail: "Plans + dossier PC complet", popular: true, projectType: "Maison neuve" },
+  { title: "Piscine / Garage / Terrasse", sub: "Déclaration préalable", price: `${PRICING.DP.basePrice} €`, detail: "Dossier DP complet", projectType: "Piscine" },
+  { title: "Extension / Surélévation", sub: "DP ou permis de construire", price: `${PRICING.EXTENSION.basePrice} €`, detail: "Plans + dossier complet", projectType: "Extension / Agrandissement" },
+  { title: "Maison neuve", sub: "Permis de construire", price: `${PRICING.MAISON_NEUVE.basePrice} €`, detail: "Plans + dossier PC complet", popular: true, projectType: "Maison neuve" },
 ]
 
 export default function PricingCards() {
@@ -57,10 +58,13 @@ export default function PricingCards() {
         ))}
       </div>
       <p className="pricing-option-re2020" style={{ fontSize: 13, color: GRAY_700, marginTop: 20, lineHeight: 1.6 }}>
-        <strong>Option RE2020 : +200 €</strong> — Attestation thermique obligatoire pour toute construction neuve, réalisée par notre partenaire certifié.
+        <strong>Option RE2020 : +{OPTIONS.RE2020.price} €</strong> — Attestation thermique obligatoire pour toute construction neuve, réalisée par notre partenaire certifié.
+      </p>
+      <p className="pricing-option-second" style={{ fontSize: 13, color: GRAY_700, marginTop: 8, lineHeight: 1.6 }}>
+        <strong>Option 2e dossier sur même parcelle : +{OPTIONS.SECOND_DOSSIER.price} €</strong> — Pour deux constructions distinctes sur un même terrain.
       </p>
       <p className="pricing-compare" style={{ fontSize: 13, color: GRAY_500, marginTop: 12 }}>
-        Un architecte facture 1 500 à 4 000€ et livre en 2 à 6 semaines.
+        Un architecte facture 1 500 à 4 000 € et livre en 2 à 6 semaines.
       </p>
     </div>
   )
