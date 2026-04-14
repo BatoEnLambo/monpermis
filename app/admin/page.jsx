@@ -6,6 +6,7 @@ import { supabase } from '../../lib/supabase'
 import { uploadFile, getDocuments, deleteDocument } from '../../lib/storage'
 import { getMessages, sendMessage, markAsRead } from '../../lib/messages'
 import AdminNav from '../../components/AdminNav'
+import { formatOuvrageType, getOuvrageType } from '../../src/config/ouvrageTypes'
 
 const STATUS_LABELS = {
   pending: '🟡 En attente de paiement',
@@ -26,6 +27,7 @@ export default function AdminPage() {
   const [projectMessages, setProjectMessages] = useState({})
   const [adminReply, setAdminReply] = useState({})
   const [projectDetails, setProjectDetails] = useState({})
+  const [projectOuvrages, setProjectOuvrages] = useState({})
   const [projectPhotos, setProjectPhotos] = useState({})
   const [projectCroquis, setProjectCroquis] = useState({})
   const [zipping, setZipping] = useState(null)
@@ -105,6 +107,19 @@ export default function AdminPage() {
     const proj = projects.find(pr => pr.id === projectId)
     if (proj?.project_type?.startsWith('Maison neuve') || proj?.project_type === 'custom' || !proj?.project_type) {
       fetchProjectDetails(projectId)
+    }
+    // Fetch ouvrages (tous les projets sont susceptibles d'en avoir)
+    if (!projectOuvrages[projectId]) {
+      try {
+        const { data: ouvragesData } = await supabase
+          .from('project_ouvrages')
+          .select('*')
+          .eq('project_id', projectId)
+          .order('position', { ascending: true })
+        setProjectOuvrages(prev => ({ ...prev, [projectId]: ouvragesData || [] }))
+      } catch (err) {
+        console.error('Error loading ouvrages:', err)
+      }
     }
   }
 
@@ -452,6 +467,48 @@ export default function AdminPage() {
                       ))}
                     </select>
                   </div>
+
+                  {/* Ouvrages déclarés par le client */}
+                  {(() => {
+                    const list = projectOuvrages[p.id] || []
+                    return (
+                      <div style={{ marginTop: 16, padding: 12, background: '#fafaf9', borderRadius: 10, border: '1px solid #e8e7e4' }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, color: '#1c1c1a' }}>
+                          Ouvrages ({list.length})
+                        </div>
+                        {list.length === 0 ? (
+                          <div style={{ fontSize: 12, color: '#888' }}>Aucun ouvrage déclaré.</div>
+                        ) : (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                            {list.map(o => {
+                              const type = getOuvrageType(o.type)
+                              return (
+                                <div key={o.id} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '8px 10px', background: '#fff', borderRadius: 8, border: '1px solid #eee' }}>
+                                  <span style={{ fontSize: 18 }}>{type?.icon || '📦'}</span>
+                                  <div style={{ flex: 1 }}>
+                                    <div style={{ fontSize: 13, fontWeight: 600, color: '#1c1c1a' }}>{o.name}</div>
+                                    <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>{formatOuvrageType(o.type, o.subtype)}</div>
+                                    {o.description_libre && (
+                                      <div style={{ fontSize: 12, color: '#44433f', marginTop: 4, whiteSpace: 'pre-wrap' }}>{o.description_libre}</div>
+                                    )}
+                                    {(o.photo_urls || []).length > 0 && (
+                                      <div style={{ display: 'flex', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
+                                        {o.photo_urls.map(url => (
+                                          <a key={url} href={url} target="_blank" rel="noopener noreferrer">
+                                            <img src={url} alt="" style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 4, border: '1px solid #eee' }} />
+                                          </a>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })()}
 
                   {/* Fiche technique client (Maison neuve + devis custom) */}
                   {(p.project_type?.startsWith('Maison neuve') || p.project_type === 'custom' || !p.project_type) && projectDetails[p.id] && (() => {

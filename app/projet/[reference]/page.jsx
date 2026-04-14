@@ -5,13 +5,10 @@ import { useParams, useSearchParams } from 'next/navigation'
 import { supabase } from '../../../lib/supabase'
 import { getDocuments } from '../../../lib/storage'
 import { getMessages, sendMessage } from '../../../lib/messages'
-import ConstructionDetailsForm from '../../../components/ConstructionDetailsForm'
 import TerrainDetailsForm from '../../../components/TerrainDetailsForm'
-import OuverturesForm from '../../../components/OuverturesForm'
 import TerrainPhotosUpload from '../../../components/TerrainPhotosUpload'
 import CoordonneesCerfaForm from '../../../components/CoordonneesCerfaForm'
-import CroquisUploadForm from '../../../components/CroquisUploadForm'
-import ChauffageEnergieForm from '../../../components/ChauffageEnergieForm'
+import OuvragesSection from '../../../components/OuvragesSection'
 import '../../../styles/dashboard.css'
 
 const ACCENT = "#1a5c3a"
@@ -81,12 +78,26 @@ function ProjetContent() {
   const [sendingMessage, setSendingMessage] = useState(false)
   const [chatOpen, setChatOpen] = useState(false)
 
-  // Fiche technique (Maison neuve only)
+  // Fiche technique
   const [details, setDetails] = useState(null)
   const [photoCount, setPhotoCount] = useState(0)
-  const [croquisCount, setCroquisCount] = useState(0)
   const [saved, setSaved] = useState(false)
+  const [ouvrages, setOuvrages] = useState([])
+  const [token, setToken] = useState(null)
   const debounceRef = useRef({})
+
+  const fetchOuvrages = useCallback(async () => {
+    if (!project?.reference || !token) return
+    try {
+      const res = await fetch(`/api/projet/${project.reference}/ouvrages?token=${token}`)
+      if (res.ok) {
+        const json = await res.json()
+        setOuvrages(json.ouvrages || [])
+      }
+    } catch (err) {
+      console.error('Fetch ouvrages error:', err)
+    }
+  }, [project?.reference, token])
 
   useEffect(() => {
     const loadProject = async () => {
@@ -127,11 +138,17 @@ function ProjetContent() {
       document.cookie = `pc_${reference}=${token}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax`
 
       setProject(data)
+      setToken(token)
       setLoading(false)
     }
 
     loadProject()
   }, [params.reference, searchParams])
+
+  // Charge les ouvrages dès que project + token sont dispos
+  useEffect(() => {
+    if (project?.id && token) fetchOuvrages()
+  }, [project?.id, token, fetchOuvrages])
 
   // Charge les documents quand le projet est chargé
   useEffect(() => {
@@ -192,6 +209,10 @@ function ProjetContent() {
   }, [project?.id])
 
   // Calcul progression fiche technique
+  // Section 1 : 8 items (coordonnées)
+  // Section 2 : 1 item (au moins 1 ouvrage — placeholder, logique fine au prompt 2)
+  // Section 3 : 5 items (terrain) + jusqu'à 5 photos = 10
+  // Total : 19
   const computeProgress = useCallback(() => {
     if (!details) return 0
     const d = details
@@ -205,23 +226,8 @@ function ProjetContent() {
     if (d.client_departement_naissance) count++
     if (d.client_telephone) count++
     if (d.client_email) count++
-    // Construction (11)
-    if (d.dimensions_longueur) count++
-    if (d.dimensions_largeur) count++
-    if (d.fondation) count++
-    if (d.hauteur_faitage || d.hauteur_faitage_nsp) count++
-    if (d.hauteur_egout || d.hauteur_egout_nsp) count++
-    if (d.roof_type) count++
-    if (d.roof_type !== 'plat' && (d.pente_toiture || d.pente_toiture_nsp)) count++
-    if (d.debord_toit || d.debord_toit_nsp) count++
-    if (d.materiau_facade) count++
-    if (d.materiau_couverture) count++
-    if (d.menuiserie_materiau || d.menuiserie_couleur) count++
-    // Pièces (1)
-    try {
-      const ouv = JSON.parse(d.ouvertures_description || '[]')
-      if (Array.isArray(ouv) && ouv.some(p => p.piece && p.longueur && p.largeur)) count++
-    } catch { if (d.ouvertures_description) count++ }
+    // Ouvrages (1 placeholder)
+    if ((ouvrages || []).length > 0) count++
     // Terrain (5)
     if (d.parcelle_nsp || d.parcelle_section || d.parcelle_numero) count++
     if (d.constructions_existantes === false) {
@@ -235,16 +241,10 @@ function ProjetContent() {
     if (d.implantation_description) count++
     if (d.assainissement) count++
     if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) count++
-    // Croquis (1)
-    if (croquisCount > 0) count++
-    // Chauffage et énergie (3)
-    if (d.chauffage_principal) count++
-    if (d.eau_chaude) count++
-    if (d.isolation_type) count++
-    // Photos
-    count += photoCount
-    return Math.round((count / 34) * 100)
-  }, [details, photoCount, croquisCount])
+    // Photos (cap à 5)
+    count += Math.min(photoCount, 5)
+    return Math.round((count / 19) * 100)
+  }, [details, photoCount, ouvrages])
 
   // Sauvegarde du pourcentage en DB pour l'admin et les relances
   const progressSaveRef = useRef(null)
@@ -407,26 +407,8 @@ function ProjetContent() {
               if (d.client_departement_naissance) infoCount++
               if (d.client_telephone) infoCount++
               if (d.client_email) infoCount++
-              // ② Votre construction (15 = construction 10 + pièces 1 + croquis 1 + chauffage 3)
-              let constrCount = 0
-              if (d.dimensions_longueur) constrCount++
-              if (d.dimensions_largeur) constrCount++
-              if (d.fondation) constrCount++
-              if (d.hauteur_faitage || d.hauteur_faitage_nsp) constrCount++
-              if (d.hauteur_egout || d.hauteur_egout_nsp) constrCount++
-              if (d.pente_toiture || d.pente_toiture_nsp) constrCount++
-              if (d.debord_toit || d.debord_toit_nsp) constrCount++
-              if (d.materiau_facade) constrCount++
-              if (d.materiau_couverture) constrCount++
-              if (d.menuiserie_materiau || d.menuiserie_couleur) constrCount++
-              try {
-                const ouv = JSON.parse(d.ouvertures_description || '[]')
-                if (Array.isArray(ouv) && ouv.some(p => p.piece && p.longueur && p.largeur)) constrCount++
-              } catch { if (d.ouvertures_description) constrCount++ }
-              if (croquisCount > 0) constrCount++
-              if (d.chauffage_principal) constrCount++
-              if (d.eau_chaude) constrCount++
-              if (d.isolation_type) constrCount++
+              // ② Vos ouvrages (1 item placeholder : 0 ou 1)
+              const ouvragesCount = (ouvrages || []).length > 0 ? 1 : 0
               // ③ Votre terrain (10 = terrain 5 + photos 5)
               let terrainCount = 0
               if (d.parcelle_nsp || d.parcelle_section || d.parcelle_numero) terrainCount++
@@ -440,7 +422,7 @@ function ProjetContent() {
               if (d.implantation_description) terrainCount++
               if (d.assainissement) terrainCount++
               if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) terrainCount++
-              terrainCount += photoCount
+              terrainCount += Math.min(photoCount, 5)
 
               const badgeStyle = (filled, max) => {
                 const s = filled === max ? 'complete' : filled > 0 ? 'partial' : 'empty'
@@ -484,7 +466,7 @@ function ProjetContent() {
                   )}
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
                     <span style={badgeStyle(infoCount, 8)}><strong>①</strong> Vos informations {infoCount}/8</span>
-                    <span style={badgeStyle(constrCount, 15)}><strong>②</strong> Votre construction {constrCount}/15</span>
+                    <span style={badgeStyle(ouvragesCount, 1)}><strong>②</strong> Vos ouvrages {(ouvrages || []).length}</span>
                     <span style={badgeStyle(terrainCount, 10)}><strong>③</strong> Votre terrain {terrainCount}/10</span>
                   </div>
                 </div>
@@ -517,59 +499,14 @@ function ProjetContent() {
               <CoordonneesCerfaForm details={details} onFieldUpdate={handleFieldUpdate} />
             </div>
 
-            {/* Bloc ② Votre construction */}
-            {(() => {
-              const d = details
-              let cCount = 0
-              if (d.dimensions_longueur) cCount++
-              if (d.dimensions_largeur) cCount++
-              if (d.fondation) cCount++
-              if (d.hauteur_faitage || d.hauteur_faitage_nsp) cCount++
-              if (d.hauteur_egout || d.hauteur_egout_nsp) cCount++
-              if (d.pente_toiture || d.pente_toiture_nsp) cCount++
-              if (d.debord_toit || d.debord_toit_nsp) cCount++
-              if (d.materiau_facade) cCount++
-              if (d.materiau_couverture) cCount++
-              if (d.menuiserie_materiau || d.menuiserie_couleur) cCount++
-              try {
-                const ouv = JSON.parse(d.ouvertures_description || '[]')
-                if (Array.isArray(ouv) && ouv.some(p => p.piece && p.longueur && p.largeur)) cCount++
-              } catch { if (d.ouvertures_description) cCount++ }
-              if (croquisCount > 0) cCount++
-              if (d.chauffage_principal) cCount++
-              if (d.eau_chaude) cCount++
-              if (d.isolation_type) cCount++
-              const hrStyle = { border: 'none', borderTop: '1px solid #eee', margin: '24px 0' }
-              return (
-                <div style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#1a472a', color: WHITE, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, flexShrink: 0 }}>2</div>
-                      <h3 style={{ fontSize: 16, fontWeight: 600, color: GRAY_900, margin: 0, letterSpacing: '-0.02em' }}>Votre construction</h3>
-                    </div>
-                    <span style={{ fontSize: 12, fontWeight: 500, color: GRAY_500 }}>{cCount}/15 remplis</span>
-                  </div>
-
-                  <div style={{ fontSize: 13, color: '#555', marginBottom: 12 }}>Dimensions et matériaux</div>
-                  <ConstructionDetailsForm data={details} onFieldUpdate={handleFieldUpdate} />
-
-                  <hr style={hrStyle} />
-                  <div style={{ fontSize: 13, color: '#555', marginBottom: 12 }}>Pièces et ouvertures</div>
-                  <OuverturesForm data={details.ouvertures_description} onFieldUpdate={handleFieldUpdate} />
-
-                  <hr style={hrStyle} />
-                  <div style={{ fontSize: 13, color: '#555', marginBottom: 12 }}>Croquis de votre projet</div>
-                  <CroquisUploadForm projectId={project.id} details={details} onFieldUpdate={handleFieldUpdate} onCroquisCountChange={setCroquisCount} />
-
-                  <hr style={hrStyle} />
-                  <div style={{ fontSize: 13, color: '#555', marginBottom: 4 }}>Chauffage et énergie</div>
-                  <p style={{ fontSize: 12, color: GRAY_500, margin: '0 0 16px', lineHeight: 1.4 }}>
-                    Ces informations sont nécessaires pour l'étude thermique RE2020.
-                  </p>
-                  <ChauffageEnergieForm details={details} onFieldUpdate={handleFieldUpdate} />
-                </div>
-              )
-            })()}
+            {/* Bloc ② Vos ouvrages */}
+            <OuvragesSection
+              reference={project.reference}
+              token={token}
+              projectId={project.id}
+              ouvrages={ouvrages}
+              onChange={fetchOuvrages}
+            />
 
             {/* Bloc ③ Votre terrain */}
             {(() => {
