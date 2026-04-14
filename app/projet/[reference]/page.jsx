@@ -149,9 +149,10 @@ function ProjetContent() {
     return () => clearInterval(interval)
   }, [project])
 
-  // Charge les project_details pour Maison neuve
+  // Charge les project_details pour Maison neuve et devis custom
+  const showFicheTechnique = project?.project_type?.startsWith('Maison neuve') || project?.project_type === 'custom' || !project?.project_type
   useEffect(() => {
-    if (!project?.id || !project.project_type?.startsWith('Maison neuve')) return
+    if (!project?.id || !showFicheTechnique) return
     const loadDetails = async () => {
       const { data, error } = await supabase
         .from('project_details')
@@ -388,8 +389,8 @@ function ProjetContent() {
         )
       })()}
 
-      {/* Fiche technique — Maison neuve uniquement */}
-      {project.project_type?.startsWith('Maison neuve') && details && (() => {
+      {/* Fiche technique — Maison neuve + devis custom */}
+      {showFicheTechnique && details && (() => {
         const progress = computeProgress()
         return (
           <>
