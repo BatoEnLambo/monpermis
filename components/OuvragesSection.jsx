@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { OUVRAGE_TYPES, getOuvrageType, formatOuvrageType } from '../src/config/ouvrageTypes'
+import { OUVRAGE_TYPES, getOuvrageType, formatOuvrageType, computeOuvrageProgress } from '../src/config/ouvrageTypes'
 import { supabase } from '../lib/supabase'
+import OuvrageDetailsFields from './OuvrageDetailsFields'
 
 const ACCENT = '#1a5c3a'
 const ACCENT_LIGHT = '#e8f5ee'
@@ -20,6 +21,7 @@ const emptyDraft = () => ({
   name: '',
   description_libre: '',
   photo_urls: [],
+  data: {},
 })
 
 /**
@@ -54,6 +56,7 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
       name: o.name || '',
       description_libre: o.description_libre || '',
       photo_urls: o.photo_urls || [],
+      data: o.data || {},
     })
   }
 
@@ -88,6 +91,7 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
       subtype: draft.subtype,
       description_libre: draft.description_libre || null,
       photo_urls: draft.photo_urls || [],
+      data: draft.data || {},
     }
     try {
       const url = editingId
@@ -355,17 +359,29 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
             )
           })()}
 
-          {/* Étape C : champs communs */}
+          {/* Étape C : champs communs + blocs conditionnels */}
           {step === 'details' && (() => {
             const type = getOuvrageType(draft.type)
             const isAutre = draft.type === 'autre'
+            const { filled, total } = computeOuvrageProgress({
+              name: draft.name,
+              type: draft.type,
+              subtype: draft.subtype,
+              data: draft.data || {},
+            })
+            const pct = total > 0 ? Math.round((filled / total) * 100) : 0
             return (
               <>
-                <div style={{ fontSize: 14, fontWeight: 600, color: GRAY_900, marginBottom: 4 }}>
-                  {type?.icon} {formatOuvrageType(draft.type, draft.subtype)}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: GRAY_900 }}>
+                    {type?.icon} {formatOuvrageType(draft.type, draft.subtype)}
+                  </div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: pct === 100 ? ACCENT : GRAY_500 }}>
+                    {pct}% complet
+                  </div>
                 </div>
                 <div style={{ fontSize: 13, color: GRAY_500, marginBottom: 16 }}>
-                  {editingId ? 'Modifiez les informations de cet ouvrage.' : 'Donnez un nom à cet ouvrage pour le retrouver facilement.'}
+                  {editingId ? 'Modifiez les informations de cet ouvrage.' : 'Remplissez les champs techniques de votre ouvrage. Tous les champs sont optionnels.'}
                 </div>
 
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>
@@ -387,7 +403,7 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
                   }}
                 />
 
-                {isAutre ? (
+                {isAutre && (
                   <>
                     <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>
                       Décrivez précisément votre projet *
@@ -437,13 +453,16 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
                     />
                     {uploading && <div style={{ fontSize: 12, color: GRAY_500, marginBottom: 16 }}>Envoi en cours...</div>}
                   </>
-                ) : (
-                  <div style={{ background: ACCENT_LIGHT, border: `1px solid ${ACCENT}33`, borderRadius: 8, padding: 12, fontSize: 13, color: GRAY_700, marginBottom: 16, lineHeight: 1.5 }}>
-                    Les champs techniques spécifiques (dimensions, matériaux, etc.) arrivent bientôt. Pour l'instant, saisissez seulement le nom pour créer l'ouvrage.
-                  </div>
                 )}
 
-                <div style={{ display: 'flex', gap: 8 }}>
+                {/* Blocs conditionnels selon type+sous-type (bâti, serre, raccord, ouvertures, commentaire…) */}
+                <OuvrageDetailsFields
+                  draft={draft}
+                  setDraft={setDraft}
+                  projectId={projectId}
+                />
+
+                <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
                   {!editingId && (
                     <button
                       onClick={() => setStep(type?.subtypes ? 'subtype' : 'type')}

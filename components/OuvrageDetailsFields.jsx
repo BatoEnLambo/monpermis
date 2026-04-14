@@ -1,0 +1,675 @@
+'use client'
+
+import { useRef } from 'react'
+import { supabase } from '../lib/supabase'
+import {
+  needsDimensionsBati,
+  needsMateriauxBati,
+  needsOuvertures,
+  needsRaccord,
+  isSerre,
+  TYPE_TOITURE_OPTIONS,
+  MATERIAU_FACADE_OPTIONS,
+  MATERIAU_COUVERTURE_OPTIONS,
+  MATERIAU_MENUISERIES_OPTIONS,
+  OUVERTURE_TYPE_OPTIONS,
+  FACADE_OPTIONS,
+  MODE_RACCORD_OPTIONS,
+  EMPRISE_CONSERVEE_OPTIONS,
+  TYPE_SERRE_OPTIONS,
+  MATERIAU_COUVERTURE_SERRE_OPTIONS,
+} from '../src/config/ouvrageTypes'
+
+const ACCENT = '#1a5c3a'
+const ACCENT_LIGHT = '#e8f5ee'
+const GRAY_100 = '#f5f4f2'
+const GRAY_200 = '#e8e7e4'
+const GRAY_300 = '#d4d3d0'
+const GRAY_500 = '#8a8985'
+const GRAY_700 = '#44433f'
+const GRAY_900 = '#1c1c1a'
+const WHITE = '#ffffff'
+
+// ── Styles partagés ─────────────────────────────────────────────────
+const blocStyle = {
+  background: GRAY_100,
+  borderRadius: 10,
+  padding: 16,
+  marginBottom: 14,
+  border: `1px solid ${GRAY_200}`,
+}
+const blocTitleStyle = {
+  fontSize: 13,
+  fontWeight: 700,
+  color: GRAY_900,
+  marginBottom: 12,
+  letterSpacing: '-0.01em',
+}
+const rowStyle = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: 10,
+  marginBottom: 10,
+}
+const labelStyle = {
+  display: 'block',
+  fontSize: 12,
+  fontWeight: 500,
+  color: GRAY_700,
+  marginBottom: 4,
+}
+const inputBaseStyle = {
+  width: '100%',
+  padding: '9px 11px',
+  borderRadius: 8,
+  border: `1px solid ${GRAY_300}`,
+  fontSize: 13,
+  fontFamily: 'inherit',
+  boxSizing: 'border-box',
+  background: WHITE,
+}
+const unknownStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 6,
+  fontSize: 11,
+  color: GRAY_500,
+  marginTop: 4,
+  cursor: 'pointer',
+}
+
+// ── Helpers d'accès au data imbriqué ────────────────────────────────
+function setPath(obj, path, value) {
+  const segments = path.split('.')
+  const next = { ...(obj || {}) }
+  let cursor = next
+  for (let i = 0; i < segments.length - 1; i++) {
+    const key = segments[i]
+    cursor[key] = { ...(cursor[key] || {}) }
+    cursor = cursor[key]
+  }
+  cursor[segments[segments.length - 1]] = value
+  return next
+}
+
+function getPath(obj, path) {
+  const segments = path.split('.')
+  let cursor = obj
+  for (const seg of segments) {
+    if (cursor == null) return undefined
+    cursor = cursor[seg]
+  }
+  return cursor
+}
+
+// ── Composant principal ─────────────────────────────────────────────
+export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
+  const fileInputRef = useRef(null)
+
+  const data = draft.data || {}
+
+  const updateData = (path, value) => {
+    setDraft(d => ({ ...d, data: setPath(d.data || {}, path, value) }))
+  }
+  const readData = (path) => getPath(data, path)
+
+  const showDimensionsBati = needsDimensionsBati(draft.type, draft.subtype)
+  const showMateriauxBati = needsMateriauxBati(draft.type, draft.subtype)
+  const showOuvertures = needsOuvertures(draft.type, draft.subtype)
+  const showRaccord = needsRaccord(draft.type, draft.subtype)
+  const showSerre = isSerre(draft.type, draft.subtype)
+  const isSurelevation = draft.type === 'maison' && draft.subtype === 'surelevation'
+
+  // ── Bloc Dimensions bâti ──────────────────────────────────────────
+  const renderDimensionsBati = () => {
+    const typeToit = readData('dimensions.type_toiture')
+    const isFlat = typeToit === 'Toit plat'
+    const hFaitageUnknown = !!readData('dimensions.hauteur_faitage_unknown')
+    const hEgoutUnknown = !!readData('dimensions.hauteur_egout_unknown')
+    const penteUnknown = !!readData('dimensions.pente_toiture_unknown')
+    const debordsUnknown = !!readData('dimensions.debords_unknown')
+
+    return (
+      <div style={blocStyle}>
+        <div style={blocTitleStyle}>📐 Dimensions du bâti</div>
+
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Longueur (m)</label>
+            <input
+              type="number"
+              step="0.1"
+              value={readData('dimensions.longueur_m') ?? ''}
+              onChange={e => updateData('dimensions.longueur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+              style={inputBaseStyle}
+              placeholder="ex : 8.5"
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Largeur (m)</label>
+            <input
+              type="number"
+              step="0.1"
+              value={readData('dimensions.largeur_m') ?? ''}
+              onChange={e => updateData('dimensions.largeur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+              style={inputBaseStyle}
+              placeholder="ex : 6.0"
+            />
+          </div>
+        </div>
+
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Hauteur au faîtage (m)</label>
+            <input
+              type="number"
+              step="0.01"
+              value={hFaitageUnknown ? '' : (readData('dimensions.hauteur_faitage_m') ?? '')}
+              disabled={hFaitageUnknown}
+              onChange={e => updateData('dimensions.hauteur_faitage_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+              style={{ ...inputBaseStyle, background: hFaitageUnknown ? GRAY_200 : WHITE }}
+              placeholder="ex : 6.50"
+            />
+            <label style={unknownStyle}>
+              <input
+                type="checkbox"
+                checked={hFaitageUnknown}
+                onChange={e => {
+                  updateData('dimensions.hauteur_faitage_unknown', e.target.checked)
+                  if (e.target.checked) updateData('dimensions.hauteur_faitage_m', null)
+                }}
+              />
+              Je ne sais pas
+            </label>
+          </div>
+          <div>
+            <label style={labelStyle}>Hauteur à l'égout (m)</label>
+            <input
+              type="number"
+              step="0.01"
+              value={hEgoutUnknown ? '' : (readData('dimensions.hauteur_egout_m') ?? '')}
+              disabled={hEgoutUnknown}
+              onChange={e => updateData('dimensions.hauteur_egout_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+              style={{ ...inputBaseStyle, background: hEgoutUnknown ? GRAY_200 : WHITE }}
+              placeholder="ex : 3.00"
+            />
+            <label style={unknownStyle}>
+              <input
+                type="checkbox"
+                checked={hEgoutUnknown}
+                onChange={e => {
+                  updateData('dimensions.hauteur_egout_unknown', e.target.checked)
+                  if (e.target.checked) updateData('dimensions.hauteur_egout_m', null)
+                }}
+              />
+              Je ne sais pas
+            </label>
+          </div>
+        </div>
+
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Type de toiture</label>
+            <select
+              value={typeToit || ''}
+              onChange={e => {
+                const v = e.target.value || null
+                updateData('dimensions.type_toiture', v)
+                if (v === 'Toit plat') {
+                  updateData('dimensions.pente_toiture_deg', null)
+                  updateData('dimensions.pente_toiture_unknown', false)
+                }
+              }}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {TYPE_TOITURE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+          {!isFlat && (
+            <div>
+              <label style={labelStyle}>Pente de toiture (°)</label>
+              <input
+                type="number"
+                step="1"
+                value={penteUnknown ? '' : (readData('dimensions.pente_toiture_deg') ?? '')}
+                disabled={penteUnknown}
+                onChange={e => updateData('dimensions.pente_toiture_deg', e.target.value === '' ? null : parseInt(e.target.value, 10))}
+                style={{ ...inputBaseStyle, background: penteUnknown ? GRAY_200 : WHITE }}
+                placeholder="ex : 30"
+              />
+              <label style={unknownStyle}>
+                <input
+                  type="checkbox"
+                  checked={penteUnknown}
+                  onChange={e => {
+                    updateData('dimensions.pente_toiture_unknown', e.target.checked)
+                    if (e.target.checked) updateData('dimensions.pente_toiture_deg', null)
+                  }}
+                />
+                Je ne sais pas
+              </label>
+            </div>
+          )}
+        </div>
+
+        <div>
+          <label style={labelStyle}>Débords de toit (cm)</label>
+          <input
+            type="number"
+            step="1"
+            value={debordsUnknown ? '' : (readData('dimensions.debords_cm') ?? '')}
+            disabled={debordsUnknown}
+            onChange={e => updateData('dimensions.debords_cm', e.target.value === '' ? null : parseInt(e.target.value, 10))}
+            style={{ ...inputBaseStyle, background: debordsUnknown ? GRAY_200 : WHITE, maxWidth: 200 }}
+            placeholder="ex : 40"
+          />
+          <label style={unknownStyle}>
+            <input
+              type="checkbox"
+              checked={debordsUnknown}
+              onChange={e => {
+                updateData('dimensions.debords_unknown', e.target.checked)
+                if (e.target.checked) updateData('dimensions.debords_cm', null)
+              }}
+            />
+            Je ne sais pas
+          </label>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Bloc Matériaux bâti ───────────────────────────────────────────
+  const renderMateriauxBati = () => {
+    const facade = readData('materiaux.materiau_facade')
+    const couv = readData('materiaux.materiau_couverture')
+    const men = readData('materiaux.materiau_menuiseries')
+    return (
+      <div style={blocStyle}>
+        <div style={blocTitleStyle}>🎨 Matériaux et couleurs</div>
+
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Matériau de façade</label>
+            <select
+              value={facade || ''}
+              onChange={e => updateData('materiaux.materiau_facade', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {MATERIAU_FACADE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Couleur façade / RAL</label>
+            <input
+              type="text"
+              value={readData('materiaux.couleur_facade_ral') || ''}
+              onChange={e => updateData('materiaux.couleur_facade_ral', e.target.value)}
+              style={inputBaseStyle}
+              placeholder="ex : RAL 9010 ou Blanc cassé"
+            />
+          </div>
+        </div>
+        {facade === 'Autre' && (
+          <div style={{ marginBottom: 10 }}>
+            <label style={labelStyle}>Précisez le matériau de façade</label>
+            <input
+              type="text"
+              value={readData('materiaux.materiau_facade_autre') || ''}
+              onChange={e => updateData('materiaux.materiau_facade_autre', e.target.value)}
+              style={inputBaseStyle}
+            />
+          </div>
+        )}
+
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Matériau de couverture</label>
+            <select
+              value={couv || ''}
+              onChange={e => updateData('materiaux.materiau_couverture', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {MATERIAU_COUVERTURE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Couleur couverture</label>
+            <input
+              type="text"
+              value={readData('materiaux.couleur_couverture') || ''}
+              onChange={e => updateData('materiaux.couleur_couverture', e.target.value)}
+              style={inputBaseStyle}
+              placeholder="ex : Rouge, Anthracite"
+            />
+          </div>
+        </div>
+        {couv === 'Autre' && (
+          <div style={{ marginBottom: 10 }}>
+            <label style={labelStyle}>Précisez le matériau de couverture</label>
+            <input
+              type="text"
+              value={readData('materiaux.materiau_couverture_autre') || ''}
+              onChange={e => updateData('materiaux.materiau_couverture_autre', e.target.value)}
+              style={inputBaseStyle}
+            />
+          </div>
+        )}
+
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Matériau des menuiseries</label>
+            <select
+              value={men || ''}
+              onChange={e => updateData('materiaux.materiau_menuiseries', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {MATERIAU_MENUISERIES_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Couleur menuiseries / RAL</label>
+            <input
+              type="text"
+              value={readData('materiaux.couleur_menuiseries_ral') || ''}
+              onChange={e => updateData('materiaux.couleur_menuiseries_ral', e.target.value)}
+              style={inputBaseStyle}
+              placeholder="ex : RAL 7016 Gris anthracite"
+            />
+          </div>
+        </div>
+        {men === 'Autre' && (
+          <div>
+            <label style={labelStyle}>Précisez le matériau des menuiseries</label>
+            <input
+              type="text"
+              value={readData('materiaux.materiau_menuiseries_autre') || ''}
+              onChange={e => updateData('materiaux.materiau_menuiseries_autre', e.target.value)}
+              style={inputBaseStyle}
+            />
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // ── Bloc Ouvertures ───────────────────────────────────────────────
+  const renderOuvertures = () => {
+    const list = data.ouvertures || []
+    const addOuv = () => {
+      setDraft(d => ({
+        ...d,
+        data: { ...(d.data || {}), ouvertures: [...((d.data || {}).ouvertures || []), { type: '', largeur_cm: null, hauteur_cm: null, nombre: 1, facade: '' }] },
+      }))
+    }
+    const updateOuv = (idx, key, value) => {
+      setDraft(d => {
+        const arr = [...((d.data || {}).ouvertures || [])]
+        arr[idx] = { ...arr[idx], [key]: value }
+        return { ...d, data: { ...(d.data || {}), ouvertures: arr } }
+      })
+    }
+    const removeOuv = (idx) => {
+      setDraft(d => {
+        const arr = [...((d.data || {}).ouvertures || [])]
+        arr.splice(idx, 1)
+        return { ...d, data: { ...(d.data || {}), ouvertures: arr } }
+      })
+    }
+    return (
+      <div style={blocStyle}>
+        <div style={blocTitleStyle}>🪟 Ouvertures</div>
+        <p style={{ fontSize: 12, color: GRAY_500, margin: '0 0 12px', lineHeight: 1.5 }}>
+          Listez chaque type d'ouverture de l'ouvrage. Si vous avez 3 fenêtres identiques de 120×100 cm en façade sud, indiquez nombre = 3.
+        </p>
+        {list.length === 0 && (
+          <div style={{ fontSize: 12, color: GRAY_500, marginBottom: 10, fontStyle: 'italic' }}>
+            Aucune ouverture pour le moment.
+          </div>
+        )}
+        {list.map((ouv, idx) => (
+          <div key={idx} style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 8, padding: 12, marginBottom: 8, position: 'relative' }}>
+            <button
+              type="button"
+              onClick={() => removeOuv(idx)}
+              style={{ position: 'absolute', top: 6, right: 6, width: 24, height: 24, borderRadius: '50%', border: 'none', background: '#fdecec', color: '#b00020', fontSize: 14, cursor: 'pointer', lineHeight: 1 }}
+              title="Supprimer cette ouverture"
+            >
+              ×
+            </button>
+            <div className="ouvrage-row" style={rowStyle}>
+              <div>
+                <label style={labelStyle}>Type d'ouverture</label>
+                <select
+                  value={ouv.type || ''}
+                  onChange={e => updateOuv(idx, 'type', e.target.value || '')}
+                  style={inputBaseStyle}
+                >
+                  <option value="">Sélectionner…</option>
+                  {OUVERTURE_TYPE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={labelStyle}>Façade</label>
+                <select
+                  value={ouv.facade || ''}
+                  onChange={e => updateOuv(idx, 'facade', e.target.value || '')}
+                  style={inputBaseStyle}
+                >
+                  <option value="">Sélectionner…</option>
+                  {FACADE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="ouvrage-row" style={{ ...rowStyle, gridTemplateColumns: '1fr 1fr 1fr' }}>
+              <div>
+                <label style={labelStyle}>Largeur (cm)</label>
+                <input
+                  type="number"
+                  step="1"
+                  value={ouv.largeur_cm ?? ''}
+                  onChange={e => updateOuv(idx, 'largeur_cm', e.target.value === '' ? null : parseInt(e.target.value, 10))}
+                  style={inputBaseStyle}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Hauteur (cm)</label>
+                <input
+                  type="number"
+                  step="1"
+                  value={ouv.hauteur_cm ?? ''}
+                  onChange={e => updateOuv(idx, 'hauteur_cm', e.target.value === '' ? null : parseInt(e.target.value, 10))}
+                  style={inputBaseStyle}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Nombre</label>
+                <input
+                  type="number"
+                  step="1"
+                  min="1"
+                  value={ouv.nombre ?? 1}
+                  onChange={e => updateOuv(idx, 'nombre', e.target.value === '' ? 1 : parseInt(e.target.value, 10))}
+                  style={inputBaseStyle}
+                />
+              </div>
+            </div>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={addOuv}
+          style={{ padding: '9px 14px', borderRadius: 8, border: `1px dashed ${ACCENT}`, background: ACCENT_LIGHT, color: ACCENT, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+        >
+          + Ajouter une ouverture
+        </button>
+      </div>
+    )
+  }
+
+  // ── Bloc Raccord existant (extension / surelevation) ─────────────
+  const renderRaccord = () => {
+    const modeRaccord = readData('raccord_existant.mode_raccord')
+    return (
+      <div style={blocStyle}>
+        <div style={blocTitleStyle}>🔗 Raccord à l'existant</div>
+        <div style={{ marginBottom: 10 }}>
+          <label style={labelStyle}>Description du bâti existant</label>
+          <textarea
+            value={readData('raccord_existant.description_existant') || ''}
+            onChange={e => updateData('raccord_existant.description_existant', e.target.value)}
+            rows={3}
+            style={{ ...inputBaseStyle, resize: 'vertical' }}
+            placeholder="Décrivez le bâti existant auquel votre ouvrage se raccorde : matériaux de façade, de toiture, dimensions approximatives, année de construction si connue."
+          />
+        </div>
+        <div style={{ marginBottom: 10 }}>
+          <label style={labelStyle}>Mode de raccord</label>
+          <select
+            value={modeRaccord || ''}
+            onChange={e => updateData('raccord_existant.mode_raccord', e.target.value || null)}
+            style={inputBaseStyle}
+          >
+            <option value="">Sélectionner…</option>
+            {MODE_RACCORD_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+          </select>
+        </div>
+        {modeRaccord === 'Autre' && (
+          <div style={{ marginBottom: 10 }}>
+            <label style={labelStyle}>Précisez le mode de raccord</label>
+            <input
+              type="text"
+              value={readData('raccord_existant.mode_raccord_autre') || ''}
+              onChange={e => updateData('raccord_existant.mode_raccord_autre', e.target.value)}
+              style={inputBaseStyle}
+            />
+          </div>
+        )}
+        {isSurelevation && (
+          <div className="ouvrage-row" style={rowStyle}>
+            <div>
+              <label style={labelStyle}>Hauteur ajoutée (m)</label>
+              <input
+                type="number"
+                step="0.01"
+                value={readData('raccord_existant.hauteur_ajoutee_m') ?? ''}
+                onChange={e => updateData('raccord_existant.hauteur_ajoutee_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+                style={inputBaseStyle}
+                placeholder="ex : 2.80"
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Emprise conservée</label>
+              <select
+                value={readData('raccord_existant.emprise_conservee') || ''}
+                onChange={e => updateData('raccord_existant.emprise_conservee', e.target.value || null)}
+                style={inputBaseStyle}
+              >
+                <option value="">Sélectionner…</option>
+                {EMPRISE_CONSERVEE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+              </select>
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // ── Bloc Dimensions serre ─────────────────────────────────────────
+  const renderSerre = () => {
+    return (
+      <div style={blocStyle}>
+        <div style={blocTitleStyle}>🌱 Dimensions de la serre</div>
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Longueur (m)</label>
+            <input
+              type="number"
+              step="0.1"
+              value={readData('serre.longueur_m') ?? ''}
+              onChange={e => updateData('serre.longueur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+              style={inputBaseStyle}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Largeur (m)</label>
+            <input
+              type="number"
+              step="0.1"
+              value={readData('serre.largeur_m') ?? ''}
+              onChange={e => updateData('serre.largeur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+              style={inputBaseStyle}
+            />
+          </div>
+        </div>
+        <div style={{ marginBottom: 10 }}>
+          <label style={labelStyle}>Hauteur faîtière (m)</label>
+          <input
+            type="number"
+            step="0.01"
+            value={readData('serre.hauteur_faitiere_m') ?? ''}
+            onChange={e => updateData('serre.hauteur_faitiere_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+            style={{ ...inputBaseStyle, maxWidth: 220 }}
+            placeholder="ex : 4.50"
+          />
+        </div>
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Type de serre</label>
+            <select
+              value={readData('serre.type_serre') || ''}
+              onChange={e => updateData('serre.type_serre', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {TYPE_SERRE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Matériau de couverture</label>
+            <select
+              value={readData('serre.materiau_couverture_serre') || ''}
+              onChange={e => updateData('serre.materiau_couverture_serre', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {MATERIAU_COUVERTURE_SERRE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Bloc Commentaire (tous types) ─────────────────────────────────
+  const renderCommentaire = () => (
+    <div style={blocStyle}>
+      <div style={blocTitleStyle}>💬 Commentaire libre (facultatif)</div>
+      <p style={{ fontSize: 12, color: GRAY_500, margin: '0 0 8px', lineHeight: 1.5 }}>
+        Une information importante qu'on ne vous a pas demandée ? Ajoutez-la ici.
+      </p>
+      <textarea
+        value={readData('commentaire') || ''}
+        onChange={e => updateData('commentaire', e.target.value)}
+        rows={3}
+        style={{ ...inputBaseStyle, resize: 'vertical' }}
+        placeholder="Particularités de votre projet que les questions précédentes ne couvrent pas : contraintes d'implantation, souhaits esthétiques, choix atypiques, etc."
+      />
+    </div>
+  )
+
+  return (
+    <>
+      {showDimensionsBati && renderDimensionsBati()}
+      {showMateriauxBati && renderMateriauxBati()}
+      {showOuvertures && renderOuvertures()}
+      {showRaccord && renderRaccord()}
+      {showSerre && renderSerre()}
+      {renderCommentaire()}
+    </>
+  )
+}

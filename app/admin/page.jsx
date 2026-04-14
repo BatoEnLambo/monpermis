@@ -6,7 +6,7 @@ import { supabase } from '../../lib/supabase'
 import { uploadFile, getDocuments, deleteDocument } from '../../lib/storage'
 import { getMessages, sendMessage, markAsRead } from '../../lib/messages'
 import AdminNav from '../../components/AdminNav'
-import { formatOuvrageType, getOuvrageType } from '../../src/config/ouvrageTypes'
+import { formatOuvrageType, getOuvrageType, computeOuvrageProgress } from '../../src/config/ouvrageTypes'
 
 const STATUS_LABELS = {
   pending: '🟡 En attente de paiement',
@@ -471,6 +471,8 @@ export default function AdminPage() {
                   {/* Ouvrages déclarés par le client */}
                   {(() => {
                     const list = projectOuvrages[p.id] || []
+                    const fmtDim = (v, unit) => v == null || v === '' ? '—' : `${v} ${unit}`
+                    const fmtNsp = (v, unknown, unit) => unknown ? 'NSP' : (v == null || v === '' ? '—' : `${v} ${unit}`)
                     return (
                       <div style={{ marginTop: 16, padding: 12, background: '#fafaf9', borderRadius: 10, border: '1px solid #e8e7e4' }}>
                         <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, color: '#1c1c1a' }}>
@@ -479,15 +481,84 @@ export default function AdminPage() {
                         {list.length === 0 ? (
                           <div style={{ fontSize: 12, color: '#888' }}>Aucun ouvrage déclaré.</div>
                         ) : (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                             {list.map(o => {
                               const type = getOuvrageType(o.type)
+                              const data = o.data || {}
+                              const dims = data.dimensions || {}
+                              const mat = data.materiaux || {}
+                              const ouvs = data.ouvertures || []
+                              const raccord = data.raccord_existant || {}
+                              const serre = data.serre || {}
+                              const { filled, total } = computeOuvrageProgress(o)
+                              const pct = total > 0 ? Math.round((filled / total) * 100) : 0
                               return (
-                                <div key={o.id} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '8px 10px', background: '#fff', borderRadius: 8, border: '1px solid #eee' }}>
-                                  <span style={{ fontSize: 18 }}>{type?.icon || '📦'}</span>
-                                  <div style={{ flex: 1 }}>
-                                    <div style={{ fontSize: 13, fontWeight: 600, color: '#1c1c1a' }}>{o.name}</div>
+                                <div key={o.id} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '10px 12px', background: '#fff', borderRadius: 8, border: '1px solid #eee' }}>
+                                  <span style={{ fontSize: 20 }}>{type?.icon || '📦'}</span>
+                                  <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                                      <div style={{ fontSize: 13, fontWeight: 600, color: '#1c1c1a' }}>{o.name}</div>
+                                      <div style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 10, background: pct === 100 ? '#e8f5ee' : '#fff3e0', color: pct === 100 ? '#1a5c3a' : '#e65100' }}>{pct}%</div>
+                                    </div>
                                     <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>{formatOuvrageType(o.type, o.subtype)}</div>
+
+                                    {/* Dimensions bâti */}
+                                    {(dims.longueur_m || dims.largeur_m || dims.type_toiture || dims.hauteur_faitage_m || dims.hauteur_faitage_unknown) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 6, lineHeight: 1.5 }}>
+                                        <strong>Dim.</strong> {fmtDim(dims.longueur_m, 'm')} × {fmtDim(dims.largeur_m, 'm')}
+                                        {dims.type_toiture && ` · Toit ${dims.type_toiture}`}
+                                        {(dims.hauteur_faitage_m != null || dims.hauteur_faitage_unknown) && ` · Faîtage ${fmtNsp(dims.hauteur_faitage_m, dims.hauteur_faitage_unknown, 'm')}`}
+                                        {(dims.hauteur_egout_m != null || dims.hauteur_egout_unknown) && ` · Égout ${fmtNsp(dims.hauteur_egout_m, dims.hauteur_egout_unknown, 'm')}`}
+                                        {(dims.pente_toiture_deg != null || dims.pente_toiture_unknown) && dims.type_toiture !== 'Toit plat' && ` · Pente ${fmtNsp(dims.pente_toiture_deg, dims.pente_toiture_unknown, '°')}`}
+                                        {(dims.debords_cm != null || dims.debords_unknown) && ` · Débords ${fmtNsp(dims.debords_cm, dims.debords_unknown, 'cm')}`}
+                                      </div>
+                                    )}
+
+                                    {/* Matériaux */}
+                                    {(mat.materiau_facade || mat.materiau_couverture || mat.materiau_menuiseries) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 4, lineHeight: 1.5 }}>
+                                        <strong>Matériaux.</strong>
+                                        {mat.materiau_facade && ` Façade ${mat.materiau_facade === 'Autre' && mat.materiau_facade_autre ? mat.materiau_facade_autre : mat.materiau_facade}${mat.couleur_facade_ral ? ` (${mat.couleur_facade_ral})` : ''}`}
+                                        {mat.materiau_couverture && ` · Couv. ${mat.materiau_couverture === 'Autre' && mat.materiau_couverture_autre ? mat.materiau_couverture_autre : mat.materiau_couverture}${mat.couleur_couverture ? ` (${mat.couleur_couverture})` : ''}`}
+                                        {mat.materiau_menuiseries && ` · Menuis. ${mat.materiau_menuiseries === 'Autre' && mat.materiau_menuiseries_autre ? mat.materiau_menuiseries_autre : mat.materiau_menuiseries}${mat.couleur_menuiseries_ral ? ` (${mat.couleur_menuiseries_ral})` : ''}`}
+                                      </div>
+                                    )}
+
+                                    {/* Ouvertures */}
+                                    {ouvs.length > 0 && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 4, lineHeight: 1.5 }}>
+                                        <strong>Ouvertures ({ouvs.length}).</strong> {ouvs.map((ou, i) => `${ou.nombre || 1}× ${ou.type || '?'} ${ou.largeur_cm || '?'}×${ou.hauteur_cm || '?'}cm${ou.facade ? ` (${ou.facade})` : ''}`).join(' · ')}
+                                      </div>
+                                    )}
+
+                                    {/* Raccord existant */}
+                                    {(raccord.description_existant || raccord.mode_raccord) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 4, lineHeight: 1.5 }}>
+                                        <strong>Raccord.</strong>
+                                        {raccord.mode_raccord && ` ${raccord.mode_raccord === 'Autre' && raccord.mode_raccord_autre ? raccord.mode_raccord_autre : raccord.mode_raccord}`}
+                                        {raccord.hauteur_ajoutee_m != null && ` · +${raccord.hauteur_ajoutee_m}m`}
+                                        {raccord.emprise_conservee && ` · ${raccord.emprise_conservee}`}
+                                        {raccord.description_existant && <div style={{ fontStyle: 'italic', color: '#666', marginTop: 2, whiteSpace: 'pre-wrap' }}>{raccord.description_existant}</div>}
+                                      </div>
+                                    )}
+
+                                    {/* Serre */}
+                                    {(serre.longueur_m || serre.type_serre) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 4, lineHeight: 1.5 }}>
+                                        <strong>Serre.</strong> {fmtDim(serre.longueur_m, 'm')} × {fmtDim(serre.largeur_m, 'm')}, faîtière {fmtDim(serre.hauteur_faitiere_m, 'm')}
+                                        {serre.type_serre && ` · ${serre.type_serre}`}
+                                        {serre.materiau_couverture_serre && ` · ${serre.materiau_couverture_serre}`}
+                                      </div>
+                                    )}
+
+                                    {/* Commentaire libre du client */}
+                                    {data.commentaire && (
+                                      <div style={{ fontSize: 11, color: '#1a5c3a', marginTop: 6, padding: '6px 8px', background: '#e8f5ee', borderRadius: 4, whiteSpace: 'pre-wrap' }}>
+                                        💬 {data.commentaire}
+                                      </div>
+                                    )}
+
+                                    {/* Ancienne description_libre (type autre) */}
                                     {o.description_libre && (
                                       <div style={{ fontSize: 12, color: '#44433f', marginTop: 4, whiteSpace: 'pre-wrap' }}>{o.description_libre}</div>
                                     )}

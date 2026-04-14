@@ -9,6 +9,7 @@ import TerrainDetailsForm from '../../../components/TerrainDetailsForm'
 import TerrainPhotosUpload from '../../../components/TerrainPhotosUpload'
 import CoordonneesCerfaForm from '../../../components/CoordonneesCerfaForm'
 import OuvragesSection from '../../../components/OuvragesSection'
+import { computeOuvragesGlobalProgress } from '../../../src/config/ouvrageTypes'
 import '../../../styles/dashboard.css'
 
 const ACCENT = "#1a5c3a"
@@ -209,10 +210,10 @@ function ProjetContent() {
   }, [project?.id])
 
   // Calcul progression fiche technique
-  // Section 1 : 8 items (coordonnées)
-  // Section 2 : 1 item (au moins 1 ouvrage — placeholder, logique fine au prompt 2)
-  // Section 3 : 5 items (terrain) + jusqu'à 5 photos = 10
-  // Total : 19
+  // Section 1 (8 pts) : coordonnées
+  // Section 2 (10 pts) : moyenne pondérée de la progression de chaque ouvrage
+  // Section 3 (10 pts) : terrain 5 + photos 5
+  // Total : 28 points
   const computeProgress = useCallback(() => {
     if (!details) return 0
     const d = details
@@ -226,8 +227,9 @@ function ProjetContent() {
     if (d.client_departement_naissance) count++
     if (d.client_telephone) count++
     if (d.client_email) count++
-    // Ouvrages (1 placeholder)
-    if ((ouvrages || []).length > 0) count++
+    // Ouvrages (10 pts proportionnels à la complétion moyenne)
+    const ouvragesRatio = computeOuvragesGlobalProgress(ouvrages) // 0..1
+    count += ouvragesRatio * 10
     // Terrain (5)
     if (d.parcelle_nsp || d.parcelle_section || d.parcelle_numero) count++
     if (d.constructions_existantes === false) {
@@ -243,7 +245,7 @@ function ProjetContent() {
     if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) count++
     // Photos (cap à 5)
     count += Math.min(photoCount, 5)
-    return Math.round((count / 19) * 100)
+    return Math.round((count / 28) * 100)
   }, [details, photoCount, ouvrages])
 
   // Sauvegarde du pourcentage en DB pour l'admin et les relances
@@ -407,8 +409,9 @@ function ProjetContent() {
               if (d.client_departement_naissance) infoCount++
               if (d.client_telephone) infoCount++
               if (d.client_email) infoCount++
-              // ② Vos ouvrages (1 item placeholder : 0 ou 1)
-              const ouvragesCount = (ouvrages || []).length > 0 ? 1 : 0
+              // ② Vos ouvrages — pourcentage moyen de complétion
+              const ouvragesList = ouvrages || []
+              const ouvragesPct = Math.round(computeOuvragesGlobalProgress(ouvragesList) * 100)
               // ③ Votre terrain (10 = terrain 5 + photos 5)
               let terrainCount = 0
               if (d.parcelle_nsp || d.parcelle_section || d.parcelle_numero) terrainCount++
@@ -466,7 +469,7 @@ function ProjetContent() {
                   )}
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
                     <span style={badgeStyle(infoCount, 8)}><strong>①</strong> Vos informations {infoCount}/8</span>
-                    <span style={badgeStyle(ouvragesCount, 1)}><strong>②</strong> Vos ouvrages {(ouvrages || []).length}</span>
+                    <span style={badgeStyle(ouvragesPct, 100)}><strong>②</strong> Vos ouvrages {ouvragesList.length} · {ouvragesPct}%</span>
                     <span style={badgeStyle(terrainCount, 10)}><strong>③</strong> Votre terrain {terrainCount}/10</span>
                   </div>
                 </div>
