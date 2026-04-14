@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { supabase } from '../../../../lib/supabase'
+import { generateAccessToken } from '../../../../lib/token'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
@@ -8,15 +9,6 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
 // Disable body parsing — Stripe needs raw body for signature verification
 export const config = {
   api: { bodyParser: false },
-}
-
-function generateToken() {
-  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
-  let token = ''
-  for (let i = 0; i < 32; i++) {
-    token += chars[Math.floor(Math.random() * chars.length)]
-  }
-  return token
 }
 
 export async function POST(request) {
@@ -96,7 +88,7 @@ async function handleQuotePayment(session, quoteId) {
 
   // Create project
   const reference = 'PC-' + Date.now().toString(36).toUpperCase()
-  const token = generateToken()
+  const token = generateAccessToken()
   const nameParts = (quote.client_name || '').split(' ')
   const firstName = nameParts[0] || ''
   const lastName = nameParts.slice(1).join(' ') || ''
