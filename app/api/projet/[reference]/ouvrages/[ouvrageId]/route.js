@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '../../../../../../lib/supabase'
+import { extractStorageKeyFromUrl } from '../../../../../../lib/storage'
 
 async function verifyAccess(reference, token) {
   if (!token) {
@@ -19,6 +20,24 @@ async function verifyAccess(reference, token) {
   return { project }
 }
 
+/**
+ * Supprime des fichiers du bucket Supabase Storage à partir d'une liste d'URLs.
+ * Les erreurs sont logguées mais non-bloquantes (best-effort).
+ */
+async function removeStorageUrls(urls) {
+  if (!Array.isArray(urls) || urls.length === 0) return
+  const keys = urls.map(extractStorageKeyFromUrl).filter(Boolean)
+  if (keys.length === 0) return
+  try {
+    const { error } = await supabase.storage.from('documents').remove(keys)
+    if (error) {
+      console.warn('Ouvrage: storage cleanup warning', { keys, error: error.message })
+    }
+  } catch (err) {
+    console.warn('Ouvrage: storage cleanup exception', { keys, error: err?.message })
+  }
+}
+
 export async function PATCH(request, { params }) {
   const { reference, ouvrageId } = await params
   const { searchParams } = new URL(request.url)
@@ -27,10 +46,10 @@ export async function PATCH(request, { params }) {
   const access = await verifyAccess(reference, token)
   if (access.error) return NextResponse.json({ error: access.error }, { status: access.status })
 
-  // Vérifier que l'ouvrage appartient bien à ce project
+  // Vérifier que l'ouvrage appartient bien à ce project, et récupérer les photos existantes pour diff
   const { data: ouvrage, error: oErr } = await supabase
     .from('project_ouvrages')
-    .select('id, project_id')
+    .select('id, project_id, photo_urls')
     .eq('id', ouvrageId)
     .single()
 
@@ -60,6 +79,17 @@ export async function PATCH(request, { params }) {
     console.error('Ouvrage update error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
+
+  // Cleanup des photos retirées (diff ancien → nouveau)
+  if (Array.isArray(body.photo_urls)) {
+    const oldUrls = Array.isArray(ouvrage.photo_urls) ? ouvrage.photo_urls : []
+    const newUrls = body.photo_urls
+    const removed = oldUrls.filter(u => !newUrls.includes(u))
+    if (removed.length > 0) {
+      await removeStorageUrls(removed)
+    }
+  }
+
   return NextResponse.json({ ouvrage: updated })
 }
 
@@ -71,15 +101,20 @@ export async function DELETE(request, { params }) {
   const access = await verifyAccess(reference, token)
   if (access.error) return NextResponse.json({ error: access.error }, { status: access.status })
 
-  // Vérifier que l'ouvrage appartient bien à ce project
+  // Vérifier que l'ouvrage appartient bien à ce project, et récupérer les photos pour cleanup
   const { data: ouvrage, error: oErr } = await supabase
     .from('project_ouvrages')
-    .select('id, project_id')
+    .select('id, project_id, photo_urls')
     .eq('id', ouvrageId)
     .single()
 
   if (oErr || !ouvrage || ouvrage.project_id !== access.project.id) {
     return NextResponse.json({ error: 'Ouvrage introuvable' }, { status: 404 })
+  }
+
+  // Cleanup Storage AVANT la suppression DB (best-effort : non bloquant en cas d'erreur)
+  if (Array.isArray(ouvrage.photo_urls) && ouvrage.photo_urls.length > 0) {
+    await removeStorageUrls(ouvrage.photo_urls)
   }
 
   const { error } = await supabase

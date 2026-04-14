@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { OUVRAGE_TYPES, getOuvrageType, formatOuvrageType, computeOuvrageProgress } from '../src/config/ouvrageTypes'
 import { supabase } from '../lib/supabase'
+import { validateUploadFile, UPLOAD_HELP_TEXT, UPLOAD_ACCEPT_ATTR } from '../lib/storage'
 import OuvrageDetailsFields from './OuvrageDetailsFields'
 
 const ACCENT = '#1a5c3a'
@@ -37,6 +38,7 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
   const [saving, setSaving] = useState(false)
   const [expandedId, setExpandedId] = useState(null)
   const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState(null)
   const fileInputRef = useRef(null)
 
   const startAdd = () => {
@@ -136,23 +138,40 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
   const handlePhotoUpload = async (e) => {
     const files = Array.from(e.target.files || [])
     if (!files.length || !projectId) return
+    setUploadError(null)
+
+    // Valider tous les fichiers avant de lancer l'upload
+    try {
+      for (const file of files) validateUploadFile(file)
+    } catch (err) {
+      setUploadError(err.message)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+      return
+    }
+
     setUploading(true)
     const newUrls = []
+    const errors = []
     for (const file of files) {
       const ext = file.name.split('.').pop()
       const path = `${projectId}/ouvrages/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
       const { error } = await supabase.storage.from('documents').upload(path, file)
-      if (!error) {
+      if (error) {
+        errors.push(`${file.name} : ${error.message}`)
+      } else {
         const { data: urlData } = supabase.storage.from('documents').getPublicUrl(path)
         newUrls.push(urlData.publicUrl)
       }
     }
     setDraft(d => ({ ...d, photo_urls: [...(d.photo_urls || []), ...newUrls] }))
     setUploading(false)
+    if (errors.length) setUploadError(errors.join(' — '))
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   const removePhoto = (url) => {
+    // L'URL est retirée du draft local. Le cleanup réel en storage se fera
+    // côté serveur dans le PATCH (diff entre ancien et nouveau photo_urls).
     setDraft(d => ({ ...d, photo_urls: (d.photo_urls || []).filter(u => u !== url) }))
   }
 
@@ -432,12 +451,20 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
                       ref={fileInputRef}
                       type="file"
                       multiple
-                      accept="image/*,application/pdf"
+                      accept={UPLOAD_ACCEPT_ATTR}
                       onChange={handlePhotoUpload}
                       disabled={uploading}
                       style={{ fontSize: 13 }}
                     />
+                    <div style={{ fontSize: 11, color: GRAY_500, marginTop: 6 }}>
+                      {UPLOAD_HELP_TEXT}
+                    </div>
                     {uploading && <div style={{ fontSize: 12, color: GRAY_500, marginTop: 6 }}>Envoi en cours...</div>}
+                    {uploadError && (
+                      <div style={{ fontSize: 12, color: '#b00020', marginTop: 6 }}>
+                        {uploadError}
+                      </div>
+                    )}
                   </div>
                 )}
 

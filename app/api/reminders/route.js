@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { createClient } from '@supabase/supabase-js'
+import { computeOuvrageProgress } from '../../../src/config/ouvrageTypes'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const supabase = createClient(
@@ -116,54 +117,90 @@ function templateJ7(prenom, typeProjet, clientUrl) {
   `)
 }
 
-// Calcul server-side du pourcentage de complétion (miroir de la logique client)
-function computeProgress(d) {
+// ─── Section 1 : informations personnelles (CERFA) — 8 champs ───
+function computeSection1Ratio(d) {
   if (!d) return 0
-  let count = 0
-  // Coordonnées CERFA (8)
-  if (d.client_civilite) count++
-  if (d.client_nom) count++
-  if (d.client_prenom) count++
-  if (d.client_date_naissance) count++
-  if (d.client_commune_naissance) count++
-  if (d.client_departement_naissance) count++
-  if (d.client_telephone) count++
-  if (d.client_email) count++
-  // Construction (10)
-  if (d.surface_plancher) count++
-  if (d.hauteur_totale) count++
-  if (d.hauteur_facade || d.hauteur_facade_nsp) count++
-  if (d.pente_toiture || d.pente_toiture_nsp) count++
-  if (d.nombre_niveaux) count++
-  if (d.forme_toiture) count++
-  if (d.cloture_prevue === true || d.cloture_prevue === false) count++
-  if (d.materiau_facade) count++
-  if (d.materiau_couverture) count++
-  if (d.menuiserie_materiau || d.menuiserie_couleur) count++
-  // Pièces (1)
-  try {
-    const ouv = JSON.parse(d.ouvertures_description || '[]')
-    if (Array.isArray(ouv) && ouv.some(p => p.piece && p.longueur && p.largeur)) count++
-  } catch { if (d.ouvertures_description) count++ }
-  // Terrain (5)
-  if (d.parcelle_nsp || d.parcelle_section || d.parcelle_numero) count++
+  const fields = [
+    d.client_civilite,
+    d.client_nom,
+    d.client_prenom,
+    d.client_date_naissance,
+    d.client_commune_naissance,
+    d.client_departement_naissance,
+    d.client_telephone,
+    d.client_email,
+  ]
+  const filled = fields.filter(Boolean).length
+  return filled / fields.length
+}
+
+// ─── Section 3 : terrain — 5 éléments ───
+function computeSection3Ratio(d) {
+  if (!d) return 0
+  let filled = 0
+  const total = 5
+
+  // Parcelle cadastrale
+  if (d.parcelle_nsp || d.parcelle_section || d.parcelle_numero) filled++
+
+  // Constructions existantes
   if (d.constructions_existantes === false) {
-    count++
+    filled++
   } else if (d.constructions_existantes === true) {
     try {
       const liste = JSON.parse(d.constructions_existantes_liste || '[]')
-      if (Array.isArray(liste) && liste.some(item => item.nom)) count++
-    } catch { if (d.constructions_existantes_liste) count++ }
+      if (Array.isArray(liste) && liste.some(item => item.nom)) filled++
+    } catch {
+      if (d.constructions_existantes_liste) filled++
+    }
   }
-  if (d.implantation_description) count++
-  if (d.assainissement) count++
-  if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) count++
-  // Chauffage et énergie (3)
-  if (d.chauffage_principal) count++
-  if (d.eau_chaude) count++
-  if (d.isolation_type) count++
-  // Croquis et photos non comptés côté serveur (stockés dans storage, pas dans project_details)
-  return Math.round((count / 33) * 100)
+
+  // Implantation
+  if (d.implantation_description) filled++
+
+  // Assainissement
+  if (d.assainissement) filled++
+
+  // Raccordements
+  if (
+    d.raccordement_eau ||
+    d.raccordement_electricite ||
+    d.raccordement_gaz ||
+    d.raccordement_fibre ||
+    d.raccordement_aucun
+  ) {
+    filled++
+  }
+
+  return filled / total
+}
+
+// ─── Section 2 : ouvrages — moyenne des progressions individuelles ───
+function computeOuvragesRatio(ouvrages) {
+  if (!Array.isArray(ouvrages) || ouvrages.length === 0) return 0
+  let totalPct = 0
+  for (const o of ouvrages) {
+    const { filled, total } = computeOuvrageProgress({
+      name: o.name,
+      type: o.type,
+      subtype: o.subtype,
+      data: o.data || {},
+    })
+    const pct = total > 0 ? filled / total : 0
+    totalPct += pct
+  }
+  return totalPct / ouvrages.length
+}
+
+// ─── Progression globale pondérée ───
+//   30% section 1 (CERFA) + 50% ouvrages + 20% section 3 (terrain)
+// Retourne un entier 0-100.
+function computeProgress(details, ouvrages) {
+  const s1 = computeSection1Ratio(details)
+  const s2 = computeOuvragesRatio(ouvrages)
+  const s3 = computeSection3Ratio(details)
+  const weighted = 0.3 * s1 + 0.5 * s2 + 0.2 * s3
+  return Math.round(weighted * 100)
 }
 
 export async function GET(request) {
@@ -205,7 +242,13 @@ export async function GET(request) {
         .eq('project_id', p.id)
         .single()
 
-      const percentage = computeProgress(details)
+      // Récupérer les ouvrages pour inclure leur progression
+      const { data: ouvrages } = await supabase
+        .from('project_ouvrages')
+        .select('name, type, subtype, data')
+        .eq('project_id', p.id)
+
+      const percentage = computeProgress(details, ouvrages || [])
       const clientUrl = `${BASE_URL}/projet/${p.reference}?token=${p.token}`
       const prenom = details?.client_prenom || p.first_name || ''
       const typeProjet = (p.project_type || 'projet').toLowerCase()
@@ -214,7 +257,7 @@ export async function GET(request) {
       let sentThisRun = false
 
       // J+7 (vérifié en premier pour éviter d'envoyer J+1 et J+7 le même jour si très en retard)
-      if (!sentThisRun && !p.reminder_j7_sent && hoursSincePaid >= 168 && percentage < 80) {
+      if (!sentThisRun && !p.reminder_j7_sent && hoursSincePaid >= 168 && percentage < 100) {
         try {
           await resend.emails.send({
             from: FROM,
@@ -232,7 +275,7 @@ export async function GET(request) {
       }
 
       // J+3
-      if (!sentThisRun && !p.reminder_j3_sent && hoursSincePaid >= 72 && percentage < 50) {
+      if (!sentThisRun && !p.reminder_j3_sent && hoursSincePaid >= 72 && percentage < 70) {
         try {
           await resend.emails.send({
             from: FROM,
@@ -250,7 +293,7 @@ export async function GET(request) {
       }
 
       // J+1
-      if (!sentThisRun && !p.reminder_j1_sent && hoursSincePaid >= 24 && percentage < 100) {
+      if (!sentThisRun && !p.reminder_j1_sent && hoursSincePaid >= 24 && percentage < 30) {
         try {
           await resend.emails.send({
             from: FROM,

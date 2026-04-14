@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { validateUploadFile, UPLOAD_HELP_TEXT, UPLOAD_ACCEPT_ATTR } from '../lib/storage'
 
 const ACCENT = "#1a5c3a"
 const ACCENT_LIGHT = "#e8f5ee"
@@ -14,7 +15,6 @@ const GRAY_900 = "#1c1c1a"
 const WHITE = "#ffffff"
 
 const BUCKET = 'documents'
-const ACCEPTED = '.jpg,.jpeg,.png,.webp,.pdf'
 
 function getExt(filename) {
   const parts = filename.split('.')
@@ -60,6 +60,7 @@ export default function CroquisUploadForm({ projectId, details, onFieldUpdate, o
   const [files, setFiles] = useState([])
   const [uploading, setUploading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
+  const [uploadError, setUploadError] = useState(null)
   const inputRef = useRef(null)
 
   const checklist = parseChecklist(details?.croquis_checklist)
@@ -94,21 +95,38 @@ export default function CroquisUploadForm({ projectId, details, onFieldUpdate, o
 
   async function handleUpload(fileList) {
     if (!fileList || fileList.length === 0) return
+    setUploadError(null)
+
+    // Valider tous les fichiers avant d'uploader quoi que ce soit
+    try {
+      for (const file of fileList) validateUploadFile(file)
+    } catch (err) {
+      setUploadError(err.message)
+      if (inputRef.current) inputRef.current.value = ''
+      return
+    }
+
     setUploading(true)
+    const errors = []
     try {
       for (const file of fileList) {
         const ext = getExt(file.name)
         const timestamp = Date.now()
         const filePath = `${projectId}/croquis/croquis-${timestamp}.${ext}`
         const { error } = await supabase.storage.from(BUCKET).upload(filePath, file)
-        if (error) console.error('Upload error:', error)
+        if (error) {
+          console.error('Upload error:', error)
+          errors.push(`${file.name} : ${error.message}`)
+        }
       }
       await loadFiles()
     } catch (err) {
       console.error('Upload error:', err)
+      errors.push(err.message)
     } finally {
       setUploading(false)
       if (inputRef.current) inputRef.current.value = ''
+      if (errors.length) setUploadError(errors.join(' — '))
     }
   }
 
@@ -329,12 +347,20 @@ export default function CroquisUploadForm({ projectId, details, onFieldUpdate, o
           ref={inputRef}
           type="file"
           multiple
-          accept={ACCEPTED}
+          accept={UPLOAD_ACCEPT_ATTR}
           style={{ display: 'none' }}
           onChange={e => handleUpload(Array.from(e.target.files))}
           disabled={uploading}
         />
       </div>
+      <div style={{ fontSize: 11, color: GRAY_500, marginTop: 6, marginBottom: files.length > 0 ? 12 : 0 }}>
+        {UPLOAD_HELP_TEXT}
+      </div>
+      {uploadError && (
+        <div style={{ fontSize: 12, color: '#b00020', marginTop: 6, marginBottom: 12 }}>
+          {uploadError}
+        </div>
+      )}
 
       {/* Files list */}
       {files.length > 0 && (

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
+import { validateUploadFile, UPLOAD_HELP_TEXT, UPLOAD_ACCEPT_ATTR } from '../lib/storage'
 
 const ACCENT = "#1a5c3a"
 const ACCENT_LIGHT = "#e8f5ee"
@@ -19,7 +20,6 @@ const SLOTS = [
   { key: 'vue-rue', label: 'Vue depuis la rue / chemin d\'accès' },
 ]
 
-const ACCEPTED = '.jpg,.jpeg,.png,.webp'
 const BUCKET = 'documents'
 
 function getExt(filename) {
@@ -30,6 +30,7 @@ function getExt(filename) {
 export default function TerrainPhotosUpload({ projectId, token, onPhotoCountChange }) {
   const [photos, setPhotos] = useState({})
   const [uploading, setUploading] = useState({})
+  const [uploadError, setUploadError] = useState(null)
   const inputRefs = useRef({})
 
   useEffect(() => {
@@ -63,6 +64,16 @@ export default function TerrainPhotosUpload({ projectId, token, onPhotoCountChan
 
   async function handleUpload(slotKey, file) {
     if (!file) return
+    setUploadError(null)
+
+    try {
+      validateUploadFile(file)
+    } catch (err) {
+      setUploadError(err.message)
+      if (inputRefs.current[slotKey]) inputRefs.current[slotKey].value = ''
+      return
+    }
+
     setUploading(prev => ({ ...prev, [slotKey]: true }))
 
     try {
@@ -84,6 +95,7 @@ export default function TerrainPhotosUpload({ projectId, token, onPhotoCountChan
       setPhotos(prev => ({ ...prev, [slotKey]: { url: urlData.publicUrl + '?t=' + Date.now(), fileName: `${slotKey}.${ext}` } }))
     } catch (err) {
       console.error('Upload error:', err)
+      setUploadError(err.message || 'Erreur lors de l\'upload')
     } finally {
       setUploading(prev => ({ ...prev, [slotKey]: false }))
       if (inputRefs.current[slotKey]) inputRefs.current[slotKey].value = ''
@@ -120,7 +132,7 @@ export default function TerrainPhotosUpload({ projectId, token, onPhotoCountChan
               <input
                 ref={el => inputRefs.current[slot.key] = el}
                 type="file"
-                accept={ACCEPTED}
+                accept={UPLOAD_ACCEPT_ATTR}
                 style={{ display: 'none' }}
                 onChange={e => {
                   if (e.target.files[0]) handleUpload(slot.key, e.target.files[0])
@@ -210,6 +222,14 @@ export default function TerrainPhotosUpload({ projectId, token, onPhotoCountChan
           )
         })}
       </div>
+      <div style={{ fontSize: 11, color: GRAY_500, marginTop: 8 }}>
+        {UPLOAD_HELP_TEXT}
+      </div>
+      {uploadError && (
+        <div style={{ fontSize: 12, color: '#b00020', marginTop: 6 }}>
+          {uploadError}
+        </div>
+      )}
     </div>
   )
 }
