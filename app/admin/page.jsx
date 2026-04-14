@@ -503,6 +503,16 @@ export default function AdminPage() {
                               const dimMur = data.dimensions_mur || {}
                               const matMur = data.materiaux_mur || {}
                               const portail = data.portail || {}
+                              // Modification extérieure
+                              const modifOuvs = data.modifications_ouvertures || []
+                              const ravalement = data.ravalement || {}
+                              const changMenuis = data.changement_menuiseries || []
+                              const changCouv = data.changement_couverture || {}
+                              const ite = data.ite || {}
+                              const solaires = data.panneaux_solaires || {}
+                              // Autre
+                              const dimApprox = data.dimensions_approx || {}
+                              const matPrinc = data.materiaux_principaux
                               const { filled, total } = computeOuvrageProgress(o)
                               const pct = total > 0 ? Math.round((filled / total) * 100) : 0
                               return (
@@ -687,6 +697,116 @@ export default function AdminPage() {
                                         {portail.avec_piliers && (
                                           <> · Piliers {portail.materiau_piliers || '?'}{portail.chapeaux_piliers && portail.chapeaux_piliers !== 'Aucun' ? ` (chapeaux ${portail.chapeaux_piliers})` : ''}{portail.hauteur_piliers_m != null ? ` H ${portail.hauteur_piliers_m}m` : ''}</>
                                         )}
+                                      </div>
+                                    )}
+
+                                    {/* Modification extérieure : ouvertures */}
+                                    {modifOuvs.length > 0 && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 6, lineHeight: 1.5 }}>
+                                        <strong>Modifs ouvertures ({modifOuvs.length}).</strong>
+                                        <div style={{ marginLeft: 8, marginTop: 2 }}>
+                                          {modifOuvs.map((m, i) => (
+                                            <div key={i} style={{ fontSize: 11, color: '#666' }}>
+                                              • {m.action || '?'} {m.type_ouverture || '?'} {m.largeur_cm || '?'}×{m.hauteur_cm || '?'}cm {m.facade ? `(${m.facade})` : ''}
+                                              {m.dimensions_avant && ` · avant ${m.dimensions_avant}`}
+                                              {m.materiau_menuiserie && ` · ${m.materiau_menuiserie}`}
+                                              {m.couleur_ral && ` ${m.couleur_ral}`}
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Ravalement */}
+                                    {(ravalement.materiau_actuel || ravalement.materiau_futur || ravalement.surface_totale_m2 != null) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 6, lineHeight: 1.5 }}>
+                                        <strong>Ravalement.</strong>
+                                        {ravalement.surface_totale_m2 != null && ` ${ravalement.surface_totale_m2}m²`}
+                                        {Array.isArray(ravalement.facades_concernees) && ravalement.facades_concernees.length > 0 && ` · ${ravalement.facades_concernees.join('/')}`}
+                                        {(ravalement.materiau_actuel || ravalement.materiau_futur) && ` · ${ravalement.materiau_actuel || '?'} → ${ravalement.materiau_futur || '?'}`}
+                                        {(ravalement.couleur_actuelle || ravalement.couleur_future_ral) && ` · ${ravalement.couleur_actuelle || '?'} → ${ravalement.couleur_future_ral || '?'}`}
+                                        {ravalement.changement_aspect && ' · ✓ change aspect'}
+                                      </div>
+                                    )}
+
+                                    {/* Changement menuiseries */}
+                                    {changMenuis.length > 0 && (() => {
+                                      const totalUnits = changMenuis.reduce((s, m) => s + (parseInt(m.nombre, 10) || 0), 0)
+                                      return (
+                                        <div style={{ fontSize: 11, color: '#44433f', marginTop: 6, lineHeight: 1.5 }}>
+                                          <strong>Menuiseries ({changMenuis.length} type{changMenuis.length > 1 ? 's' : ''}, {totalUnits} unité{totalUnits > 1 ? 's' : ''}).</strong>
+                                          <div style={{ marginLeft: 8, marginTop: 2 }}>
+                                            {changMenuis.map((m, i) => (
+                                              <div key={i} style={{ fontSize: 11, color: '#666' }}>
+                                                • {m.nombre || 1}× {m.type || '?'}
+                                                {m.dimensions_standard && ` · ${m.dimensions_standard}`}
+                                                {(m.largeur_cm || m.hauteur_cm) && ` (${m.largeur_cm || '?'}×${m.hauteur_cm || '?'}cm)`}
+                                                {(m.materiau_actuel || m.materiau_futur) && ` · ${m.materiau_actuel || '?'} → ${m.materiau_futur || '?'}`}
+                                                {m.vitrage && ` · ${m.vitrage}`}
+                                                {m.couleur_future_ral && ` · ${m.couleur_future_ral}`}
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )
+                                    })()}
+
+                                    {/* Changement couverture */}
+                                    {(changCouv.materiau_actuel || changCouv.materiau_futur || changCouv.surface_totale_m2 != null) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 6, lineHeight: 1.5 }}>
+                                        <strong>Couverture.</strong>
+                                        {changCouv.surface_totale_m2 != null && ` ${changCouv.surface_totale_m2}m²`}
+                                        {(changCouv.materiau_actuel || changCouv.materiau_futur) && ` · ${changCouv.materiau_actuel || '?'} → ${changCouv.materiau_futur || '?'}`}
+                                        {(changCouv.couleur_actuelle || changCouv.couleur_future) && ` · ${changCouv.couleur_actuelle || '?'} → ${changCouv.couleur_future || '?'}`}
+                                        {changCouv.changement_pente && ` · Pente ${changCouv.pente_avant_deg ?? '?'}° → ${changCouv.pente_apres_deg ?? '?'}°`}
+                                        {changCouv.isolation_sous_toiture && ' · + isolation sous-toiture'}
+                                      </div>
+                                    )}
+
+                                    {/* ITE */}
+                                    {(ite.materiau_isolant || ite.surface_totale_m2 != null) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 6, lineHeight: 1.5 }}>
+                                        <strong>ITE.</strong>
+                                        {ite.surface_totale_m2 != null && ` ${ite.surface_totale_m2}m²`}
+                                        {Array.isArray(ite.facades_concernees) && ite.facades_concernees.length > 0 && ` · ${ite.facades_concernees.join('/')}`}
+                                        {ite.materiau_isolant && ` · ${ite.materiau_isolant}`}
+                                        {ite.epaisseur_cm != null && ` ${ite.epaisseur_cm}cm`}
+                                        {ite.parement_final && ` · ${ite.parement_final}`}
+                                        {ite.couleur_finale_ral && ` · ${ite.couleur_finale_ral}`}
+                                        {ite.surepaisseur_cm != null && ` · surép. ${ite.surepaisseur_cm}cm`}
+                                      </div>
+                                    )}
+
+                                    {/* Panneaux solaires */}
+                                    {(solaires.type || solaires.nombre_panneaux != null) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 6, lineHeight: 1.5 }}>
+                                        <strong>Solaires.</strong>
+                                        {solaires.type && ` ${solaires.type}`}
+                                        {solaires.nombre_panneaux != null && ` · ${solaires.nombre_panneaux} panneaux`}
+                                        {solaires.surface_totale_m2 != null && ` · ${solaires.surface_totale_m2}m²`}
+                                        {solaires.puissance_kwc != null && ` · ${solaires.puissance_kwc}kWc`}
+                                        {solaires.implantation && ` · ${solaires.implantation}`}
+                                        {solaires.pan_toiture && ` · ${solaires.pan_toiture}`}
+                                        {(solaires.orientation_deg != null || solaires.inclinaison_deg != null) && ` · Orient. ${solaires.orientation_deg ?? '?'}°/Incl. ${solaires.inclinaison_deg ?? '?'}°`}
+                                        {solaires.couleur_panneaux && ` · ${solaires.couleur_panneaux}`}
+                                        {solaires.raccordement && ` · ${solaires.raccordement}`}
+                                      </div>
+                                    )}
+
+                                    {/* Autre — dimensions approximatives */}
+                                    {(dimApprox.surface_au_sol_m2 != null || dimApprox.hauteur_m != null || dimApprox.longueur_m != null || dimApprox.largeur_m != null) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 6, lineHeight: 1.5 }}>
+                                        <strong>Dim. approx.</strong>
+                                        {dimApprox.surface_au_sol_m2 != null && ` ${dimApprox.surface_au_sol_m2}m²`}
+                                        {(dimApprox.longueur_m != null || dimApprox.largeur_m != null) && ` · ${fmtDim(dimApprox.longueur_m, 'm')} × ${fmtDim(dimApprox.largeur_m, 'm')}`}
+                                        {dimApprox.hauteur_m != null && ` · H ${dimApprox.hauteur_m}m`}
+                                      </div>
+                                    )}
+
+                                    {/* Autre — matériaux principaux */}
+                                    {matPrinc && typeof matPrinc === 'string' && matPrinc.trim() && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 4, lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
+                                        <strong>Matériaux.</strong> {matPrinc}
                                       </div>
                                     )}
 

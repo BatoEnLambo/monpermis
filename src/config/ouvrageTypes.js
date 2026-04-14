@@ -203,6 +203,34 @@ export function isMurLineaire(typeId, subtypeId) {
   return typeId === 'mur_cloture' && subtypeId && subtypeId !== 'portail'
 }
 
+// ─── Modification extérieure ────────────────────────────────────────
+export function isModificationExterieure(typeId) {
+  return typeId === 'modification_exterieure'
+}
+export function isModifOuverture(typeId, subtypeId) {
+  return typeId === 'modification_exterieure' && subtypeId === 'ouverture'
+}
+export function isModifRavalement(typeId, subtypeId) {
+  return typeId === 'modification_exterieure' && subtypeId === 'ravalement'
+}
+export function isModifMenuiseries(typeId, subtypeId) {
+  return typeId === 'modification_exterieure' && subtypeId === 'menuiseries'
+}
+export function isModifCouverture(typeId, subtypeId) {
+  return typeId === 'modification_exterieure' && subtypeId === 'couverture'
+}
+export function isModifIte(typeId, subtypeId) {
+  return typeId === 'modification_exterieure' && subtypeId === 'ite'
+}
+export function isModifSolaires(typeId, subtypeId) {
+  return typeId === 'modification_exterieure' && subtypeId === 'solaires'
+}
+
+// ─── Autre ──────────────────────────────────────────────────────────
+export function isAutre(typeId) {
+  return typeId === 'autre'
+}
+
 // ─────────────────────────────────────────────────────────────────────
 // Listes de choix pour les selects (partagées avec le composant fields)
 // ─────────────────────────────────────────────────────────────────────
@@ -548,6 +576,173 @@ export const CHAPEAUX_PILIERS_OPTIONS = [
   'Autre',
 ]
 
+// ─── Modification extérieure : ouverture ────────────────────────────
+export const ACTION_OUVERTURE_OPTIONS = [
+  'Création',
+  'Agrandissement',
+  'Réduction',
+  'Suppression',
+  'Déplacement',
+]
+
+export const TYPE_OUVERTURE_MODIF_OPTIONS = [
+  'Fenêtre',
+  'Baie vitrée',
+  'Porte-fenêtre',
+  'Porte',
+  'Velux / fenêtre de toit',
+  'Oculus / hublot',
+  'Autre',
+]
+
+export const FACADE_MODIF_OPTIONS = [
+  'Nord',
+  'Sud',
+  'Est',
+  'Ouest',
+  'Toiture',
+  'Non déterminée',
+]
+
+export const MATERIAU_MENUISERIE_MODIF_OPTIONS = [
+  'PVC',
+  'Aluminium',
+  'Bois',
+  'Mixte bois-alu',
+  'Autre',
+]
+
+// ─── Modification extérieure : ravalement ───────────────────────────
+export const FACADES_CONCERNEES_OPTIONS = ['Nord', 'Sud', 'Est', 'Ouest', 'Toutes']
+
+export const MATERIAU_FACADE_ACTUEL_OPTIONS = [
+  'Enduit',
+  'Peinture',
+  'Crépi',
+  'Bardage bois',
+  'Pierre apparente',
+  'Brique',
+  'Béton',
+  'Autre',
+]
+
+export const MATERIAU_FACADE_FUTUR_OPTIONS = [
+  'Enduit taloché',
+  'Enduit lisse',
+  'Enduit gratté',
+  'Peinture',
+  'Bardage bois',
+  'Bardage composite',
+  'Parement pierre',
+  'Autre',
+]
+
+// ─── Modification extérieure : menuiseries ──────────────────────────
+export const TYPE_MENUISERIE_REMPL_OPTIONS = [
+  'Fenêtre',
+  'Porte-fenêtre',
+  'Baie vitrée',
+  "Porte d'entrée",
+  'Velux',
+  'Volets',
+]
+
+export const DIMENSIONS_MENUISERIE_OPTIONS = [
+  "Identiques à l'existant",
+  'Nouvelles dimensions',
+]
+
+export const MATERIAU_MENUISERIE_ACTUEL_OPTIONS = [
+  'PVC',
+  'Aluminium',
+  'Bois',
+  'Acier',
+  'Mixte',
+  'Autre',
+]
+
+export const VITRAGE_OPTIONS = [
+  'Double vitrage standard',
+  'Double vitrage thermique renforcé',
+  'Triple vitrage',
+  'Autre',
+]
+
+// ─── Modification extérieure : couverture ───────────────────────────
+export const MATERIAU_COUVERTURE_MODIF_OPTIONS = [
+  'Tuiles terre cuite',
+  'Tuiles béton',
+  'Ardoise naturelle',
+  'Ardoise fibrociment',
+  'Zinc',
+  'Bac acier',
+  'Membrane EPDM',
+  'Shingle',
+  'Autre',
+]
+
+// ─── Modification extérieure : ITE ──────────────────────────────────
+export const MATERIAU_ISOLANT_ITE_OPTIONS = [
+  'Polystyrène expansé (PSE)',
+  'Polystyrène extrudé (XPS)',
+  'Laine de roche',
+  'Laine de bois',
+  'Liège',
+  'Polyuréthane',
+  'Autre',
+]
+
+export const PAREMENT_ITE_OPTIONS = [
+  'Enduit sur isolant',
+  'Bardage bois',
+  'Bardage composite',
+  'Bardage métallique',
+  'Parement pierre',
+  'Autre',
+]
+
+// ─── Modification extérieure : panneaux solaires ────────────────────
+export const TYPE_PANNEAUX_OPTIONS = [
+  'Photovoltaïques',
+  'Thermiques (eau chaude)',
+  'Hybrides',
+  'Autre',
+]
+
+export const DIMENSIONS_PANNEAU_OPTIONS = [
+  'Standard (~1,7×1m)',
+  'Grand format (~2×1m)',
+  'Autre',
+]
+
+export const IMPLANTATION_PANNEAUX_OPTIONS = [
+  'En superposition (au-dessus des tuiles)',
+  'Intégration au bâti (à la place des tuiles)',
+  'En surimposition sur châssis',
+]
+
+export const PAN_TOITURE_OPTIONS = [
+  'Pan sud',
+  'Pan nord',
+  'Pan est',
+  'Pan ouest',
+  'Plusieurs pans',
+  'Toiture plate',
+]
+
+export const COULEUR_PANNEAUX_OPTIONS = [
+  'Noir',
+  'Bleu foncé',
+  'Anthracite',
+  'Autre',
+]
+
+export const RACCORDEMENT_PANNEAUX_OPTIONS = [
+  'Revente totale au réseau',
+  'Autoconsommation avec revente du surplus',
+  'Autoconsommation totale',
+]
+
 // ─────────────────────────────────────────────────────────────────────
 // Calcul de la progression d'un ouvrage individuel
 // Retourne { filled, total } — le caller fait le ratio.
@@ -726,6 +921,80 @@ export function computeOuvrageProgress(o) {
       if (mm.soubassement) filled++
       if (mm.occultation) filled++
     }
+  }
+
+  // ─── Modification extérieure : ouverture ──────────────────────────
+  if (isModifOuverture(o.type, o.subtype)) {
+    const list = d.modifications_ouvertures || []
+    total += 1
+    // Complet si ≥ 1 ouverture avec les champs essentiels remplis
+    const hasComplete = Array.isArray(list) && list.some(m =>
+      m.action && m.type_ouverture && m.facade &&
+      m.largeur_cm != null && m.largeur_cm !== '' &&
+      m.hauteur_cm != null && m.hauteur_cm !== '' &&
+      m.materiau_menuiserie
+    )
+    if (hasComplete) filled++
+  }
+
+  // ─── Modification extérieure : ravalement ─────────────────────────
+  if (isModifRavalement(o.type, o.subtype)) {
+    const r = d.ravalement || {}
+    total += 5
+    if (Array.isArray(r.facades_concernees) && r.facades_concernees.length > 0) filled++
+    if (r.surface_totale_m2 != null && r.surface_totale_m2 !== '') filled++
+    if (r.materiau_actuel) filled++
+    if (r.materiau_futur) filled++
+    if (r.couleur_future_ral && r.couleur_future_ral.trim()) filled++
+  }
+
+  // ─── Modification extérieure : menuiseries ────────────────────────
+  if (isModifMenuiseries(o.type, o.subtype)) {
+    const list = d.changement_menuiseries || []
+    total += 1
+    const hasComplete = Array.isArray(list) && list.some(m =>
+      m.type && m.nombre != null && m.nombre !== '' &&
+      m.materiau_actuel && m.materiau_futur && m.vitrage
+    )
+    if (hasComplete) filled++
+  }
+
+  // ─── Modification extérieure : couverture ─────────────────────────
+  if (isModifCouverture(o.type, o.subtype)) {
+    const c = d.changement_couverture || {}
+    total += 3
+    if (c.surface_totale_m2 != null && c.surface_totale_m2 !== '') filled++
+    if (c.materiau_actuel) filled++
+    if (c.materiau_futur) filled++
+  }
+
+  // ─── Modification extérieure : ITE ────────────────────────────────
+  if (isModifIte(o.type, o.subtype)) {
+    const i = d.ite || {}
+    total += 5
+    if (i.surface_totale_m2 != null && i.surface_totale_m2 !== '') filled++
+    if (Array.isArray(i.facades_concernees) && i.facades_concernees.length > 0) filled++
+    if (i.materiau_isolant) filled++
+    if (i.epaisseur_cm != null && i.epaisseur_cm !== '') filled++
+    if (i.parement_final) filled++
+  }
+
+  // ─── Modification extérieure : panneaux solaires ──────────────────
+  if (isModifSolaires(o.type, o.subtype)) {
+    const s = d.panneaux_solaires || {}
+    total += 5
+    if (s.type) filled++
+    if (s.nombre_panneaux != null && s.nombre_panneaux !== '') filled++
+    if (s.surface_totale_m2 != null && s.surface_totale_m2 !== '') filled++
+    if (s.implantation) filled++
+    if (s.pan_toiture) filled++
+  }
+
+  // ─── Autre ────────────────────────────────────────────────────────
+  if (isAutre(o.type)) {
+    total += 1
+    const desc = d.description || ''
+    if (desc.trim().length >= 100) filled++
   }
 
   // ─── Portail ──────────────────────────────────────────────────────

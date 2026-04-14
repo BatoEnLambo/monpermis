@@ -403,32 +403,18 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
                   }}
                 />
 
-                {isAutre && (
-                  <>
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>
-                      Décrivez précisément votre projet *
-                    </label>
-                    <textarea
-                      value={draft.description_libre}
-                      onChange={e => setDraft(d => ({ ...d, description_libre: e.target.value }))}
-                      placeholder="Décrivez ce que vous souhaitez construire : nature, dimensions approximatives, usage, matériaux envisagés, contraintes particulières..."
-                      rows={5}
-                      style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        borderRadius: 8,
-                        border: `1px solid ${GRAY_300}`,
-                        fontSize: 14,
-                        fontFamily: 'inherit',
-                        resize: 'vertical',
-                        marginBottom: 16,
-                        boxSizing: 'border-box',
-                      }}
-                    />
+                {/* Blocs conditionnels selon type+sous-type (bâti, serre, raccord, ouvertures, commentaire…) */}
+                <OuvrageDetailsFields
+                  draft={draft}
+                  setDraft={setDraft}
+                  projectId={projectId}
+                />
 
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>
-                      Photos ou croquis (facultatif)
-                    </label>
+                {isAutre && (
+                  <div style={{ background: GRAY_100, border: `1px solid ${GRAY_200}`, borderRadius: 10, padding: 16, marginBottom: 14 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: GRAY_900, marginBottom: 12, letterSpacing: '-0.01em' }}>
+                      📷 Photos ou croquis (facultatif)
+                    </div>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
                       {(draft.photo_urls || []).map(url => (
                         <div key={url} style={{ position: 'relative' }}>
@@ -449,18 +435,11 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
                       accept="image/*,application/pdf"
                       onChange={handlePhotoUpload}
                       disabled={uploading}
-                      style={{ fontSize: 13, marginBottom: 16 }}
+                      style={{ fontSize: 13 }}
                     />
-                    {uploading && <div style={{ fontSize: 12, color: GRAY_500, marginBottom: 16 }}>Envoi en cours...</div>}
-                  </>
+                    {uploading && <div style={{ fontSize: 12, color: GRAY_500, marginTop: 6 }}>Envoi en cours...</div>}
+                  </div>
                 )}
-
-                {/* Blocs conditionnels selon type+sous-type (bâti, serre, raccord, ouvertures, commentaire…) */}
-                <OuvrageDetailsFields
-                  draft={draft}
-                  setDraft={setDraft}
-                  projectId={projectId}
-                />
 
                 <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
                   {!editingId && (
