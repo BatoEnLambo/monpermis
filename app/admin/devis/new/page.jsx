@@ -21,8 +21,8 @@ export default function NewDevisPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!form.client_name || !form.client_email || !form.project_title || !form.amount) {
-      alert('Tous les champs sont obligatoires')
+    if (!form.client_name || !form.project_title || !form.amount) {
+      alert('Nom, titre et prix sont obligatoires')
       return
     }
     setSaving(true)
@@ -30,7 +30,7 @@ export default function NewDevisPage() {
       .from('quotes')
       .insert({
         client_name: form.client_name.trim(),
-        client_email: form.client_email.trim(),
+        client_email: form.client_email.trim() || null,
         project_title: form.project_title.trim(),
         amount: parseInt(form.amount, 10),
       })
@@ -61,6 +61,7 @@ export default function NewDevisPage() {
         <div>
           <label style={{ fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 4, display: 'block' }}>Email du client</label>
           <input type="email" value={form.client_email} onChange={handleChange('client_email')} placeholder="jean@exemple.fr" style={inputStyle} />
+          <div style={{ fontSize: 12, color: GRAY_500, marginTop: 4 }}>Optionnel — si vide, le client le renseignera lui-même sur sa page de devis</div>
         </div>
         <div>
           <label style={{ fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 4, display: 'block' }}>Titre du projet</label>

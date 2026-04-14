@@ -63,7 +63,7 @@ export default function DevisListPage() {
                 style={{ border: `1px solid ${GRAY_200}`, borderRadius: 10, padding: 16, background: WHITE, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
                 <div>
                   <div style={{ fontWeight: 600, fontSize: 14, color: GRAY_900 }}>{q.project_title}</div>
-                  <div style={{ fontSize: 13, color: GRAY_500, marginTop: 2 }}>{q.client_name} — {q.client_email}</div>
+                  <div style={{ fontSize: 13, color: GRAY_500, marginTop: 2 }}>{q.client_name}{q.client_email ? ` — ${q.client_email}` : ''}</div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <span style={{ fontWeight: 700, fontSize: 15, color: GRAY_900 }}>{q.amount} €</span>

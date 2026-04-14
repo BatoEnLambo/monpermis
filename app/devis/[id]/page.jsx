@@ -1,16 +1,16 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '../../../lib/supabase'
 import '../../../styles/payment.css'
 
 const ACCENT = "#1a5c3a"
 const ACCENT_HOVER = "#14482e"
-const ACCENT_LIGHT = "#e8f5ee"
 const GRAY_50 = "#fafaf9"
 const GRAY_100 = "#f5f4f2"
 const GRAY_200 = "#e8e7e4"
+const GRAY_300 = "#d4d3d0"
 const GRAY_500 = "#8a8985"
 const GRAY_700 = "#44433f"
 const GRAY_900 = "#1c1c1a"
@@ -18,6 +18,8 @@ const WHITE = "#ffffff"
 const SUCCESS = "#1a7a3a"
 const SUCCESS_BG = "#eefbf2"
 const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const INCLUDES = [
   "Plans complets (PCMI1 à PCMI8)",
@@ -33,9 +35,15 @@ export default function DevisPublicPage() {
   const [quote, setQuote] = useState(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const [email, setEmail] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState(null)
+  const formRef = useRef(null)
+
+  const emailValid = EMAIL_RE.test(email)
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchQuote = async () => {
       const { data, error } = await supabase
         .from('quotes')
         .select('*')
@@ -45,11 +53,36 @@ export default function DevisPublicPage() {
         setNotFound(true)
       } else {
         setQuote(data)
+        if (data.client_email) setEmail(data.client_email)
       }
       setLoading(false)
     }
-    fetch()
+    fetchQuote()
   }, [params.id])
+
+  const handlePay = async (e) => {
+    e.preventDefault()
+    if (!emailValid || submitting) return
+    setSubmitting(true)
+    setError(null)
+
+    // Enregistrer l'email dans le devis avant le checkout
+    const res = await fetch(`/api/devis/${quote.id}/email`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.trim() }),
+    })
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      setError(data.error || 'Erreur lors de la sauvegarde de l\'email')
+      setSubmitting(false)
+      return
+    }
+
+    // Soumettre le formulaire natif vers /api/checkout
+    formRef.current.submit()
+  }
 
   if (loading) return <div style={{ textAlign: 'center', padding: 60, color: GRAY_500, fontFamily: FONT }}>Chargement...</div>
 
@@ -68,6 +101,8 @@ export default function DevisPublicPage() {
       <p style={{ fontSize: 14, color: GRAY_500, lineHeight: 1.6 }}>Consultez votre email pour accéder à votre espace client.</p>
     </div>
   )
+
+  const canPay = emailValid && !submitting
 
   return (
     <div className="page-payment payment-page" style={{ maxWidth: 520, margin: '0 auto' }}>
@@ -108,21 +143,42 @@ export default function DevisPublicPage() {
             <span style={{ fontSize: 14, color: GRAY_500, marginLeft: 4 }}>TTC</span>
           </div>
 
-          <form method="POST" action="/api/checkout">
-            <input type="hidden" name="quote_id" value={quote.id} />
-            <button type="submit"
+          <div style={{ textAlign: 'left', marginBottom: 16 }}>
+            <label style={{ fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 4, display: 'block' }}>Votre email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={e => { setEmail(e.target.value); setError(null) }}
+              placeholder="jean@exemple.fr"
               style={{
-                width: '100%', padding: '14px', borderRadius: 10, border: 'none',
-                background: ACCENT, color: WHITE,
-                fontSize: 15, fontWeight: 600, cursor: 'pointer',
-                fontFamily: FONT, transition: 'all 0.2s',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                width: '100%', padding: '10px 14px', borderRadius: 8, fontSize: 14, fontFamily: FONT,
+                border: `1px solid ${email && !emailValid ? '#e65100' : GRAY_300}`,
+                boxSizing: 'border-box', transition: 'border-color 0.15s',
               }}
-              onMouseOver={e => e.currentTarget.style.background = ACCENT_HOVER}
-              onMouseOut={e => e.currentTarget.style.background = ACCENT}>
-              Payer {quote.amount} € — dossier livré en 5 jours ouvrés
-            </button>
+            />
+            <div style={{ fontSize: 12, color: GRAY_500, marginTop: 4 }}>
+              Nous vous enverrons l'accès à votre espace client à cette adresse.
+            </div>
+            {error && <div style={{ fontSize: 13, color: '#e65100', marginTop: 6 }}>{error}</div>}
+          </div>
+
+          <form ref={formRef} method="POST" action="/api/checkout" style={{ display: 'none' }}>
+            <input type="hidden" name="quote_id" value={quote.id} />
           </form>
+          <button
+            onClick={handlePay}
+            disabled={!canPay}
+            style={{
+              width: '100%', padding: '14px', borderRadius: 10, border: 'none',
+              background: canPay ? ACCENT : '#d1d5db', color: canPay ? WHITE : '#9ca3af',
+              fontSize: 15, fontWeight: 600, cursor: canPay ? 'pointer' : 'default',
+              fontFamily: FONT, transition: 'all 0.2s',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            }}
+            onMouseOver={e => { if (canPay) e.currentTarget.style.background = ACCENT_HOVER }}
+            onMouseOut={e => { if (canPay) e.currentTarget.style.background = ACCENT }}>
+            {submitting ? 'Redirection...' : `Payer ${quote.amount} € — dossier livré en 5 jours ouvrés`}
+          </button>
 
           <div className="payment-badges" style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '0.75rem' }}>
             {[

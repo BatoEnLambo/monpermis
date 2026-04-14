@@ -74,7 +74,7 @@ export default function DevisDetailPage() {
             <span style={{ fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 6, background: badge.bg, color: badge.color }}>{badge.label}</span>
           </div>
           <div style={{ fontSize: 14, color: GRAY_700 }}>{quote.client_name}</div>
-          <div style={{ fontSize: 13, color: GRAY_500 }}>{quote.client_email}</div>
+          <div style={{ fontSize: 13, color: GRAY_500 }}>{quote.client_email || '—'}</div>
           <div style={{ fontSize: 13, color: GRAY_500, marginTop: 4 }}>Créé le {new Date(quote.created_at).toLocaleDateString('fr-FR')}</div>
           <div style={{ fontSize: 28, fontWeight: 700, color: GRAY_900, marginTop: 16 }}>{quote.amount} € <span style={{ fontSize: 14, fontWeight: 400, color: GRAY_500 }}>TTC</span></div>
         </div>

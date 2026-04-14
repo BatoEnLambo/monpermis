@@ -28,6 +28,10 @@ export async function POST(request) {
         return NextResponse.json({ error: 'Ce devis a déjà été réglé' }, { status: 400 })
       }
 
+      if (!quote.client_email) {
+        return NextResponse.json({ error: 'Email client manquant sur le devis' }, { status: 400 })
+      }
+
       console.log('Quote checkout:', { quoteId, amount: quote.amount, client: quote.client_email })
 
       const session = await stripe.checkout.sessions.create({
