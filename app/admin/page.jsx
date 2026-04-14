@@ -830,6 +830,32 @@ export default function AdminPage() {
                                         ))}
                                       </div>
                                     )}
+                                    {/* Croquis de l'ouvrage (data.croquis.photo_urls) */}
+                                    {(() => {
+                                      const croquisUrls = Array.isArray(data?.croquis?.photo_urls) ? data.croquis.photo_urls : []
+                                      if (croquisUrls.length === 0) return null
+                                      const isPdf = (u) => (u || '').toLowerCase().endsWith('.pdf')
+                                      return (
+                                        <div style={{ marginTop: 8 }}>
+                                          <div style={{ fontSize: 11, fontWeight: 600, color: '#1a5c3a', marginBottom: 4 }}>
+                                            Croquis ({croquisUrls.length})
+                                          </div>
+                                          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                                            {croquisUrls.map(url => (
+                                              <a key={url} href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block' }}>
+                                                {isPdf(url) ? (
+                                                  <div style={{ width: 48, height: 48, borderRadius: 4, border: '1px solid #eee', background: '#fafaf9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, color: '#44433f' }}>
+                                                    PDF
+                                                  </div>
+                                                ) : (
+                                                  <img src={url} alt="croquis" style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 4, border: '1px solid #eee' }} />
+                                                )}
+                                              </a>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )
+                                    })()}
                                   </div>
                                 </div>
                               )

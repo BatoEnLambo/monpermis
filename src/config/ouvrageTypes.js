@@ -749,11 +749,17 @@ export const RACCORDEMENT_PANNEAUX_OPTIONS = [
 // ─────────────────────────────────────────────────────────────────────
 
 export function computeOuvrageProgress(o) {
-  if (!o) return { filled: 0, total: 1 }
+  if (!o) return { filled: 0, total: 1, hasCroquis: false }
   const d = o.data || {}
   let filled = 0
   let total = 1 // le nom
   if (o.name && o.name.trim()) filled++
+
+  // Croquis : critère OPTIONNEL non pénalisant — on expose un flag
+  // `hasCroquis` pour l'UI mais on ne l'ajoute ni à `filled` ni à `total`
+  // afin de ne pas pénaliser les ouvrages sans croquis.
+  const croquisUrls = Array.isArray(d?.croquis?.photo_urls) ? d.croquis.photo_urls : []
+  const hasCroquis = croquisUrls.length > 0
 
   if (needsDimensionsBati(o.type, o.subtype)) {
     const dims = d.dimensions || {}
@@ -1017,7 +1023,7 @@ export function computeOuvrageProgress(o) {
   }
 
   // Types non-bâti non encore spécifiés : complétion = nom seulement (placeholder).
-  return { filled, total }
+  return { filled, total, hasCroquis }
 }
 
 // Moyenne pondérée : chaque ouvrage contribue proportionnellement à son ratio.

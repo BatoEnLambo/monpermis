@@ -277,7 +277,7 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
 
       {/* FORMULAIRE D'AJOUT / MODIFICATION */}
       {(mode === 'add' || mode === 'edit') && (
-        <div style={{ background: GRAY_100, borderRadius: 10, padding: 20, marginBottom: 8 }}>
+        <div style={{ marginBottom: 8 }}>
           {/* Étape A : choix du type */}
           {step === 'type' && (
             <>
@@ -427,12 +427,14 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
                   draft={draft}
                   setDraft={setDraft}
                   projectId={projectId}
+                  ouvrageId={editingId}
                 />
 
                 {isAutre && (
-                  <div style={{ background: GRAY_100, border: `1px solid ${GRAY_200}`, borderRadius: 10, padding: 16, marginBottom: 14 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: GRAY_900, marginBottom: 12, letterSpacing: '-0.01em' }}>
-                      📷 Photos ou croquis (facultatif)
+                  <div style={{ marginBottom: 14 }}>
+                    <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '24px 0' }} />
+                    <div style={{ fontSize: 13, color: '#555', marginBottom: 12 }}>
+                      Photos (facultatif)
                     </div>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
                       {(draft.photo_urls || []).map(url => (

@@ -2,6 +2,7 @@
 
 import { useRef } from 'react'
 import { supabase } from '../lib/supabase'
+import OuvrageCroquisField from './OuvrageCroquisField'
 import {
   needsDimensionsBati,
   needsMateriauxBati,
@@ -113,19 +114,20 @@ const GRAY_900 = '#1c1c1a'
 const WHITE = '#ffffff'
 
 // ── Styles partagés ─────────────────────────────────────────────────
+// blocStyle : simple espacement (plus de fond beige ni bordure, pour
+// rester cohérent avec les Sections 1 et 3 qui sont "plates" dans le card.
 const blocStyle = {
-  background: GRAY_100,
-  borderRadius: 10,
-  padding: 16,
-  marginBottom: 14,
-  border: `1px solid ${GRAY_200}`,
+  marginBottom: 8,
 }
+// blocTitleStyle : libellé gris 13px avec séparateur horizontal au-dessus,
+// imitant le pattern <hr /> + libellé gris des Sections 1 et 3.
 const blocTitleStyle = {
   fontSize: 13,
-  fontWeight: 700,
-  color: GRAY_900,
+  color: '#555',
   marginBottom: 12,
-  letterSpacing: '-0.01em',
+  paddingTop: 24,
+  marginTop: 0,
+  borderTop: '1px solid #eee',
 }
 const rowStyle = {
   display: 'grid',
@@ -135,21 +137,26 @@ const rowStyle = {
 }
 const labelStyle = {
   display: 'block',
-  fontSize: 12,
+  fontSize: 13,
   fontWeight: 500,
   color: GRAY_700,
-  marginBottom: 4,
+  marginBottom: 6,
 }
 const inputBaseStyle = {
   width: '100%',
-  padding: '9px 11px',
+  padding: '10px 12px',
   borderRadius: 8,
   border: `1px solid ${GRAY_300}`,
-  fontSize: 13,
+  fontSize: 14,
   fontFamily: 'inherit',
   boxSizing: 'border-box',
   background: WHITE,
+  outline: 'none',
+  transition: 'border 0.15s',
 }
+// Focus/blur handlers partagés (cohérence avec CoordonneesCerfaForm / TerrainDetailsForm)
+function handleFocus(e) { e.target.style.borderColor = ACCENT }
+function handleBlur(e) { e.target.style.borderColor = GRAY_300 }
 const unknownStyle = {
   display: 'flex',
   alignItems: 'center',
@@ -185,7 +192,7 @@ function getPath(obj, path) {
 }
 
 // ── Composant principal ─────────────────────────────────────────────
-export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
+export default function OuvrageDetailsFields({ draft, setDraft, projectId, ouvrageId }) {
   const fileInputRef = useRef(null)
 
   const data = draft.data || {}
@@ -243,7 +250,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
 
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>📐 Dimensions du bâti</div>
+        <div style={blocTitleStyle}>Dimensions du bâti</div>
 
         <div className="ouvrage-row" style={rowStyle}>
           <div>
@@ -253,7 +260,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.1"
               value={readData('dimensions.longueur_m') ?? ''}
               onChange={e => updateData('dimensions.longueur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 8.5"
             />
           </div>
@@ -264,7 +271,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.1"
               value={readData('dimensions.largeur_m') ?? ''}
               onChange={e => updateData('dimensions.largeur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 6.0"
             />
           </div>
@@ -279,7 +286,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               value={hFaitageUnknown ? '' : (readData('dimensions.hauteur_faitage_m') ?? '')}
               disabled={hFaitageUnknown}
               onChange={e => updateData('dimensions.hauteur_faitage_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={{ ...inputBaseStyle, background: hFaitageUnknown ? GRAY_200 : WHITE }}
+              onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, background: hFaitageUnknown ? GRAY_200 : WHITE }}
               placeholder="ex : 6.50"
             />
             <label style={unknownStyle}>
@@ -302,7 +309,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               value={hEgoutUnknown ? '' : (readData('dimensions.hauteur_egout_m') ?? '')}
               disabled={hEgoutUnknown}
               onChange={e => updateData('dimensions.hauteur_egout_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={{ ...inputBaseStyle, background: hEgoutUnknown ? GRAY_200 : WHITE }}
+              onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, background: hEgoutUnknown ? GRAY_200 : WHITE }}
               placeholder="ex : 3.00"
             />
             <label style={unknownStyle}>
@@ -332,7 +339,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                   updateData('dimensions.pente_toiture_unknown', false)
                 }
               }}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {TYPE_TOITURE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -347,7 +354,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 value={penteUnknown ? '' : (readData('dimensions.pente_toiture_deg') ?? '')}
                 disabled={penteUnknown}
                 onChange={e => updateData('dimensions.pente_toiture_deg', e.target.value === '' ? null : parseInt(e.target.value, 10))}
-                style={{ ...inputBaseStyle, background: penteUnknown ? GRAY_200 : WHITE }}
+                onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, background: penteUnknown ? GRAY_200 : WHITE }}
                 placeholder="ex : 30"
               />
               <label style={unknownStyle}>
@@ -373,7 +380,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             value={debordsUnknown ? '' : (readData('dimensions.debords_cm') ?? '')}
             disabled={debordsUnknown}
             onChange={e => updateData('dimensions.debords_cm', e.target.value === '' ? null : parseInt(e.target.value, 10))}
-            style={{ ...inputBaseStyle, background: debordsUnknown ? GRAY_200 : WHITE, maxWidth: 200 }}
+            onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, background: debordsUnknown ? GRAY_200 : WHITE, maxWidth: 200 }}
             placeholder="ex : 40"
           />
           <label style={unknownStyle}>
@@ -399,7 +406,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     const men = readData('materiaux.materiau_menuiseries')
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>🎨 Matériaux et couleurs</div>
+        <div style={blocTitleStyle}>Matériaux et couleurs</div>
 
         <div className="ouvrage-row" style={rowStyle}>
           <div>
@@ -407,7 +414,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={facade || ''}
               onChange={e => updateData('materiaux.materiau_facade', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {MATERIAU_FACADE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -419,7 +426,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               type="text"
               value={readData('materiaux.couleur_facade_ral') || ''}
               onChange={e => updateData('materiaux.couleur_facade_ral', e.target.value)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : RAL 9010 ou Blanc cassé"
             />
           </div>
@@ -431,7 +438,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               type="text"
               value={readData('materiaux.materiau_facade_autre') || ''}
               onChange={e => updateData('materiaux.materiau_facade_autre', e.target.value)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             />
           </div>
         )}
@@ -442,7 +449,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={couv || ''}
               onChange={e => updateData('materiaux.materiau_couverture', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {MATERIAU_COUVERTURE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -454,7 +461,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               type="text"
               value={readData('materiaux.couleur_couverture') || ''}
               onChange={e => updateData('materiaux.couleur_couverture', e.target.value)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : Rouge, Anthracite"
             />
           </div>
@@ -466,7 +473,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               type="text"
               value={readData('materiaux.materiau_couverture_autre') || ''}
               onChange={e => updateData('materiaux.materiau_couverture_autre', e.target.value)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             />
           </div>
         )}
@@ -477,7 +484,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={men || ''}
               onChange={e => updateData('materiaux.materiau_menuiseries', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {MATERIAU_MENUISERIES_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -489,7 +496,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               type="text"
               value={readData('materiaux.couleur_menuiseries_ral') || ''}
               onChange={e => updateData('materiaux.couleur_menuiseries_ral', e.target.value)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : RAL 7016 Gris anthracite"
             />
           </div>
@@ -501,7 +508,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               type="text"
               value={readData('materiaux.materiau_menuiseries_autre') || ''}
               onChange={e => updateData('materiaux.materiau_menuiseries_autre', e.target.value)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             />
           </div>
         )}
@@ -534,7 +541,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     }
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>🪟 Ouvertures</div>
+        <div style={blocTitleStyle}>Ouvertures</div>
         <p style={{ fontSize: 12, color: GRAY_500, margin: '0 0 12px', lineHeight: 1.5 }}>
           Listez chaque type d'ouverture de l'ouvrage. Si vous avez 3 fenêtres identiques de 120×100 cm en façade sud, indiquez nombre = 3.
         </p>
@@ -559,7 +566,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 <select
                   value={ouv.type || ''}
                   onChange={e => updateOuv(idx, 'type', e.target.value || '')}
-                  style={inputBaseStyle}
+                  style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                 >
                   <option value="">Sélectionner…</option>
                   {OUVERTURE_TYPE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -570,7 +577,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 <select
                   value={ouv.facade || ''}
                   onChange={e => updateOuv(idx, 'facade', e.target.value || '')}
-                  style={inputBaseStyle}
+                  style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                 >
                   <option value="">Sélectionner…</option>
                   {FACADE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -585,7 +592,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                   step="1"
                   value={ouv.largeur_cm ?? ''}
                   onChange={e => updateOuv(idx, 'largeur_cm', e.target.value === '' ? null : parseInt(e.target.value, 10))}
-                  style={inputBaseStyle}
+                  style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                 />
               </div>
               <div>
@@ -595,7 +602,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                   step="1"
                   value={ouv.hauteur_cm ?? ''}
                   onChange={e => updateOuv(idx, 'hauteur_cm', e.target.value === '' ? null : parseInt(e.target.value, 10))}
-                  style={inputBaseStyle}
+                  style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                 />
               </div>
               <div>
@@ -606,7 +613,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                   min="1"
                   value={ouv.nombre ?? 1}
                   onChange={e => updateOuv(idx, 'nombre', e.target.value === '' ? 1 : parseInt(e.target.value, 10))}
-                  style={inputBaseStyle}
+                  style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                 />
               </div>
             </div>
@@ -628,14 +635,14 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     const modeRaccord = readData('raccord_existant.mode_raccord')
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>🔗 Raccord à l'existant</div>
+        <div style={blocTitleStyle}>Raccord à l'existant</div>
         <div style={{ marginBottom: 10 }}>
           <label style={labelStyle}>Description du bâti existant</label>
           <textarea
             value={readData('raccord_existant.description_existant') || ''}
             onChange={e => updateData('raccord_existant.description_existant', e.target.value)}
             rows={3}
-            style={{ ...inputBaseStyle, resize: 'vertical' }}
+            onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, resize: 'vertical' }}
             placeholder="Décrivez le bâti existant auquel votre ouvrage se raccorde : matériaux de façade, de toiture, dimensions approximatives, année de construction si connue."
           />
         </div>
@@ -644,7 +651,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
           <select
             value={modeRaccord || ''}
             onChange={e => updateData('raccord_existant.mode_raccord', e.target.value || null)}
-            style={inputBaseStyle}
+            style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
           >
             <option value="">Sélectionner…</option>
             {MODE_RACCORD_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -657,7 +664,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               type="text"
               value={readData('raccord_existant.mode_raccord_autre') || ''}
               onChange={e => updateData('raccord_existant.mode_raccord_autre', e.target.value)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             />
           </div>
         )}
@@ -670,7 +677,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 step="0.01"
                 value={readData('raccord_existant.hauteur_ajoutee_m') ?? ''}
                 onChange={e => updateData('raccord_existant.hauteur_ajoutee_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-                style={inputBaseStyle}
+                style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                 placeholder="ex : 2.80"
               />
             </div>
@@ -679,7 +686,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               <select
                 value={readData('raccord_existant.emprise_conservee') || ''}
                 onChange={e => updateData('raccord_existant.emprise_conservee', e.target.value || null)}
-                style={inputBaseStyle}
+                style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               >
                 <option value="">Sélectionner…</option>
                 {EMPRISE_CONSERVEE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -695,7 +702,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
   const renderSerre = () => {
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>🌱 Dimensions de la serre</div>
+        <div style={blocTitleStyle}>Dimensions de la serre</div>
         <div className="ouvrage-row" style={rowStyle}>
           <div>
             <label style={labelStyle}>Longueur (m)</label>
@@ -704,7 +711,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.1"
               value={readData('serre.longueur_m') ?? ''}
               onChange={e => updateData('serre.longueur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             />
           </div>
           <div>
@@ -714,7 +721,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.1"
               value={readData('serre.largeur_m') ?? ''}
               onChange={e => updateData('serre.largeur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             />
           </div>
         </div>
@@ -725,7 +732,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             step="0.01"
             value={readData('serre.hauteur_faitiere_m') ?? ''}
             onChange={e => updateData('serre.hauteur_faitiere_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-            style={{ ...inputBaseStyle, maxWidth: 220 }}
+            onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, maxWidth: 220 }}
             placeholder="ex : 4.50"
           />
         </div>
@@ -735,7 +742,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={readData('serre.type_serre') || ''}
               onChange={e => updateData('serre.type_serre', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {TYPE_SERRE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -746,7 +753,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={readData('serre.materiau_couverture_serre') || ''}
               onChange={e => updateData('serre.materiau_couverture_serre', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {MATERIAU_COUVERTURE_SERRE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -767,7 +774,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     const isRonde = forme === 'Ronde'
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>📐 Dimensions du bassin</div>
+        <div style={blocTitleStyle}>Dimensions du bassin</div>
         <div className="ouvrage-row" style={rowStyle}>
           <div>
             <label style={labelStyle}>Forme du bassin</label>
@@ -783,7 +790,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                   updateData('bassin.diametre_m', null)
                 }
               }}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {FORME_PISCINE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -797,7 +804,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 step="0.1"
                 value={readData('bassin.diametre_m') ?? ''}
                 onChange={e => updateData('bassin.diametre_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-                style={inputBaseStyle}
+                style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                 placeholder="ex : 4.5"
               />
             </div>
@@ -812,7 +819,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 step="0.1"
                 value={readData('bassin.longueur_m') ?? ''}
                 onChange={e => updateData('bassin.longueur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-                style={inputBaseStyle}
+                style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                 placeholder="ex : 8.0"
               />
             </div>
@@ -823,7 +830,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 step="0.1"
                 value={readData('bassin.largeur_m') ?? ''}
                 onChange={e => updateData('bassin.largeur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-                style={inputBaseStyle}
+                style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                 placeholder="ex : 4.0"
               />
             </div>
@@ -837,7 +844,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.01"
               value={readData('bassin.profondeur_min_m') ?? ''}
               onChange={e => updateData('bassin.profondeur_min_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 1.20"
             />
           </div>
@@ -848,7 +855,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.01"
               value={readData('bassin.profondeur_max_m') ?? ''}
               onChange={e => updateData('bassin.profondeur_max_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 2.00"
             />
           </div>
@@ -865,14 +872,14 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     const ch = readData('caracteristiques.chauffage')
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>🏊 Caractéristiques de la piscine</div>
+        <div style={blocTitleStyle}>Caractéristiques de la piscine</div>
         <div className="ouvrage-row" style={rowStyle}>
           <div>
             <label style={labelStyle}>Type de construction</label>
             <select
               value={tc || ''}
               onChange={e => updateData('caracteristiques.type_construction', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {TYPE_CONSTRUCTION_PISCINE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -882,7 +889,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 type="text"
                 value={readData('caracteristiques.type_construction_autre') || ''}
                 onChange={e => updateData('caracteristiques.type_construction_autre', e.target.value)}
-                style={{ ...inputBaseStyle, marginTop: 6 }}
+                onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, marginTop: 6 }}
                 placeholder="Précisez…"
               />
             )}
@@ -892,7 +899,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={rev || ''}
               onChange={e => updateData('caracteristiques.revetement', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {REVETEMENT_PISCINE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -902,7 +909,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 type="text"
                 value={readData('caracteristiques.revetement_autre') || ''}
                 onChange={e => updateData('caracteristiques.revetement_autre', e.target.value)}
-                style={{ ...inputBaseStyle, marginTop: 6 }}
+                onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, marginTop: 6 }}
                 placeholder="Précisez…"
               />
             )}
@@ -914,7 +921,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={lt || ''}
               onChange={e => updateData('caracteristiques.local_technique', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {LOCAL_TECHNIQUE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -925,7 +932,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={ch || ''}
               onChange={e => updateData('caracteristiques.chauffage', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {CHAUFFAGE_PISCINE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -942,14 +949,14 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     const h = readData('caracteristiques.habillage')
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>🏊 Caractéristiques de la piscine hors-sol</div>
+        <div style={blocTitleStyle}>Caractéristiques de la piscine hors-sol</div>
         <div className="ouvrage-row" style={rowStyle}>
           <div>
             <label style={labelStyle}>Type</label>
             <select
               value={t || ''}
               onChange={e => updateData('caracteristiques.type_hors_sol', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {TYPE_HORS_SOL_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -962,7 +969,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.01"
               value={readData('caracteristiques.hauteur_bassin_m') ?? ''}
               onChange={e => updateData('caracteristiques.hauteur_bassin_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 1.30"
             />
           </div>
@@ -972,7 +979,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
           <select
             value={h || ''}
             onChange={e => updateData('caracteristiques.habillage', e.target.value || null)}
-            style={{ ...inputBaseStyle, maxWidth: 280 }}
+            onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, maxWidth: 280 }}
           >
             <option value="">Sélectionner…</option>
             {HABILLAGE_HORS_SOL_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -986,7 +993,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
   const renderCaractPiscineSpa = () => {
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>🛁 Caractéristiques du spa</div>
+        <div style={blocTitleStyle}>Caractéristiques du spa</div>
         <div className="ouvrage-row" style={rowStyle}>
           <div>
             <label style={labelStyle}>Nombre de places</label>
@@ -996,7 +1003,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               min="1"
               value={readData('caracteristiques.nombre_places') ?? ''}
               onChange={e => updateData('caracteristiques.nombre_places', e.target.value === '' ? null : parseInt(e.target.value, 10))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 4"
             />
           </div>
@@ -1005,7 +1012,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={readData('caracteristiques.type_encastrement') || ''}
               onChange={e => updateData('caracteristiques.type_encastrement', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {TYPE_ENCASTREMENT_SPA_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1017,7 +1024,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
           <select
             value={readData('caracteristiques.abri_spa') || ''}
             onChange={e => updateData('caracteristiques.abri_spa', e.target.value || null)}
-            style={{ ...inputBaseStyle, maxWidth: 280 }}
+            onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, maxWidth: 280 }}
           >
             <option value="">Sélectionner…</option>
             {ABRI_SPA_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1036,7 +1043,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     }
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>🛡️ Sécurité (obligatoire)</div>
+        <div style={blocTitleStyle}>Sécurité (obligatoire)</div>
         <p style={{ fontSize: 12, color: GRAY_500, margin: '0 0 10px', lineHeight: 1.5 }}>
           La loi impose au moins un dispositif de sécurité homologué pour toute piscine enterrée, semi-enterrée ou hors-sol non démontable. Cochez tous ceux qui s'appliquent.
         </p>
@@ -1060,14 +1067,14 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
   const renderAbriPiscine = () => {
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>🏕️ Caractéristiques de l'abri</div>
+        <div style={blocTitleStyle}>Caractéristiques de l'abri</div>
         <div className="ouvrage-row" style={rowStyle}>
           <div>
             <label style={labelStyle}>Type d'abri</label>
             <select
               value={readData('abri.type_abri') || ''}
               onChange={e => updateData('abri.type_abri', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {TYPE_ABRI_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1078,7 +1085,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={readData('abri.mobile') || ''}
               onChange={e => updateData('abri.mobile', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {MOBILE_ABRI_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1091,7 +1098,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={readData('abri.materiau_structure') || ''}
               onChange={e => updateData('abri.materiau_structure', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {MATERIAU_STRUCTURE_ABRI_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1102,7 +1109,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={readData('abri.materiau_parois') || ''}
               onChange={e => updateData('abri.materiau_parois', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {MATERIAU_PAROIS_ABRI_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1117,7 +1124,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.1"
               value={readData('abri.longueur_m') ?? ''}
               onChange={e => updateData('abri.longueur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 9.0"
             />
           </div>
@@ -1128,7 +1135,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.1"
               value={readData('abri.largeur_m') ?? ''}
               onChange={e => updateData('abri.largeur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 5.0"
             />
           </div>
@@ -1146,7 +1153,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     const hUnknown = !!readData('terrasse.hauteur_au_dessus_sol_unknown')
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>📐 Dimensions de la terrasse</div>
+        <div style={blocTitleStyle}>Dimensions de la terrasse</div>
         <div className="ouvrage-row" style={rowStyle}>
           <div>
             <label style={labelStyle}>Longueur (m)</label>
@@ -1155,7 +1162,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.1"
               value={readData('terrasse.longueur_m') ?? ''}
               onChange={e => updateData('terrasse.longueur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 6.0"
             />
           </div>
@@ -1166,7 +1173,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.1"
               value={readData('terrasse.largeur_m') ?? ''}
               onChange={e => updateData('terrasse.largeur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 4.0"
             />
           </div>
@@ -1179,7 +1186,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             value={hUnknown ? '' : (readData('terrasse.hauteur_au_dessus_sol_m') ?? '')}
             disabled={hUnknown}
             onChange={e => updateData('terrasse.hauteur_au_dessus_sol_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-            style={{ ...inputBaseStyle, maxWidth: 220, background: hUnknown ? GRAY_200 : WHITE }}
+            onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, maxWidth: 220, background: hUnknown ? GRAY_200 : WHITE }}
             placeholder="ex : 0.80"
           />
           <label style={unknownStyle}>
@@ -1204,14 +1211,14 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     const struct = readData('materiaux_terrasse.structure_portante')
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>🎨 Matériaux et structure</div>
+        <div style={blocTitleStyle}>Matériaux et structure</div>
         <div className="ouvrage-row" style={rowStyle}>
           <div>
             <label style={labelStyle}>Matériau de revêtement</label>
             <select
               value={rev || ''}
               onChange={e => updateData('materiaux_terrasse.materiau_revetement', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {MATERIAU_REVETEMENT_TERRASSE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1221,7 +1228,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 type="text"
                 value={readData('materiaux_terrasse.materiau_revetement_autre') || ''}
                 onChange={e => updateData('materiaux_terrasse.materiau_revetement_autre', e.target.value)}
-                style={{ ...inputBaseStyle, marginTop: 6 }}
+                onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, marginTop: 6 }}
                 placeholder="Précisez…"
               />
             )}
@@ -1231,7 +1238,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={struct || ''}
               onChange={e => updateData('materiaux_terrasse.structure_portante', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {STRUCTURE_PORTANTE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1245,7 +1252,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               <select
                 value={readData('materiaux_terrasse.essence_bois') || ''}
                 onChange={e => updateData('materiaux_terrasse.essence_bois', e.target.value || null)}
-                style={inputBaseStyle}
+                style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               >
                 <option value="">Sélectionner…</option>
                 {ESSENCE_BOIS_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1256,7 +1263,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               <select
                 value={readData('materiaux_terrasse.sens_pose') || ''}
                 onChange={e => updateData('materiaux_terrasse.sens_pose', e.target.value || null)}
-                style={inputBaseStyle}
+                style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               >
                 <option value="">Sélectionner…</option>
                 {SENS_POSE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1274,14 +1281,14 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     const hasGC = gc && gc !== 'Aucun'
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>♿ Accessibilité</div>
+        <div style={blocTitleStyle}>Accessibilité</div>
         <div className="ouvrage-row" style={rowStyle}>
           <div>
             <label style={labelStyle}>Accès à la terrasse</label>
             <select
               value={readData('accessibilite.acces') || ''}
               onChange={e => updateData('accessibilite.acces', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {ACCES_TERRASSE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1296,7 +1303,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 updateData('accessibilite.garde_corps', v)
                 if (!v || v === 'Aucun') updateData('accessibilite.hauteur_garde_corps_m', null)
               }}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {GARDE_CORPS_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1311,7 +1318,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.01"
               value={readData('accessibilite.hauteur_garde_corps_m') ?? ''}
               onChange={e => updateData('accessibilite.hauteur_garde_corps_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={{ ...inputBaseStyle, maxWidth: 200 }}
+              onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, maxWidth: 200 }}
               placeholder="ex : 1.00"
             />
           </div>
@@ -1329,7 +1336,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     const variable = !!readData('dimensions_mur.hauteur_variable')
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>📐 Dimensions de l'ouvrage</div>
+        <div style={blocTitleStyle}>Dimensions de l'ouvrage</div>
         <div>
           <label style={labelStyle}>Longueur (m)</label>
           <input
@@ -1337,7 +1344,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             step="0.1"
             value={readData('dimensions_mur.longueur_m') ?? ''}
             onChange={e => updateData('dimensions_mur.longueur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-            style={{ ...inputBaseStyle, maxWidth: 220, marginBottom: 10 }}
+            onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, maxWidth: 220, marginBottom: 10 }}
             placeholder="ex : 15.0"
           />
         </div>
@@ -1368,7 +1375,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 step="0.01"
                 value={readData('dimensions_mur.hauteur_min_m') ?? ''}
                 onChange={e => updateData('dimensions_mur.hauteur_min_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-                style={inputBaseStyle}
+                style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                 placeholder="ex : 0.80"
               />
             </div>
@@ -1379,7 +1386,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 step="0.01"
                 value={readData('dimensions_mur.hauteur_max_m') ?? ''}
                 onChange={e => updateData('dimensions_mur.hauteur_max_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-                style={inputBaseStyle}
+                style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                 placeholder="ex : 1.80"
               />
             </div>
@@ -1392,7 +1399,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.01"
               value={readData('dimensions_mur.hauteur_m') ?? ''}
               onChange={e => updateData('dimensions_mur.hauteur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={{ ...inputBaseStyle, maxWidth: 220 }}
+              onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, maxWidth: 220 }}
               placeholder="ex : 1.60"
             />
           </div>
@@ -1407,14 +1414,14 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     const par = readData('materiaux_mur.parement')
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>🎨 Matériaux du mur de soutènement</div>
+        <div style={blocTitleStyle}>Matériaux du mur de soutènement</div>
         <div className="ouvrage-row" style={rowStyle}>
           <div>
             <label style={labelStyle}>Matériau</label>
             <select
               value={mat || ''}
               onChange={e => updateData('materiaux_mur.materiau', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {MATERIAU_MUR_SOUTENEMENT_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1424,7 +1431,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 type="text"
                 value={readData('materiaux_mur.materiau_autre') || ''}
                 onChange={e => updateData('materiaux_mur.materiau_autre', e.target.value)}
-                style={{ ...inputBaseStyle, marginTop: 6 }}
+                onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, marginTop: 6 }}
                 placeholder="Précisez…"
               />
             )}
@@ -1434,7 +1441,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={par || ''}
               onChange={e => updateData('materiaux_mur.parement', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {PAREMENT_MUR_SOUTENEMENT_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1451,14 +1458,14 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     const par = readData('materiaux_mur.parement')
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>🎨 Matériaux du mur de clôture</div>
+        <div style={blocTitleStyle}>Matériaux du mur de clôture</div>
         <div className="ouvrage-row" style={rowStyle}>
           <div>
             <label style={labelStyle}>Matériau</label>
             <select
               value={mat || ''}
               onChange={e => updateData('materiaux_mur.materiau', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {MATERIAU_MUR_CLOTURE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1468,7 +1475,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 type="text"
                 value={readData('materiaux_mur.materiau_autre') || ''}
                 onChange={e => updateData('materiaux_mur.materiau_autre', e.target.value)}
-                style={{ ...inputBaseStyle, marginTop: 6 }}
+                onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, marginTop: 6 }}
                 placeholder="Précisez…"
               />
             )}
@@ -1478,7 +1485,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={par || ''}
               onChange={e => updateData('materiaux_mur.parement', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {PAREMENT_MUR_CLOTURE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1494,14 +1501,14 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     const tc = readData('materiaux_mur.type_cloture')
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>🎨 Caractéristiques de la clôture</div>
+        <div style={blocTitleStyle}>Caractéristiques de la clôture</div>
         <div className="ouvrage-row" style={rowStyle}>
           <div>
             <label style={labelStyle}>Type de clôture</label>
             <select
               value={tc || ''}
               onChange={e => updateData('materiaux_mur.type_cloture', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {TYPE_CLOTURE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1511,7 +1518,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 type="text"
                 value={readData('materiaux_mur.type_cloture_autre') || ''}
                 onChange={e => updateData('materiaux_mur.type_cloture_autre', e.target.value)}
-                style={{ ...inputBaseStyle, marginTop: 6 }}
+                onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, marginTop: 6 }}
                 placeholder="Précisez…"
               />
             )}
@@ -1521,7 +1528,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={readData('materiaux_mur.soubassement') || ''}
               onChange={e => updateData('materiaux_mur.soubassement', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {SOUBASSEMENT_CLOTURE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1533,7 +1540,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
           <select
             value={readData('materiaux_mur.occultation') || ''}
             onChange={e => updateData('materiaux_mur.occultation', e.target.value || null)}
-            style={{ ...inputBaseStyle, maxWidth: 280 }}
+            onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, maxWidth: 280 }}
           >
             <option value="">Sélectionner…</option>
             {OCCULTATION_CLOTURE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1549,14 +1556,14 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     const mat = readData('portail.materiau')
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>🚪 Portail et piliers</div>
+        <div style={blocTitleStyle}>Portail et piliers</div>
         <div className="ouvrage-row" style={rowStyle}>
           <div>
             <label style={labelStyle}>Type d'ouverture</label>
             <select
               value={readData('portail.type_ouverture') || ''}
               onChange={e => updateData('portail.type_ouverture', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {TYPE_OUVERTURE_PORTAIL_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1567,7 +1574,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={readData('portail.motorisation') || ''}
               onChange={e => updateData('portail.motorisation', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {MOTORISATION_PORTAIL_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1582,7 +1589,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.01"
               value={readData('portail.largeur_m') ?? ''}
               onChange={e => updateData('portail.largeur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 3.50"
             />
           </div>
@@ -1593,7 +1600,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.01"
               value={readData('portail.hauteur_m') ?? ''}
               onChange={e => updateData('portail.hauteur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 1.60"
             />
           </div>
@@ -1603,7 +1610,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
           <select
             value={mat || ''}
             onChange={e => updateData('portail.materiau', e.target.value || null)}
-            style={{ ...inputBaseStyle, maxWidth: 280 }}
+            onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, maxWidth: 280 }}
           >
             <option value="">Sélectionner…</option>
             {MATERIAU_PORTAIL_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1613,7 +1620,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               type="text"
               value={readData('portail.materiau_autre') || ''}
               onChange={e => updateData('portail.materiau_autre', e.target.value)}
-              style={{ ...inputBaseStyle, marginTop: 6, maxWidth: 280 }}
+              onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, marginTop: 6, maxWidth: 280 }}
               placeholder="Précisez…"
             />
           )}
@@ -1643,7 +1650,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 <select
                   value={readData('portail.materiau_piliers') || ''}
                   onChange={e => updateData('portail.materiau_piliers', e.target.value || null)}
-                  style={inputBaseStyle}
+                  style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                 >
                   <option value="">Sélectionner…</option>
                   {MATERIAU_PILIERS_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1654,7 +1661,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 <select
                   value={readData('portail.chapeaux_piliers') || ''}
                   onChange={e => updateData('portail.chapeaux_piliers', e.target.value || null)}
-                  style={inputBaseStyle}
+                  style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                 >
                   <option value="">Sélectionner…</option>
                   {CHAPEAUX_PILIERS_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1668,7 +1675,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 step="0.01"
                 value={readData('portail.hauteur_piliers_m') ?? ''}
                 onChange={e => updateData('portail.hauteur_piliers_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-                style={{ ...inputBaseStyle, maxWidth: 200 }}
+                onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, maxWidth: 200 }}
                 placeholder="ex : 1.80"
               />
             </div>
@@ -1713,7 +1720,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     }
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>🪟 Création / modification d'ouverture</div>
+        <div style={blocTitleStyle}>Création / modification d'ouverture</div>
         <p style={{ fontSize: 12, color: GRAY_500, margin: '0 0 12px', lineHeight: 1.5 }}>
           Listez chaque ouverture à créer, modifier ou supprimer.
         </p>
@@ -1740,7 +1747,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                   <select
                     value={m.action || ''}
                     onChange={e => updateItem(idx, 'action', e.target.value || '')}
-                    style={inputBaseStyle}
+                    style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                   >
                     <option value="">Sélectionner…</option>
                     {ACTION_OUVERTURE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1751,7 +1758,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                   <select
                     value={m.type_ouverture || ''}
                     onChange={e => updateItem(idx, 'type_ouverture', e.target.value || '')}
-                    style={inputBaseStyle}
+                    style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                   >
                     <option value="">Sélectionner…</option>
                     {TYPE_OUVERTURE_MODIF_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1764,7 +1771,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                   <select
                     value={m.facade || ''}
                     onChange={e => updateItem(idx, 'facade', e.target.value || '')}
-                    style={inputBaseStyle}
+                    style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                   >
                     <option value="">Sélectionner…</option>
                     {FACADE_MODIF_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1775,7 +1782,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                   <select
                     value={m.materiau_menuiserie || ''}
                     onChange={e => updateItem(idx, 'materiau_menuiserie', e.target.value || '')}
-                    style={inputBaseStyle}
+                    style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                   >
                     <option value="">Sélectionner…</option>
                     {MATERIAU_MENUISERIE_MODIF_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1790,7 +1797,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                     step="1"
                     value={m.largeur_cm ?? ''}
                     onChange={e => updateItem(idx, 'largeur_cm', e.target.value === '' ? null : parseInt(e.target.value, 10))}
-                    style={inputBaseStyle}
+                    style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                   />
                 </div>
                 <div>
@@ -1800,7 +1807,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                     step="1"
                     value={m.hauteur_cm ?? ''}
                     onChange={e => updateItem(idx, 'hauteur_cm', e.target.value === '' ? null : parseInt(e.target.value, 10))}
-                    style={inputBaseStyle}
+                    style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                   />
                 </div>
                 <div>
@@ -1809,7 +1816,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                     type="text"
                     value={m.couleur_ral || ''}
                     onChange={e => updateItem(idx, 'couleur_ral', e.target.value)}
-                    style={inputBaseStyle}
+                    style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                     placeholder="ex : RAL 7016"
                   />
                 </div>
@@ -1821,7 +1828,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                     type="text"
                     value={m.dimensions_avant || ''}
                     onChange={e => updateItem(idx, 'dimensions_avant', e.target.value)}
-                    style={inputBaseStyle}
+                    style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                     placeholder="ex : 80×100 cm"
                   />
                 </div>
@@ -1851,7 +1858,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     const matF = readData('ravalement.materiau_futur')
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>🎨 Ravalement de façade</div>
+        <div style={blocTitleStyle}>Ravalement de façade</div>
         <p style={{ fontSize: 12, color: GRAY_500, margin: '0 0 10px', lineHeight: 1.5 }}>
           Un ravalement avec changement de couleur ou matériau nécessite une DP.
         </p>
@@ -1878,7 +1885,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.1"
               value={readData('ravalement.surface_totale_m2') ?? ''}
               onChange={e => updateData('ravalement.surface_totale_m2', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 120.0"
             />
           </div>
@@ -1888,7 +1895,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               type="text"
               value={readData('ravalement.couleur_actuelle') || ''}
               onChange={e => updateData('ravalement.couleur_actuelle', e.target.value)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : Beige, Blanc"
             />
           </div>
@@ -1899,7 +1906,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={matA || ''}
               onChange={e => updateData('ravalement.materiau_actuel', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {MATERIAU_FACADE_ACTUEL_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1910,7 +1917,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={matF || ''}
               onChange={e => updateData('ravalement.materiau_futur', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {MATERIAU_FACADE_FUTUR_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1923,7 +1930,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             type="text"
             value={readData('ravalement.couleur_future_ral') || ''}
             onChange={e => updateData('ravalement.couleur_future_ral', e.target.value)}
-            style={{ ...inputBaseStyle, maxWidth: 320, marginBottom: 10 }}
+            onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, maxWidth: 320, marginBottom: 10 }}
             placeholder="ex : RAL 9001 Blanc crème"
           />
         </div>
@@ -1972,7 +1979,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     }
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>🪟 Changement de menuiseries</div>
+        <div style={blocTitleStyle}>Changement de menuiseries</div>
         {list.length === 0 && (
           <div style={{ fontSize: 12, color: GRAY_500, marginBottom: 10, fontStyle: 'italic' }}>
             Aucune menuiserie pour le moment.
@@ -1996,7 +2003,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                   <select
                     value={m.type || ''}
                     onChange={e => updateItem(idx, 'type', e.target.value || '')}
-                    style={inputBaseStyle}
+                    style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                   >
                     <option value="">Sélectionner…</option>
                     {TYPE_MENUISERIE_REMPL_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -2010,7 +2017,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                     min="1"
                     value={m.nombre ?? 1}
                     onChange={e => updateItem(idx, 'nombre', e.target.value === '' ? 1 : parseInt(e.target.value, 10))}
-                    style={inputBaseStyle}
+                    style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                   />
                 </div>
               </div>
@@ -2019,7 +2026,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 <select
                   value={m.dimensions_standard || ''}
                   onChange={e => updateItem(idx, 'dimensions_standard', e.target.value || '')}
-                  style={{ ...inputBaseStyle, maxWidth: 280 }}
+                  onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, maxWidth: 280 }}
                 >
                   <option value="">Sélectionner…</option>
                   {DIMENSIONS_MENUISERIE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -2034,7 +2041,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                       step="1"
                       value={m.largeur_cm ?? ''}
                       onChange={e => updateItem(idx, 'largeur_cm', e.target.value === '' ? null : parseInt(e.target.value, 10))}
-                      style={inputBaseStyle}
+                      style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                     />
                   </div>
                   <div>
@@ -2044,7 +2051,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                       step="1"
                       value={m.hauteur_cm ?? ''}
                       onChange={e => updateItem(idx, 'hauteur_cm', e.target.value === '' ? null : parseInt(e.target.value, 10))}
-                      style={inputBaseStyle}
+                      style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                     />
                   </div>
                 </div>
@@ -2055,7 +2062,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                   <select
                     value={m.materiau_actuel || ''}
                     onChange={e => updateItem(idx, 'materiau_actuel', e.target.value || '')}
-                    style={inputBaseStyle}
+                    style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                   >
                     <option value="">Sélectionner…</option>
                     {MATERIAU_MENUISERIE_ACTUEL_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -2066,7 +2073,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                   <select
                     value={m.materiau_futur || ''}
                     onChange={e => updateItem(idx, 'materiau_futur', e.target.value || '')}
-                    style={inputBaseStyle}
+                    style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                   >
                     <option value="">Sélectionner…</option>
                     {MATERIAU_MENUISERIE_MODIF_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -2080,7 +2087,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                     type="text"
                     value={m.couleur_actuelle || ''}
                     onChange={e => updateItem(idx, 'couleur_actuelle', e.target.value)}
-                    style={inputBaseStyle}
+                    style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                   />
                 </div>
                 <div>
@@ -2089,7 +2096,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                     type="text"
                     value={m.couleur_future_ral || ''}
                     onChange={e => updateItem(idx, 'couleur_future_ral', e.target.value)}
-                    style={inputBaseStyle}
+                    style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
                     placeholder="ex : RAL 7016"
                   />
                 </div>
@@ -2099,7 +2106,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 <select
                   value={m.vitrage || ''}
                   onChange={e => updateItem(idx, 'vitrage', e.target.value || '')}
-                  style={{ ...inputBaseStyle, maxWidth: 320 }}
+                  onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, maxWidth: 320 }}
                 >
                   <option value="">Sélectionner…</option>
                   {VITRAGE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -2124,7 +2131,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     const changePente = !!readData('changement_couverture.changement_pente')
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>🏠 Changement de couverture</div>
+        <div style={blocTitleStyle}>Changement de couverture</div>
         <div className="ouvrage-row" style={rowStyle}>
           <div>
             <label style={labelStyle}>Surface totale (m²)</label>
@@ -2133,7 +2140,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.1"
               value={readData('changement_couverture.surface_totale_m2') ?? ''}
               onChange={e => updateData('changement_couverture.surface_totale_m2', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 100.0"
             />
           </div>
@@ -2145,7 +2152,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={readData('changement_couverture.materiau_actuel') || ''}
               onChange={e => updateData('changement_couverture.materiau_actuel', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {MATERIAU_COUVERTURE_MODIF_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -2156,7 +2163,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={readData('changement_couverture.materiau_futur') || ''}
               onChange={e => updateData('changement_couverture.materiau_futur', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {MATERIAU_COUVERTURE_MODIF_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -2170,7 +2177,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               type="text"
               value={readData('changement_couverture.couleur_actuelle') || ''}
               onChange={e => updateData('changement_couverture.couleur_actuelle', e.target.value)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : Rouge, Anthracite"
             />
           </div>
@@ -2180,7 +2187,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               type="text"
               value={readData('changement_couverture.couleur_future') || ''}
               onChange={e => updateData('changement_couverture.couleur_future', e.target.value)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             />
           </div>
         </div>
@@ -2209,7 +2216,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 step="1"
                 value={readData('changement_couverture.pente_avant_deg') ?? ''}
                 onChange={e => updateData('changement_couverture.pente_avant_deg', e.target.value === '' ? null : parseInt(e.target.value, 10))}
-                style={inputBaseStyle}
+                style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               />
             </div>
             <div>
@@ -2219,7 +2226,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                 step="1"
                 value={readData('changement_couverture.pente_apres_deg') ?? ''}
                 onChange={e => updateData('changement_couverture.pente_apres_deg', e.target.value === '' ? null : parseInt(e.target.value, 10))}
-                style={inputBaseStyle}
+                style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               />
             </div>
           </div>
@@ -2247,7 +2254,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     }
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>🧱 Isolation thermique par l'extérieur (ITE)</div>
+        <div style={blocTitleStyle}>Isolation thermique par l'extérieur (ITE)</div>
         <p style={{ fontSize: 12, color: GRAY_500, margin: '0 0 10px', lineHeight: 1.5 }}>
           Une ITE modifie l'aspect extérieur et nécessite une DP (y compris en zone protégée où un avis ABF peut être nécessaire).
         </p>
@@ -2274,7 +2281,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.1"
               value={readData('ite.surface_totale_m2') ?? ''}
               onChange={e => updateData('ite.surface_totale_m2', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 140.0"
             />
           </div>
@@ -2285,7 +2292,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="1"
               value={readData('ite.epaisseur_cm') ?? ''}
               onChange={e => updateData('ite.epaisseur_cm', e.target.value === '' ? null : parseInt(e.target.value, 10))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 16"
             />
           </div>
@@ -2296,7 +2303,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={readData('ite.materiau_isolant') || ''}
               onChange={e => updateData('ite.materiau_isolant', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {MATERIAU_ISOLANT_ITE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -2307,7 +2314,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={readData('ite.parement_final') || ''}
               onChange={e => updateData('ite.parement_final', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {PAREMENT_ITE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -2321,7 +2328,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               type="text"
               value={readData('ite.couleur_finale_ral') || ''}
               onChange={e => updateData('ite.couleur_finale_ral', e.target.value)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : RAL 9001"
             />
           </div>
@@ -2332,7 +2339,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="1"
               value={readData('ite.surepaisseur_cm') ?? ''}
               onChange={e => updateData('ite.surepaisseur_cm', e.target.value === '' ? null : parseInt(e.target.value, 10))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="Surépaisseur par rapport à la façade"
             />
           </div>
@@ -2347,7 +2354,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     const showPuissance = t === 'Photovoltaïques' || t === 'Hybrides'
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>☀️ Panneaux solaires en toiture</div>
+        <div style={blocTitleStyle}>Panneaux solaires en toiture</div>
         <p style={{ fontSize: 12, color: GRAY_500, margin: '0 0 10px', lineHeight: 1.5 }}>
           L'installation de panneaux solaires en toiture nécessite une DP. En zone protégée (ABF), une autorisation spécifique peut être exigée.
         </p>
@@ -2363,7 +2370,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
                   updateData('panneaux_solaires.puissance_kwc', null)
                 }
               }}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {TYPE_PANNEAUX_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -2377,7 +2384,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               min="1"
               value={readData('panneaux_solaires.nombre_panneaux') ?? ''}
               onChange={e => updateData('panneaux_solaires.nombre_panneaux', e.target.value === '' ? null : parseInt(e.target.value, 10))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 12"
             />
           </div>
@@ -2388,7 +2395,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={readData('panneaux_solaires.dimensions_panneau') || ''}
               onChange={e => updateData('panneaux_solaires.dimensions_panneau', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {DIMENSIONS_PANNEAU_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -2401,7 +2408,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.1"
               value={readData('panneaux_solaires.surface_totale_m2') ?? ''}
               onChange={e => updateData('panneaux_solaires.surface_totale_m2', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 24.0"
             />
           </div>
@@ -2414,7 +2421,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.01"
               value={readData('panneaux_solaires.puissance_kwc') ?? ''}
               onChange={e => updateData('panneaux_solaires.puissance_kwc', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={{ ...inputBaseStyle, maxWidth: 220 }}
+              onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, maxWidth: 220 }}
               placeholder="ex : 4.50"
             />
           </div>
@@ -2425,7 +2432,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={readData('panneaux_solaires.implantation') || ''}
               onChange={e => updateData('panneaux_solaires.implantation', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {IMPLANTATION_PANNEAUX_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -2436,7 +2443,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={readData('panneaux_solaires.pan_toiture') || ''}
               onChange={e => updateData('panneaux_solaires.pan_toiture', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {PAN_TOITURE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -2451,7 +2458,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="1"
               value={readData('panneaux_solaires.orientation_deg') ?? ''}
               onChange={e => updateData('panneaux_solaires.orientation_deg', e.target.value === '' ? null : parseInt(e.target.value, 10))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 180"
             />
           </div>
@@ -2462,7 +2469,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="1"
               value={readData('panneaux_solaires.inclinaison_deg') ?? ''}
               onChange={e => updateData('panneaux_solaires.inclinaison_deg', e.target.value === '' ? null : parseInt(e.target.value, 10))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 30"
             />
           </div>
@@ -2473,7 +2480,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={readData('panneaux_solaires.couleur_panneaux') || ''}
               onChange={e => updateData('panneaux_solaires.couleur_panneaux', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {COULEUR_PANNEAUX_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -2484,7 +2491,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
             <select
               value={readData('panneaux_solaires.raccordement') || ''}
               onChange={e => updateData('panneaux_solaires.raccordement', e.target.value || null)}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
             >
               <option value="">Sélectionner…</option>
               {RACCORDEMENT_PANNEAUX_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -2506,12 +2513,12 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     const ok = count >= 100
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>📝 Description du projet</div>
+        <div style={blocTitleStyle}>Description du projet</div>
         <textarea
           value={desc}
           onChange={e => setDraft(d => ({ ...d, description_libre: e.target.value }))}
           rows={6}
-          style={{ ...inputBaseStyle, resize: 'vertical' }}
+          onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, resize: 'vertical' }}
           placeholder="Décrivez précisément votre projet : nature de la construction, dimensions, matériaux, hauteur, implantation souhaitée, contraintes particulières..."
         />
         <div style={{ fontSize: 11, color: ok ? ACCENT : GRAY_500, marginTop: 4, fontWeight: ok ? 600 : 400 }}>
@@ -2525,7 +2532,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
   const renderDimensionsApproxAutre = () => {
     return (
       <div style={blocStyle}>
-        <div style={blocTitleStyle}>📐 Dimensions approximatives</div>
+        <div style={blocTitleStyle}>Dimensions approximatives</div>
         <p style={{ fontSize: 12, color: GRAY_500, margin: '0 0 10px', lineHeight: 1.5 }}>
           Renseignez les dimensions principales si elles sont pertinentes pour votre projet.
         </p>
@@ -2537,7 +2544,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.1"
               value={readData('dimensions_approx.surface_au_sol_m2') ?? ''}
               onChange={e => updateData('dimensions_approx.surface_au_sol_m2', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 20.0"
             />
           </div>
@@ -2548,7 +2555,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.01"
               value={readData('dimensions_approx.hauteur_m') ?? ''}
               onChange={e => updateData('dimensions_approx.hauteur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 3.50"
             />
           </div>
@@ -2561,7 +2568,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.01"
               value={readData('dimensions_approx.longueur_m') ?? ''}
               onChange={e => updateData('dimensions_approx.longueur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 5.00"
             />
           </div>
@@ -2572,7 +2579,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
               step="0.01"
               value={readData('dimensions_approx.largeur_m') ?? ''}
               onChange={e => updateData('dimensions_approx.largeur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
-              style={inputBaseStyle}
+              style={inputBaseStyle} onFocus={handleFocus} onBlur={handleBlur}
               placeholder="ex : 4.00"
             />
           </div>
@@ -2584,13 +2591,26 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
   // ── Bloc Matériaux principaux (Autre) ─────────────────────────────
   const renderMateriauxPrincipauxAutre = () => (
     <div style={blocStyle}>
-      <div style={blocTitleStyle}>🔨 Matériaux principaux</div>
+      <div style={blocTitleStyle}>Matériaux principaux</div>
       <textarea
         value={readData('materiaux_principaux') || ''}
         onChange={e => updateData('materiaux_principaux', e.target.value)}
         rows={3}
-        style={{ ...inputBaseStyle, resize: 'vertical' }}
+        onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, resize: 'vertical' }}
         placeholder="Liste des matériaux envisagés : ex. béton pour la structure, bardage bois, couverture métallique, etc."
+      />
+    </div>
+  )
+
+  // ── Bloc Croquis (tous types, optionnel, ne pénalise pas la progression) ─
+  const renderCroquis = () => (
+    <div style={blocStyle}>
+      <div style={blocTitleStyle}>Croquis de l'ouvrage (facultatif)</div>
+      <OuvrageCroquisField
+        projectId={projectId}
+        ouvrageId={ouvrageId}
+        croquis={readData('croquis')}
+        onChange={(next) => updateData('croquis', next)}
       />
     </div>
   )
@@ -2598,7 +2618,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
   // ── Bloc Commentaire (tous types) ─────────────────────────────────
   const renderCommentaire = () => (
     <div style={blocStyle}>
-      <div style={blocTitleStyle}>💬 Commentaire libre (facultatif)</div>
+      <div style={blocTitleStyle}>Commentaire libre (facultatif)</div>
       <p style={{ fontSize: 12, color: GRAY_500, margin: '0 0 8px', lineHeight: 1.5 }}>
         Une information importante qu'on ne vous a pas demandée ? Ajoutez-la ici.
       </p>
@@ -2606,7 +2626,7 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
         value={readData('commentaire') || ''}
         onChange={e => updateData('commentaire', e.target.value)}
         rows={3}
-        style={{ ...inputBaseStyle, resize: 'vertical' }}
+        onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputBaseStyle, resize: 'vertical' }}
         placeholder="Particularités de votre projet que les questions précédentes ne couvrent pas : contraintes d'implantation, souhaits esthétiques, choix atypiques, etc."
       />
     </div>
@@ -2653,6 +2673,9 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
       {showAutre && renderDescriptionAutre()}
       {showAutre && renderDimensionsApproxAutre()}
       {showAutre && renderMateriauxPrincipauxAutre()}
+
+      {/* Croquis (tous types, facultatif) */}
+      {renderCroquis()}
 
       {renderCommentaire()}
     </>
