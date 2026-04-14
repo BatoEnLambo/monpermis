@@ -7,6 +7,7 @@ import AdminNav from '../../../../components/AdminNav'
 
 const ACCENT = "#1a5c3a"
 const GRAY_200 = "#e8e7e4"
+const GRAY_500 = "#8a8985"
 const GRAY_700 = "#44433f"
 const GRAY_900 = "#1c1c1a"
 const WHITE = "#ffffff"
