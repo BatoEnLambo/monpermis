@@ -429,9 +429,6 @@ export default function AdminPage() {
                   {p.options && p.options.includes('RE2020') && (
                     <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 6, background: '#e8f5ee', color: '#1a5c3a' }}>RE2020</span>
                   )}
-                  {p.options && p.options.includes('SECOND_DOSSIER') && (
-                    <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 6, background: '#fff3e0', color: '#e65100' }}>2e dossier</span>
-                  )}
                   <span style={{ fontSize: 12 }}>{STATUS_LABELS[p.status] || p.status}</span>
                   {p.project_type?.startsWith('Maison neuve') && projectDetails[p.id] && (() => {
                     const pct = computeDetailsProgress(projectDetails[p.id], projectPhotos[p.id] || [], projectCroquis[p.id] || [])

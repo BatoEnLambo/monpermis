@@ -60,9 +60,6 @@ export default function PricingCards() {
       <p className="pricing-option-re2020" style={{ fontSize: 13, color: GRAY_700, marginTop: 20, lineHeight: 1.6 }}>
         <strong>Option RE2020 : +{OPTIONS.RE2020.price} €</strong> — Attestation thermique obligatoire pour toute construction neuve, réalisée par notre partenaire certifié.
       </p>
-      <p className="pricing-option-second" style={{ fontSize: 13, color: GRAY_700, marginTop: 8, lineHeight: 1.6 }}>
-        <strong>Option 2e dossier sur même parcelle : +{OPTIONS.SECOND_DOSSIER.price} €</strong> — Pour deux constructions distinctes sur un même terrain.
-      </p>
       <p className="pricing-compare" style={{ fontSize: 13, color: GRAY_500, marginTop: 12 }}>
         Un architecte facture 1 500 à 4 000 € et livre en 2 à 6 semaines.
       </p>

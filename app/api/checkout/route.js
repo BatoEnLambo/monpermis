@@ -11,7 +11,7 @@ export async function POST(request) {
     const projectId = formData.get('projectId')
     const reference = formData.get('reference')
     const category = formData.get('category')
-    const options = JSON.parse(formData.get('options') || '[]')
+    const options = JSON.parse(formData.get('options') || '[]').filter(o => o !== 'SECOND_DOSSIER')
     const label = formData.get('label')
     const email = formData.get('email')
 

@@ -9,7 +9,6 @@ export const PRICING = {
 
 export const OPTIONS = {
   RE2020: { id: 're2020', label: 'Attestation RE2020', price: 200 },
-  SECOND_DOSSIER: { id: 'second_dossier', label: '2e dossier sur même parcelle', price: 100 },
 };
 
 const PC_INCLUDES = [
