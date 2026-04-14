@@ -5,6 +5,7 @@ import JSZip from 'jszip'
 import { supabase } from '../../lib/supabase'
 import { uploadFile, getDocuments, deleteDocument } from '../../lib/storage'
 import { getMessages, sendMessage, markAsRead } from '../../lib/messages'
+import AdminNav from '../../components/AdminNav'
 
 const ADMIN_PASSWORD = 'permisclair2026'
 
@@ -348,17 +349,7 @@ export default function AdminPage() {
 
   return (
     <div style={{ maxWidth: 1000, margin: '0 auto', padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700 }}>Projets clients</h1>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={fetchProjects} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontSize: 14 }}>
-            ↻ Rafraîchir
-          </button>
-          <button onClick={() => setAuthed(false)} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontSize: 14 }}>
-            Déconnexion
-          </button>
-        </div>
-      </div>
+      <AdminNav onRefresh={fetchProjects} onLogout={() => setAuthed(false)} />
 
       <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
         <div style={{ padding: '8px 14px', background: '#e8f5ee', borderRadius: 8, fontSize: 13, fontWeight: 600 }}>

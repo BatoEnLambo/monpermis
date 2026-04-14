@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { supabase } from '../../../../lib/supabase'
+import AdminNav from '../../../../components/AdminNav'
 
 const ADMIN_PASSWORD = 'permisclair2026'
 const ACCENT = "#1a5c3a"
@@ -91,10 +92,7 @@ export default function DevisDetailPage() {
 
   return (
     <div style={{ maxWidth: 520, margin: '40px auto', fontFamily: FONT, padding: '0 16px' }}>
-      <button onClick={() => router.push('/admin/devis')}
-        style={{ background: 'none', border: 'none', color: GRAY_500, fontSize: 13, cursor: 'pointer', fontFamily: FONT, padding: 0, marginBottom: 20 }}>
-        ← Retour aux devis
-      </button>
+      <AdminNav onLogout={() => setAuthed(false)} />
 
       <div style={{ border: `1px solid ${GRAY_200}`, borderRadius: 14, background: WHITE, overflow: 'hidden' }}>
         <div style={{ padding: '24px 28px', borderBottom: `1px solid ${GRAY_200}` }}>
