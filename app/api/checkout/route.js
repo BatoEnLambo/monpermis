@@ -8,6 +8,56 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 export async function POST(request) {
   try {
     const formData = await request.formData()
+    const origin = request.headers.get('origin') || request.headers.get('referer')?.replace(/\/[^/]*$/, '') || 'https://www.permisclair.fr'
+
+    // ── Mode devis (quote_id) ──
+    const quoteId = formData.get('quote_id')
+    if (quoteId) {
+      const { data: quote, error: qErr } = await supabase
+        .from('quotes')
+        .select('*')
+        .eq('id', quoteId)
+        .single()
+
+      if (qErr || !quote) {
+        console.error('Quote lookup error:', qErr)
+        return NextResponse.json({ error: 'Devis introuvable' }, { status: 400 })
+      }
+
+      if (quote.status === 'paid') {
+        return NextResponse.json({ error: 'Ce devis a déjà été réglé' }, { status: 400 })
+      }
+
+      console.log('Quote checkout:', { quoteId, amount: quote.amount, client: quote.client_email })
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        customer_email: quote.client_email,
+        line_items: [
+          {
+            price_data: {
+              currency: 'eur',
+              product_data: {
+                name: quote.project_title,
+                description: `Devis PermisClair pour ${quote.client_name}`,
+              },
+              unit_amount: quote.amount * 100,
+            },
+            quantity: 1,
+          },
+        ],
+        mode: 'payment',
+        success_url: `${origin}/paiement/succes?session_id={CHECKOUT_SESSION_ID}&quote_id=${quoteId}`,
+        cancel_url: `${origin}/devis/${quoteId}?cancelled=true`,
+        metadata: { quote_id: quoteId },
+      })
+
+      await supabase.from('quotes').update({ stripe_session_id: session.id }).eq('id', quoteId)
+
+      return NextResponse.redirect(session.url, 303)
+    }
+
+    // ── Mode self-service (category + options) ──
     const projectId = formData.get('projectId')
     const reference = formData.get('reference')
     const category = formData.get('category')
@@ -67,8 +117,6 @@ export async function POST(request) {
     }
 
     console.log('Checkout request:', { projectId, reference, price, category, options, label, email })
-
-    const origin = request.headers.get('origin') || request.headers.get('referer')?.replace(/\/[^/]*$/, '') || 'https://www.permisclair.fr'
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],

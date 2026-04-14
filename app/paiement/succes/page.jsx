@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../../../lib/supabase'
+import { generateToken } from '../../../lib/token'
 import { Suspense } from 'react'
 
 function SuccesContent() {
@@ -13,6 +14,72 @@ function SuccesContent() {
 
   useEffect(() => {
     const init = async () => {
+      // ── Mode devis ──
+      const quoteId = searchParams.get('quote_id')
+      if (quoteId) {
+        // Fetch le devis
+        const { data: quote } = await supabase
+          .from('quotes')
+          .select('*')
+          .eq('id', quoteId)
+          .single()
+
+        if (!quote || quote.status === 'paid') {
+          // Déjà traité ou invalide
+          return
+        }
+
+        // Créer le projet
+        const reference = 'PC-' + Date.now().toString(36).toUpperCase()
+        const token = generateToken()
+        const nameParts = (quote.client_name || '').split(' ')
+        const firstName = nameParts[0] || ''
+        const lastName = nameParts.slice(1).join(' ') || ''
+
+        const { data: project } = await supabase
+          .from('projects')
+          .insert({
+            reference,
+            token,
+            project_type: 'custom',
+            first_name: firstName,
+            last_name: lastName,
+            email: quote.client_email,
+            price: quote.amount,
+            status: 'paid',
+            paid_at: new Date().toISOString(),
+          })
+          .select()
+          .single()
+
+        if (project) {
+          // Lier le projet au devis et marquer payé
+          await supabase
+            .from('quotes')
+            .update({ status: 'paid', paid_at: new Date().toISOString(), project_id: project.id })
+            .eq('id', quoteId)
+
+          // Email de bienvenue
+          await fetch('/api/send-welcome-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: quote.client_email,
+              firstName,
+              reference,
+              token,
+              projectType: quote.project_title,
+              price: quote.amount,
+              options: [],
+            }),
+          })
+
+          setProjectInfo({ reference, token })
+        }
+        return
+      }
+
+      // ── Mode self-service ──
       const projectId = searchParams.get('project_id')
 
       if (projectId) {
