@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '../../../lib/supabase'
 import AdminNav from '../../../components/AdminNav'
 
-const ADMIN_PASSWORD = 'permisclair2026'
 const ACCENT = "#1a5c3a"
 const ACCENT_LIGHT = "#e8f5ee"
 const GRAY_200 = "#e8e7e4"
@@ -23,20 +22,8 @@ const STATUS_BADGE = {
 
 export default function DevisListPage() {
   const router = useRouter()
-  const [authed, setAuthed] = useState(false)
-  const [password, setPassword] = useState('')
   const [quotes, setQuotes] = useState([])
   const [loading, setLoading] = useState(false)
-
-  const login = (e) => {
-    e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      setAuthed(true)
-      fetchQuotes()
-    } else {
-      alert('Mot de passe incorrect')
-    }
-  }
 
   const fetchQuotes = async () => {
     setLoading(true)
@@ -49,27 +36,12 @@ export default function DevisListPage() {
   }
 
   useEffect(() => {
-    if (authed) fetchQuotes()
-  }, [authed])
-
-  if (!authed) {
-    return (
-      <div style={{ maxWidth: 360, margin: '80px auto', textAlign: 'center', fontFamily: FONT }}>
-        <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16, color: GRAY_900 }}>Admin — Devis</h2>
-        <form onSubmit={login} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <input type="password" placeholder="Mot de passe" value={password} onChange={e => setPassword(e.target.value)}
-            style={{ padding: '10px 14px', borderRadius: 8, border: `1px solid ${GRAY_200}`, fontSize: 14, fontFamily: FONT }} />
-          <button type="submit" style={{ padding: '10px 20px', borderRadius: 8, border: 'none', background: ACCENT, color: WHITE, fontWeight: 600, fontSize: 14, cursor: 'pointer', fontFamily: FONT }}>
-            Connexion
-          </button>
-        </form>
-      </div>
-    )
-  }
+    fetchQuotes()
+  }, [])
 
   return (
     <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: FONT, padding: '0 16px' }}>
-      <AdminNav onRefresh={fetchQuotes} onLogout={() => setAuthed(false)} />
+      <AdminNav onRefresh={fetchQuotes} />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: GRAY_900, margin: 0 }}>Devis</h1>
         <button onClick={() => router.push('/admin/devis/new')}
@@ -103,7 +75,6 @@ export default function DevisListPage() {
           })}
         </div>
       )}
-
     </div>
   )
 }

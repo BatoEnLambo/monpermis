@@ -5,10 +5,8 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '../../../../lib/supabase'
 import AdminNav from '../../../../components/AdminNav'
 
-const ADMIN_PASSWORD = 'permisclair2026'
 const ACCENT = "#1a5c3a"
 const GRAY_200 = "#e8e7e4"
-const GRAY_500 = "#8a8985"
 const GRAY_700 = "#44433f"
 const GRAY_900 = "#1c1c1a"
 const WHITE = "#ffffff"
@@ -16,16 +14,8 @@ const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 
 export default function NewDevisPage() {
   const router = useRouter()
-  const [authed, setAuthed] = useState(false)
-  const [password, setPassword] = useState('')
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({ client_name: '', client_email: '', project_title: '', amount: '' })
-
-  const login = (e) => {
-    e.preventDefault()
-    if (password === ADMIN_PASSWORD) setAuthed(true)
-    else alert('Mot de passe incorrect')
-  }
 
   const handleChange = (field) => (e) => setForm(prev => ({ ...prev, [field]: e.target.value }))
 
@@ -55,26 +45,11 @@ export default function NewDevisPage() {
     router.push(`/admin/devis/${data.id}`)
   }
 
-  if (!authed) {
-    return (
-      <div style={{ maxWidth: 360, margin: '80px auto', textAlign: 'center', fontFamily: FONT }}>
-        <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16, color: GRAY_900 }}>Admin — Nouveau devis</h2>
-        <form onSubmit={login} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <input type="password" placeholder="Mot de passe" value={password} onChange={e => setPassword(e.target.value)}
-            style={{ padding: '10px 14px', borderRadius: 8, border: `1px solid ${GRAY_200}`, fontSize: 14, fontFamily: FONT }} />
-          <button type="submit" style={{ padding: '10px 20px', borderRadius: 8, border: 'none', background: ACCENT, color: WHITE, fontWeight: 600, fontSize: 14, cursor: 'pointer', fontFamily: FONT }}>
-            Connexion
-          </button>
-        </form>
-      </div>
-    )
-  }
-
   const inputStyle = { padding: '10px 14px', borderRadius: 8, border: `1px solid ${GRAY_200}`, fontSize: 14, fontFamily: FONT, width: '100%', boxSizing: 'border-box' }
 
   return (
     <div style={{ maxWidth: 480, margin: '40px auto', fontFamily: FONT, padding: '0 16px' }}>
-      <AdminNav onLogout={() => setAuthed(false)} />
+      <AdminNav />
 
       <h1 style={{ fontSize: 22, fontWeight: 700, color: GRAY_900, margin: '0 0 24px' }}>Nouveau devis</h1>
 

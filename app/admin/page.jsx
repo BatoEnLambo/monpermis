@@ -7,8 +7,6 @@ import { uploadFile, getDocuments, deleteDocument } from '../../lib/storage'
 import { getMessages, sendMessage, markAsRead } from '../../lib/messages'
 import AdminNav from '../../components/AdminNav'
 
-const ADMIN_PASSWORD = 'permisclair2026'
-
 const STATUS_LABELS = {
   pending: '🟡 En attente de paiement',
   paid: '🟢 Payé',
@@ -20,8 +18,6 @@ const STATUS_LABELS = {
 const STATUS_OPTIONS = ['pending', 'paid', 'in_progress', 'review', 'delivered']
 
 export default function AdminPage() {
-  const [authed, setAuthed] = useState(false)
-  const [password, setPassword] = useState('')
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(false)
   const [selected, setSelected] = useState(null)
@@ -34,15 +30,9 @@ export default function AdminPage() {
   const [projectCroquis, setProjectCroquis] = useState({})
   const [zipping, setZipping] = useState(null)
 
-  const login = (e) => {
-    e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      setAuthed(true)
-      fetchProjects()
-    } else {
-      alert('Mot de passe incorrect')
-    }
-  }
+  useEffect(() => {
+    fetchProjects()
+  }, [])
 
   const fetchAllMessages = async (projectsList) => {
     const allMsgs = {}
@@ -327,29 +317,9 @@ export default function AdminPage() {
     setZipping(null)
   }
 
-  if (!authed) {
-    return (
-      <div style={{ maxWidth: 400, margin: '80px auto', padding: 20 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 24 }}>Admin PermisClair</h1>
-        <form onSubmit={login}>
-          <input
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            placeholder="Mot de passe"
-            style={{ width: '100%', padding: '12px', borderRadius: 8, border: '1px solid #ddd', fontSize: 16, marginBottom: 12, boxSizing: 'border-box' }}
-          />
-          <button type="submit" style={{ width: '100%', padding: '12px', borderRadius: 8, border: 'none', background: '#1a5c3a', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
-            Connexion
-          </button>
-        </form>
-      </div>
-    )
-  }
-
   return (
     <div style={{ maxWidth: 1000, margin: '0 auto', padding: '20px' }}>
-      <AdminNav onRefresh={fetchProjects} onLogout={() => setAuthed(false)} />
+      <AdminNav onRefresh={fetchProjects} />
 
       <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
         <div style={{ padding: '8px 14px', background: '#e8f5ee', borderRadius: 8, fontSize: 13, fontWeight: 600 }}>

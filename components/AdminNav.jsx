@@ -1,6 +1,7 @@
 'use client'
 
 import { usePathname, useRouter } from 'next/navigation'
+import { useAdminAuth } from '../app/admin/AdminAuthContext'
 
 const ACCENT = "#1a5c3a"
 const GRAY_500 = "#8a8985"
@@ -11,9 +12,10 @@ const tabs = [
   { label: 'Devis', href: '/admin/devis' },
 ]
 
-export default function AdminNav({ onRefresh, onLogout }) {
+export default function AdminNav({ onRefresh }) {
   const pathname = usePathname()
   const router = useRouter()
+  const { logout } = useAdminAuth()
 
   const isActive = (href) => {
     if (href === '/admin') return pathname === '/admin'
@@ -45,11 +47,9 @@ export default function AdminNav({ onRefresh, onLogout }) {
             ↻ Rafraîchir
           </button>
         )}
-        {onLogout && (
-          <button onClick={onLogout} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontSize: 14, fontFamily: FONT }}>
-            Déconnexion
-          </button>
-        )}
+        <button onClick={logout} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontSize: 14, fontFamily: FONT }}>
+          Déconnexion
+        </button>
       </div>
     </div>
   )

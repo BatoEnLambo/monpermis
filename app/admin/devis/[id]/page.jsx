@@ -5,7 +5,6 @@ import { useRouter, useParams } from 'next/navigation'
 import { supabase } from '../../../../lib/supabase'
 import AdminNav from '../../../../components/AdminNav'
 
-const ADMIN_PASSWORD = 'permisclair2026'
 const ACCENT = "#1a5c3a"
 const ACCENT_LIGHT = "#e8f5ee"
 const GRAY_200 = "#e8e7e4"
@@ -24,21 +23,10 @@ const STATUS_BADGE = {
 export default function DevisDetailPage() {
   const router = useRouter()
   const params = useParams()
-  const [authed, setAuthed] = useState(false)
-  const [password, setPassword] = useState('')
   const [quote, setQuote] = useState(null)
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
   const [updating, setUpdating] = useState(false)
-
-  const login = (e) => {
-    e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      setAuthed(true)
-    } else {
-      alert('Mot de passe incorrect')
-    }
-  }
 
   const fetchQuote = async () => {
     setLoading(true)
@@ -52,8 +40,8 @@ export default function DevisDetailPage() {
   }
 
   useEffect(() => {
-    if (authed) fetchQuote()
-  }, [authed])
+    fetchQuote()
+  }, [])
 
   const copyLink = () => {
     const url = `https://permisclair.fr/devis/${quote.id}`
@@ -69,21 +57,6 @@ export default function DevisDetailPage() {
     setUpdating(false)
   }
 
-  if (!authed) {
-    return (
-      <div style={{ maxWidth: 360, margin: '80px auto', textAlign: 'center', fontFamily: FONT }}>
-        <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16, color: GRAY_900 }}>Admin — Détail devis</h2>
-        <form onSubmit={login} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <input type="password" placeholder="Mot de passe" value={password} onChange={e => setPassword(e.target.value)}
-            style={{ padding: '10px 14px', borderRadius: 8, border: `1px solid ${GRAY_200}`, fontSize: 14, fontFamily: FONT }} />
-          <button type="submit" style={{ padding: '10px 20px', borderRadius: 8, border: 'none', background: ACCENT, color: WHITE, fontWeight: 600, fontSize: 14, cursor: 'pointer', fontFamily: FONT }}>
-            Connexion
-          </button>
-        </form>
-      </div>
-    )
-  }
-
   if (loading) return <p style={{ textAlign: 'center', padding: 60, color: GRAY_500, fontFamily: FONT }}>Chargement...</p>
   if (!quote) return <p style={{ textAlign: 'center', padding: 60, color: GRAY_500, fontFamily: FONT }}>Devis introuvable.</p>
 
@@ -92,7 +65,7 @@ export default function DevisDetailPage() {
 
   return (
     <div style={{ maxWidth: 520, margin: '40px auto', fontFamily: FONT, padding: '0 16px' }}>
-      <AdminNav onLogout={() => setAuthed(false)} />
+      <AdminNav />
 
       <div style={{ border: `1px solid ${GRAY_200}`, borderRadius: 14, background: WHITE, overflow: 'hidden' }}>
         <div style={{ padding: '24px 28px', borderBottom: `1px solid ${GRAY_200}` }}>
