@@ -8,6 +8,23 @@ import {
   needsOuvertures,
   needsRaccord,
   isSerre,
+  // Piscine
+  isPiscineBassin,
+  isPiscineEnterree,
+  isPiscineHorsSol,
+  isPiscineSpa,
+  isPiscineAbri,
+  needsPiscineSecurite,
+  // Terrasse
+  isTerrasse,
+  isTerrasseDeckBois,
+  // Mur
+  isMurLineaire,
+  isMurSoutenement,
+  isMurClotureMur,
+  isCloture,
+  isPortail,
+  // Options bâti
   TYPE_TOITURE_OPTIONS,
   MATERIAU_FACADE_OPTIONS,
   MATERIAU_COUVERTURE_OPTIONS,
@@ -18,6 +35,41 @@ import {
   EMPRISE_CONSERVEE_OPTIONS,
   TYPE_SERRE_OPTIONS,
   MATERIAU_COUVERTURE_SERRE_OPTIONS,
+  // Options piscine
+  FORME_PISCINE_OPTIONS,
+  TYPE_CONSTRUCTION_PISCINE_OPTIONS,
+  REVETEMENT_PISCINE_OPTIONS,
+  LOCAL_TECHNIQUE_OPTIONS,
+  CHAUFFAGE_PISCINE_OPTIONS,
+  TYPE_HORS_SOL_OPTIONS,
+  HABILLAGE_HORS_SOL_OPTIONS,
+  TYPE_ENCASTREMENT_SPA_OPTIONS,
+  ABRI_SPA_OPTIONS,
+  DISPOSITIFS_SECURITE_OPTIONS,
+  TYPE_ABRI_OPTIONS,
+  MOBILE_ABRI_OPTIONS,
+  MATERIAU_STRUCTURE_ABRI_OPTIONS,
+  MATERIAU_PAROIS_ABRI_OPTIONS,
+  // Options terrasse
+  MATERIAU_REVETEMENT_TERRASSE_OPTIONS,
+  STRUCTURE_PORTANTE_OPTIONS,
+  ESSENCE_BOIS_OPTIONS,
+  SENS_POSE_OPTIONS,
+  ACCES_TERRASSE_OPTIONS,
+  GARDE_CORPS_OPTIONS,
+  // Options mur/clôture/portail
+  MATERIAU_MUR_SOUTENEMENT_OPTIONS,
+  PAREMENT_MUR_SOUTENEMENT_OPTIONS,
+  MATERIAU_MUR_CLOTURE_OPTIONS,
+  PAREMENT_MUR_CLOTURE_OPTIONS,
+  TYPE_CLOTURE_OPTIONS,
+  SOUBASSEMENT_CLOTURE_OPTIONS,
+  OCCULTATION_CLOTURE_OPTIONS,
+  TYPE_OUVERTURE_PORTAIL_OPTIONS,
+  MATERIAU_PORTAIL_OPTIONS,
+  MOTORISATION_PORTAIL_OPTIONS,
+  MATERIAU_PILIERS_OPTIONS,
+  CHAPEAUX_PILIERS_OPTIONS,
 } from '../src/config/ouvrageTypes'
 
 const ACCENT = '#1a5c3a'
@@ -119,6 +171,25 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
   const showRaccord = needsRaccord(draft.type, draft.subtype)
   const showSerre = isSerre(draft.type, draft.subtype)
   const isSurelevation = draft.type === 'maison' && draft.subtype === 'surelevation'
+
+  // Piscine
+  const showBassin = isPiscineBassin(draft.type, draft.subtype)
+  const showCaractPiscineEnterree = isPiscineEnterree(draft.type, draft.subtype)
+  const showCaractPiscineHorsSol = isPiscineHorsSol(draft.type, draft.subtype)
+  const showCaractPiscineSpa = isPiscineSpa(draft.type, draft.subtype)
+  const showSecuritePiscine = needsPiscineSecurite(draft.type, draft.subtype)
+  const showAbriPiscine = isPiscineAbri(draft.type, draft.subtype)
+
+  // Terrasse
+  const showTerrasse = isTerrasse(draft.type)
+  const showTerrasseDeckBois = isTerrasseDeckBois(draft.type, draft.subtype)
+
+  // Mur / Clôture / Portail
+  const showMurLineaire = isMurLineaire(draft.type, draft.subtype)
+  const showMurSoutenement = isMurSoutenement(draft.type, draft.subtype)
+  const showMurClotureMur = isMurClotureMur(draft.type, draft.subtype)
+  const showCloture = isCloture(draft.type, draft.subtype)
+  const showPortail = isPortail(draft.type, draft.subtype)
 
   // ── Bloc Dimensions bâti ──────────────────────────────────────────
   const renderDimensionsBati = () => {
@@ -645,6 +716,927 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
     )
   }
 
+  // ══════════════════════════════════════════════════════════════════
+  // PISCINE
+  // ══════════════════════════════════════════════════════════════════
+
+  // ── Bloc Dimensions bassin ────────────────────────────────────────
+  const renderDimensionsBassin = () => {
+    const forme = readData('bassin.forme')
+    const isRonde = forme === 'Ronde'
+    return (
+      <div style={blocStyle}>
+        <div style={blocTitleStyle}>📐 Dimensions du bassin</div>
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Forme du bassin</label>
+            <select
+              value={forme || ''}
+              onChange={e => {
+                const v = e.target.value || null
+                updateData('bassin.forme', v)
+                if (v === 'Ronde') {
+                  updateData('bassin.longueur_m', null)
+                  updateData('bassin.largeur_m', null)
+                } else {
+                  updateData('bassin.diametre_m', null)
+                }
+              }}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {FORME_PISCINE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+          {isRonde ? (
+            <div>
+              <label style={labelStyle}>Diamètre (m)</label>
+              <input
+                type="number"
+                step="0.1"
+                value={readData('bassin.diametre_m') ?? ''}
+                onChange={e => updateData('bassin.diametre_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+                style={inputBaseStyle}
+                placeholder="ex : 4.5"
+              />
+            </div>
+          ) : null}
+        </div>
+        {!isRonde && (
+          <div className="ouvrage-row" style={rowStyle}>
+            <div>
+              <label style={labelStyle}>Longueur (m)</label>
+              <input
+                type="number"
+                step="0.1"
+                value={readData('bassin.longueur_m') ?? ''}
+                onChange={e => updateData('bassin.longueur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+                style={inputBaseStyle}
+                placeholder="ex : 8.0"
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Largeur (m)</label>
+              <input
+                type="number"
+                step="0.1"
+                value={readData('bassin.largeur_m') ?? ''}
+                onChange={e => updateData('bassin.largeur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+                style={inputBaseStyle}
+                placeholder="ex : 4.0"
+              />
+            </div>
+          </div>
+        )}
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Profondeur mini (m)</label>
+            <input
+              type="number"
+              step="0.01"
+              value={readData('bassin.profondeur_min_m') ?? ''}
+              onChange={e => updateData('bassin.profondeur_min_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+              style={inputBaseStyle}
+              placeholder="ex : 1.20"
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Profondeur maxi (m)</label>
+            <input
+              type="number"
+              step="0.01"
+              value={readData('bassin.profondeur_max_m') ?? ''}
+              onChange={e => updateData('bassin.profondeur_max_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+              style={inputBaseStyle}
+              placeholder="ex : 2.00"
+            />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Bloc Caractéristiques piscine enterrée / semi ─────────────────
+  const renderCaractPiscineEnterree = () => {
+    const tc = readData('caracteristiques.type_construction')
+    const rev = readData('caracteristiques.revetement')
+    const lt = readData('caracteristiques.local_technique')
+    const ch = readData('caracteristiques.chauffage')
+    return (
+      <div style={blocStyle}>
+        <div style={blocTitleStyle}>🏊 Caractéristiques de la piscine</div>
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Type de construction</label>
+            <select
+              value={tc || ''}
+              onChange={e => updateData('caracteristiques.type_construction', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {TYPE_CONSTRUCTION_PISCINE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+            {tc === 'Autre' && (
+              <input
+                type="text"
+                value={readData('caracteristiques.type_construction_autre') || ''}
+                onChange={e => updateData('caracteristiques.type_construction_autre', e.target.value)}
+                style={{ ...inputBaseStyle, marginTop: 6 }}
+                placeholder="Précisez…"
+              />
+            )}
+          </div>
+          <div>
+            <label style={labelStyle}>Revêtement</label>
+            <select
+              value={rev || ''}
+              onChange={e => updateData('caracteristiques.revetement', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {REVETEMENT_PISCINE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+            {rev === 'Autre' && (
+              <input
+                type="text"
+                value={readData('caracteristiques.revetement_autre') || ''}
+                onChange={e => updateData('caracteristiques.revetement_autre', e.target.value)}
+                style={{ ...inputBaseStyle, marginTop: 6 }}
+                placeholder="Précisez…"
+              />
+            )}
+          </div>
+        </div>
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Local technique</label>
+            <select
+              value={lt || ''}
+              onChange={e => updateData('caracteristiques.local_technique', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {LOCAL_TECHNIQUE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Chauffage</label>
+            <select
+              value={ch || ''}
+              onChange={e => updateData('caracteristiques.chauffage', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {CHAUFFAGE_PISCINE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Bloc Caractéristiques piscine hors-sol ────────────────────────
+  const renderCaractPiscineHorsSol = () => {
+    const t = readData('caracteristiques.type_hors_sol')
+    const h = readData('caracteristiques.habillage')
+    return (
+      <div style={blocStyle}>
+        <div style={blocTitleStyle}>🏊 Caractéristiques de la piscine hors-sol</div>
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Type</label>
+            <select
+              value={t || ''}
+              onChange={e => updateData('caracteristiques.type_hors_sol', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {TYPE_HORS_SOL_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Hauteur du bassin (m)</label>
+            <input
+              type="number"
+              step="0.01"
+              value={readData('caracteristiques.hauteur_bassin_m') ?? ''}
+              onChange={e => updateData('caracteristiques.hauteur_bassin_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+              style={inputBaseStyle}
+              placeholder="ex : 1.30"
+            />
+          </div>
+        </div>
+        <div>
+          <label style={labelStyle}>Habillage extérieur</label>
+          <select
+            value={h || ''}
+            onChange={e => updateData('caracteristiques.habillage', e.target.value || null)}
+            style={{ ...inputBaseStyle, maxWidth: 280 }}
+          >
+            <option value="">Sélectionner…</option>
+            {HABILLAGE_HORS_SOL_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+          </select>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Bloc Caractéristiques spa ─────────────────────────────────────
+  const renderCaractPiscineSpa = () => {
+    return (
+      <div style={blocStyle}>
+        <div style={blocTitleStyle}>🛁 Caractéristiques du spa</div>
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Nombre de places</label>
+            <input
+              type="number"
+              step="1"
+              min="1"
+              value={readData('caracteristiques.nombre_places') ?? ''}
+              onChange={e => updateData('caracteristiques.nombre_places', e.target.value === '' ? null : parseInt(e.target.value, 10))}
+              style={inputBaseStyle}
+              placeholder="ex : 4"
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Type d'encastrement</label>
+            <select
+              value={readData('caracteristiques.type_encastrement') || ''}
+              onChange={e => updateData('caracteristiques.type_encastrement', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {TYPE_ENCASTREMENT_SPA_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+        </div>
+        <div>
+          <label style={labelStyle}>Abri / couverture</label>
+          <select
+            value={readData('caracteristiques.abri_spa') || ''}
+            onChange={e => updateData('caracteristiques.abri_spa', e.target.value || null)}
+            style={{ ...inputBaseStyle, maxWidth: 280 }}
+          >
+            <option value="">Sélectionner…</option>
+            {ABRI_SPA_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+          </select>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Bloc Sécurité piscine ─────────────────────────────────────────
+  const renderSecuritePiscine = () => {
+    const dispos = readData('securite.dispositifs') || []
+    const toggle = (opt) => {
+      const next = dispos.includes(opt) ? dispos.filter(x => x !== opt) : [...dispos, opt]
+      updateData('securite.dispositifs', next)
+    }
+    return (
+      <div style={blocStyle}>
+        <div style={blocTitleStyle}>🛡️ Sécurité (obligatoire)</div>
+        <p style={{ fontSize: 12, color: GRAY_500, margin: '0 0 10px', lineHeight: 1.5 }}>
+          La loi impose au moins un dispositif de sécurité homologué pour toute piscine enterrée, semi-enterrée ou hors-sol non démontable. Cochez tous ceux qui s'appliquent.
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {DISPOSITIFS_SECURITE_OPTIONS.map(opt => (
+            <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: GRAY_700, cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={dispos.includes(opt)}
+                onChange={() => toggle(opt)}
+              />
+              {opt}
+            </label>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  // ── Bloc Abri de piscine (sous-type abri) ─────────────────────────
+  const renderAbriPiscine = () => {
+    return (
+      <div style={blocStyle}>
+        <div style={blocTitleStyle}>🏕️ Caractéristiques de l'abri</div>
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Type d'abri</label>
+            <select
+              value={readData('abri.type_abri') || ''}
+              onChange={e => updateData('abri.type_abri', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {TYPE_ABRI_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Fixe ou mobile</label>
+            <select
+              value={readData('abri.mobile') || ''}
+              onChange={e => updateData('abri.mobile', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {MOBILE_ABRI_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+        </div>
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Matériau structure</label>
+            <select
+              value={readData('abri.materiau_structure') || ''}
+              onChange={e => updateData('abri.materiau_structure', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {MATERIAU_STRUCTURE_ABRI_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Matériau parois</label>
+            <select
+              value={readData('abri.materiau_parois') || ''}
+              onChange={e => updateData('abri.materiau_parois', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {MATERIAU_PAROIS_ABRI_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+        </div>
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Longueur (m)</label>
+            <input
+              type="number"
+              step="0.1"
+              value={readData('abri.longueur_m') ?? ''}
+              onChange={e => updateData('abri.longueur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+              style={inputBaseStyle}
+              placeholder="ex : 9.0"
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Largeur (m)</label>
+            <input
+              type="number"
+              step="0.1"
+              value={readData('abri.largeur_m') ?? ''}
+              onChange={e => updateData('abri.largeur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+              style={inputBaseStyle}
+              placeholder="ex : 5.0"
+            />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // TERRASSE
+  // ══════════════════════════════════════════════════════════════════
+
+  // ── Bloc Dimensions terrasse ──────────────────────────────────────
+  const renderDimensionsTerrasse = () => {
+    const hUnknown = !!readData('terrasse.hauteur_au_dessus_sol_unknown')
+    return (
+      <div style={blocStyle}>
+        <div style={blocTitleStyle}>📐 Dimensions de la terrasse</div>
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Longueur (m)</label>
+            <input
+              type="number"
+              step="0.1"
+              value={readData('terrasse.longueur_m') ?? ''}
+              onChange={e => updateData('terrasse.longueur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+              style={inputBaseStyle}
+              placeholder="ex : 6.0"
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Largeur (m)</label>
+            <input
+              type="number"
+              step="0.1"
+              value={readData('terrasse.largeur_m') ?? ''}
+              onChange={e => updateData('terrasse.largeur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+              style={inputBaseStyle}
+              placeholder="ex : 4.0"
+            />
+          </div>
+        </div>
+        <div>
+          <label style={labelStyle}>Hauteur au-dessus du sol naturel (m)</label>
+          <input
+            type="number"
+            step="0.01"
+            value={hUnknown ? '' : (readData('terrasse.hauteur_au_dessus_sol_m') ?? '')}
+            disabled={hUnknown}
+            onChange={e => updateData('terrasse.hauteur_au_dessus_sol_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+            style={{ ...inputBaseStyle, maxWidth: 220, background: hUnknown ? GRAY_200 : WHITE }}
+            placeholder="ex : 0.80"
+          />
+          <label style={unknownStyle}>
+            <input
+              type="checkbox"
+              checked={hUnknown}
+              onChange={e => {
+                updateData('terrasse.hauteur_au_dessus_sol_unknown', e.target.checked)
+                if (e.target.checked) updateData('terrasse.hauteur_au_dessus_sol_m', null)
+              }}
+            />
+            Je ne sais pas
+          </label>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Bloc Matériaux terrasse ───────────────────────────────────────
+  const renderMateriauxTerrasse = () => {
+    const rev = readData('materiaux_terrasse.materiau_revetement')
+    const struct = readData('materiaux_terrasse.structure_portante')
+    return (
+      <div style={blocStyle}>
+        <div style={blocTitleStyle}>🎨 Matériaux et structure</div>
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Matériau de revêtement</label>
+            <select
+              value={rev || ''}
+              onChange={e => updateData('materiaux_terrasse.materiau_revetement', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {MATERIAU_REVETEMENT_TERRASSE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+            {rev === 'Autre' && (
+              <input
+                type="text"
+                value={readData('materiaux_terrasse.materiau_revetement_autre') || ''}
+                onChange={e => updateData('materiaux_terrasse.materiau_revetement_autre', e.target.value)}
+                style={{ ...inputBaseStyle, marginTop: 6 }}
+                placeholder="Précisez…"
+              />
+            )}
+          </div>
+          <div>
+            <label style={labelStyle}>Structure portante</label>
+            <select
+              value={struct || ''}
+              onChange={e => updateData('materiaux_terrasse.structure_portante', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {STRUCTURE_PORTANTE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+        </div>
+        {showTerrasseDeckBois && (
+          <div className="ouvrage-row" style={rowStyle}>
+            <div>
+              <label style={labelStyle}>Essence de bois</label>
+              <select
+                value={readData('materiaux_terrasse.essence_bois') || ''}
+                onChange={e => updateData('materiaux_terrasse.essence_bois', e.target.value || null)}
+                style={inputBaseStyle}
+              >
+                <option value="">Sélectionner…</option>
+                {ESSENCE_BOIS_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>Sens de pose des lames</label>
+              <select
+                value={readData('materiaux_terrasse.sens_pose') || ''}
+                onChange={e => updateData('materiaux_terrasse.sens_pose', e.target.value || null)}
+                style={inputBaseStyle}
+              >
+                <option value="">Sélectionner…</option>
+                {SENS_POSE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+              </select>
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // ── Bloc Accessibilité terrasse ───────────────────────────────────
+  const renderAccessibiliteTerrasse = () => {
+    const gc = readData('accessibilite.garde_corps')
+    const hasGC = gc && gc !== 'Aucun'
+    return (
+      <div style={blocStyle}>
+        <div style={blocTitleStyle}>♿ Accessibilité</div>
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Accès à la terrasse</label>
+            <select
+              value={readData('accessibilite.acces') || ''}
+              onChange={e => updateData('accessibilite.acces', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {ACCES_TERRASSE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Garde-corps</label>
+            <select
+              value={gc || ''}
+              onChange={e => {
+                const v = e.target.value || null
+                updateData('accessibilite.garde_corps', v)
+                if (!v || v === 'Aucun') updateData('accessibilite.hauteur_garde_corps_m', null)
+              }}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {GARDE_CORPS_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+        </div>
+        {hasGC && (
+          <div>
+            <label style={labelStyle}>Hauteur du garde-corps (m)</label>
+            <input
+              type="number"
+              step="0.01"
+              value={readData('accessibilite.hauteur_garde_corps_m') ?? ''}
+              onChange={e => updateData('accessibilite.hauteur_garde_corps_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+              style={{ ...inputBaseStyle, maxWidth: 200 }}
+              placeholder="ex : 1.00"
+            />
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // MUR / CLÔTURE / PORTAIL
+  // ══════════════════════════════════════════════════════════════════
+
+  // ── Bloc Dimensions mur/clôture ───────────────────────────────────
+  const renderDimensionsMur = () => {
+    const variable = !!readData('dimensions_mur.hauteur_variable')
+    return (
+      <div style={blocStyle}>
+        <div style={blocTitleStyle}>📐 Dimensions de l'ouvrage</div>
+        <div>
+          <label style={labelStyle}>Longueur (m)</label>
+          <input
+            type="number"
+            step="0.1"
+            value={readData('dimensions_mur.longueur_m') ?? ''}
+            onChange={e => updateData('dimensions_mur.longueur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+            style={{ ...inputBaseStyle, maxWidth: 220, marginBottom: 10 }}
+            placeholder="ex : 15.0"
+          />
+        </div>
+        <div style={{ marginBottom: 10 }}>
+          <label style={unknownStyle}>
+            <input
+              type="checkbox"
+              checked={variable}
+              onChange={e => {
+                updateData('dimensions_mur.hauteur_variable', e.target.checked)
+                if (e.target.checked) {
+                  updateData('dimensions_mur.hauteur_m', null)
+                } else {
+                  updateData('dimensions_mur.hauteur_min_m', null)
+                  updateData('dimensions_mur.hauteur_max_m', null)
+                }
+              }}
+            />
+            Hauteur variable (terrain en pente)
+          </label>
+        </div>
+        {variable ? (
+          <div className="ouvrage-row" style={rowStyle}>
+            <div>
+              <label style={labelStyle}>Hauteur mini (m)</label>
+              <input
+                type="number"
+                step="0.01"
+                value={readData('dimensions_mur.hauteur_min_m') ?? ''}
+                onChange={e => updateData('dimensions_mur.hauteur_min_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+                style={inputBaseStyle}
+                placeholder="ex : 0.80"
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Hauteur maxi (m)</label>
+              <input
+                type="number"
+                step="0.01"
+                value={readData('dimensions_mur.hauteur_max_m') ?? ''}
+                onChange={e => updateData('dimensions_mur.hauteur_max_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+                style={inputBaseStyle}
+                placeholder="ex : 1.80"
+              />
+            </div>
+          </div>
+        ) : (
+          <div>
+            <label style={labelStyle}>Hauteur (m)</label>
+            <input
+              type="number"
+              step="0.01"
+              value={readData('dimensions_mur.hauteur_m') ?? ''}
+              onChange={e => updateData('dimensions_mur.hauteur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+              style={{ ...inputBaseStyle, maxWidth: 220 }}
+              placeholder="ex : 1.60"
+            />
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // ── Bloc Matériaux mur de soutènement ─────────────────────────────
+  const renderMateriauxMurSoutenement = () => {
+    const mat = readData('materiaux_mur.materiau')
+    const par = readData('materiaux_mur.parement')
+    return (
+      <div style={blocStyle}>
+        <div style={blocTitleStyle}>🎨 Matériaux du mur de soutènement</div>
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Matériau</label>
+            <select
+              value={mat || ''}
+              onChange={e => updateData('materiaux_mur.materiau', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {MATERIAU_MUR_SOUTENEMENT_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+            {mat === 'Autre' && (
+              <input
+                type="text"
+                value={readData('materiaux_mur.materiau_autre') || ''}
+                onChange={e => updateData('materiaux_mur.materiau_autre', e.target.value)}
+                style={{ ...inputBaseStyle, marginTop: 6 }}
+                placeholder="Précisez…"
+              />
+            )}
+          </div>
+          <div>
+            <label style={labelStyle}>Parement / finition</label>
+            <select
+              value={par || ''}
+              onChange={e => updateData('materiaux_mur.parement', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {PAREMENT_MUR_SOUTENEMENT_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Bloc Matériaux mur de clôture ─────────────────────────────────
+  const renderMateriauxMurCloture = () => {
+    const mat = readData('materiaux_mur.materiau')
+    const par = readData('materiaux_mur.parement')
+    return (
+      <div style={blocStyle}>
+        <div style={blocTitleStyle}>🎨 Matériaux du mur de clôture</div>
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Matériau</label>
+            <select
+              value={mat || ''}
+              onChange={e => updateData('materiaux_mur.materiau', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {MATERIAU_MUR_CLOTURE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+            {mat === 'Autre' && (
+              <input
+                type="text"
+                value={readData('materiaux_mur.materiau_autre') || ''}
+                onChange={e => updateData('materiaux_mur.materiau_autre', e.target.value)}
+                style={{ ...inputBaseStyle, marginTop: 6 }}
+                placeholder="Précisez…"
+              />
+            )}
+          </div>
+          <div>
+            <label style={labelStyle}>Parement / finition</label>
+            <select
+              value={par || ''}
+              onChange={e => updateData('materiaux_mur.parement', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {PAREMENT_MUR_CLOTURE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Bloc Matériaux clôture ────────────────────────────────────────
+  const renderMateriauxCloture = () => {
+    const tc = readData('materiaux_mur.type_cloture')
+    return (
+      <div style={blocStyle}>
+        <div style={blocTitleStyle}>🎨 Caractéristiques de la clôture</div>
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Type de clôture</label>
+            <select
+              value={tc || ''}
+              onChange={e => updateData('materiaux_mur.type_cloture', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {TYPE_CLOTURE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+            {tc === 'Autre' && (
+              <input
+                type="text"
+                value={readData('materiaux_mur.type_cloture_autre') || ''}
+                onChange={e => updateData('materiaux_mur.type_cloture_autre', e.target.value)}
+                style={{ ...inputBaseStyle, marginTop: 6 }}
+                placeholder="Précisez…"
+              />
+            )}
+          </div>
+          <div>
+            <label style={labelStyle}>Soubassement</label>
+            <select
+              value={readData('materiaux_mur.soubassement') || ''}
+              onChange={e => updateData('materiaux_mur.soubassement', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {SOUBASSEMENT_CLOTURE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+        </div>
+        <div>
+          <label style={labelStyle}>Occultation</label>
+          <select
+            value={readData('materiaux_mur.occultation') || ''}
+            onChange={e => updateData('materiaux_mur.occultation', e.target.value || null)}
+            style={{ ...inputBaseStyle, maxWidth: 280 }}
+          >
+            <option value="">Sélectionner…</option>
+            {OCCULTATION_CLOTURE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+          </select>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Bloc Portail ──────────────────────────────────────────────────
+  const renderPortail = () => {
+    const avecPiliers = !!readData('portail.avec_piliers')
+    const mat = readData('portail.materiau')
+    return (
+      <div style={blocStyle}>
+        <div style={blocTitleStyle}>🚪 Portail et piliers</div>
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Type d'ouverture</label>
+            <select
+              value={readData('portail.type_ouverture') || ''}
+              onChange={e => updateData('portail.type_ouverture', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {TYPE_OUVERTURE_PORTAIL_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Motorisation</label>
+            <select
+              value={readData('portail.motorisation') || ''}
+              onChange={e => updateData('portail.motorisation', e.target.value || null)}
+              style={inputBaseStyle}
+            >
+              <option value="">Sélectionner…</option>
+              {MOTORISATION_PORTAIL_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+        </div>
+        <div className="ouvrage-row" style={rowStyle}>
+          <div>
+            <label style={labelStyle}>Largeur (m)</label>
+            <input
+              type="number"
+              step="0.01"
+              value={readData('portail.largeur_m') ?? ''}
+              onChange={e => updateData('portail.largeur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+              style={inputBaseStyle}
+              placeholder="ex : 3.50"
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Hauteur (m)</label>
+            <input
+              type="number"
+              step="0.01"
+              value={readData('portail.hauteur_m') ?? ''}
+              onChange={e => updateData('portail.hauteur_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+              style={inputBaseStyle}
+              placeholder="ex : 1.60"
+            />
+          </div>
+        </div>
+        <div style={{ marginBottom: 10 }}>
+          <label style={labelStyle}>Matériau du portail</label>
+          <select
+            value={mat || ''}
+            onChange={e => updateData('portail.materiau', e.target.value || null)}
+            style={{ ...inputBaseStyle, maxWidth: 280 }}
+          >
+            <option value="">Sélectionner…</option>
+            {MATERIAU_PORTAIL_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+          </select>
+          {mat === 'Autre' && (
+            <input
+              type="text"
+              value={readData('portail.materiau_autre') || ''}
+              onChange={e => updateData('portail.materiau_autre', e.target.value)}
+              style={{ ...inputBaseStyle, marginTop: 6, maxWidth: 280 }}
+              placeholder="Précisez…"
+            />
+          )}
+        </div>
+        <div style={{ marginBottom: 10 }}>
+          <label style={unknownStyle}>
+            <input
+              type="checkbox"
+              checked={avecPiliers}
+              onChange={e => {
+                updateData('portail.avec_piliers', e.target.checked)
+                if (!e.target.checked) {
+                  updateData('portail.materiau_piliers', null)
+                  updateData('portail.chapeaux_piliers', null)
+                  updateData('portail.hauteur_piliers_m', null)
+                }
+              }}
+            />
+            Portail accompagné de piliers maçonnés
+          </label>
+        </div>
+        {avecPiliers && (
+          <>
+            <div className="ouvrage-row" style={rowStyle}>
+              <div>
+                <label style={labelStyle}>Matériau des piliers</label>
+                <select
+                  value={readData('portail.materiau_piliers') || ''}
+                  onChange={e => updateData('portail.materiau_piliers', e.target.value || null)}
+                  style={inputBaseStyle}
+                >
+                  <option value="">Sélectionner…</option>
+                  {MATERIAU_PILIERS_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={labelStyle}>Chapeaux de piliers</label>
+                <select
+                  value={readData('portail.chapeaux_piliers') || ''}
+                  onChange={e => updateData('portail.chapeaux_piliers', e.target.value || null)}
+                  style={inputBaseStyle}
+                >
+                  <option value="">Sélectionner…</option>
+                  {CHAPEAUX_PILIERS_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+                </select>
+              </div>
+            </div>
+            <div>
+              <label style={labelStyle}>Hauteur des piliers (m)</label>
+              <input
+                type="number"
+                step="0.01"
+                value={readData('portail.hauteur_piliers_m') ?? ''}
+                onChange={e => updateData('portail.hauteur_piliers_m', e.target.value === '' ? null : parseFloat(e.target.value))}
+                style={{ ...inputBaseStyle, maxWidth: 200 }}
+                placeholder="ex : 1.80"
+              />
+            </div>
+          </>
+        )}
+      </div>
+    )
+  }
+
   // ── Bloc Commentaire (tous types) ─────────────────────────────────
   const renderCommentaire = () => (
     <div style={blocStyle}>
@@ -664,11 +1656,33 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId }) {
 
   return (
     <>
+      {/* Bâti (maison, garage, agricole hors serre) */}
       {showDimensionsBati && renderDimensionsBati()}
       {showMateriauxBati && renderMateriauxBati()}
       {showOuvertures && renderOuvertures()}
       {showRaccord && renderRaccord()}
       {showSerre && renderSerre()}
+
+      {/* Piscine */}
+      {showBassin && renderDimensionsBassin()}
+      {showCaractPiscineEnterree && renderCaractPiscineEnterree()}
+      {showCaractPiscineHorsSol && renderCaractPiscineHorsSol()}
+      {showCaractPiscineSpa && renderCaractPiscineSpa()}
+      {showSecuritePiscine && renderSecuritePiscine()}
+      {showAbriPiscine && renderAbriPiscine()}
+
+      {/* Terrasse */}
+      {showTerrasse && renderDimensionsTerrasse()}
+      {showTerrasse && renderMateriauxTerrasse()}
+      {showTerrasse && renderAccessibiliteTerrasse()}
+
+      {/* Mur / Clôture / Portail */}
+      {showMurLineaire && renderDimensionsMur()}
+      {showMurSoutenement && renderMateriauxMurSoutenement()}
+      {showMurClotureMur && renderMateriauxMurCloture()}
+      {showCloture && renderMateriauxCloture()}
+      {showPortail && renderPortail()}
+
       {renderCommentaire()}
     </>
   )

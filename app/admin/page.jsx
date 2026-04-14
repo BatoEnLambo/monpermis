@@ -490,6 +490,19 @@ export default function AdminPage() {
                               const ouvs = data.ouvertures || []
                               const raccord = data.raccord_existant || {}
                               const serre = data.serre || {}
+                              // Piscine
+                              const bassin = data.bassin || {}
+                              const carac = data.caracteristiques || {}
+                              const securite = data.securite || {}
+                              const abri = data.abri || {}
+                              // Terrasse
+                              const terrasse = data.terrasse || {}
+                              const matTer = data.materiaux_terrasse || {}
+                              const access = data.accessibilite || {}
+                              // Mur / Clôture / Portail
+                              const dimMur = data.dimensions_mur || {}
+                              const matMur = data.materiaux_mur || {}
+                              const portail = data.portail || {}
                               const { filled, total } = computeOuvrageProgress(o)
                               const pct = total > 0 ? Math.round((filled / total) * 100) : 0
                               return (
@@ -548,6 +561,132 @@ export default function AdminPage() {
                                         <strong>Serre.</strong> {fmtDim(serre.longueur_m, 'm')} × {fmtDim(serre.largeur_m, 'm')}, faîtière {fmtDim(serre.hauteur_faitiere_m, 'm')}
                                         {serre.type_serre && ` · ${serre.type_serre}`}
                                         {serre.materiau_couverture_serre && ` · ${serre.materiau_couverture_serre}`}
+                                      </div>
+                                    )}
+
+                                    {/* Piscine — bassin */}
+                                    {(bassin.forme || bassin.longueur_m || bassin.diametre_m) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 4, lineHeight: 1.5 }}>
+                                        <strong>Bassin.</strong>
+                                        {bassin.forme && ` ${bassin.forme}`}
+                                        {bassin.forme === 'Ronde'
+                                          ? bassin.diametre_m != null && ` · Ø ${bassin.diametre_m}m`
+                                          : (bassin.longueur_m || bassin.largeur_m) && ` · ${fmtDim(bassin.longueur_m, 'm')} × ${fmtDim(bassin.largeur_m, 'm')}`}
+                                        {(bassin.profondeur_min_m != null || bassin.profondeur_max_m != null) && ` · Prof. ${fmtDim(bassin.profondeur_min_m, 'm')}→${fmtDim(bassin.profondeur_max_m, 'm')}`}
+                                      </div>
+                                    )}
+
+                                    {/* Piscine — caractéristiques enterrée/semi */}
+                                    {(carac.type_construction || carac.revetement || carac.local_technique || carac.chauffage) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 4, lineHeight: 1.5 }}>
+                                        <strong>Caract.</strong>
+                                        {carac.type_construction && ` ${carac.type_construction === 'Autre' && carac.type_construction_autre ? carac.type_construction_autre : carac.type_construction}`}
+                                        {carac.revetement && ` · Rev. ${carac.revetement === 'Autre' && carac.revetement_autre ? carac.revetement_autre : carac.revetement}`}
+                                        {carac.local_technique && ` · Local ${carac.local_technique}`}
+                                        {carac.chauffage && ` · Chauff. ${carac.chauffage}`}
+                                      </div>
+                                    )}
+
+                                    {/* Piscine — caractéristiques hors-sol */}
+                                    {(carac.type_hors_sol || carac.hauteur_bassin_m != null || carac.habillage) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 4, lineHeight: 1.5 }}>
+                                        <strong>Hors-sol.</strong>
+                                        {carac.type_hors_sol && ` ${carac.type_hors_sol}`}
+                                        {carac.hauteur_bassin_m != null && ` · H ${carac.hauteur_bassin_m}m`}
+                                        {carac.habillage && ` · Habillage ${carac.habillage}`}
+                                      </div>
+                                    )}
+
+                                    {/* Piscine — spa */}
+                                    {(carac.nombre_places != null || carac.type_encastrement || carac.abri_spa) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 4, lineHeight: 1.5 }}>
+                                        <strong>Spa.</strong>
+                                        {carac.nombre_places != null && ` ${carac.nombre_places} places`}
+                                        {carac.type_encastrement && ` · ${carac.type_encastrement}`}
+                                        {carac.abri_spa && ` · Abri ${carac.abri_spa}`}
+                                      </div>
+                                    )}
+
+                                    {/* Piscine — sécurité */}
+                                    {Array.isArray(securite.dispositifs) && securite.dispositifs.length > 0 && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 4, lineHeight: 1.5 }}>
+                                        <strong>Sécurité.</strong> {securite.dispositifs.join(', ')}
+                                      </div>
+                                    )}
+
+                                    {/* Abri de piscine */}
+                                    {(abri.type_abri || abri.longueur_m != null) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 4, lineHeight: 1.5 }}>
+                                        <strong>Abri.</strong>
+                                        {abri.type_abri && ` ${abri.type_abri}`}
+                                        {abri.mobile && ` · ${abri.mobile}`}
+                                        {abri.materiau_structure && ` · Struct. ${abri.materiau_structure}`}
+                                        {abri.materiau_parois && ` · Parois ${abri.materiau_parois}`}
+                                        {(abri.longueur_m || abri.largeur_m) && ` · ${fmtDim(abri.longueur_m, 'm')} × ${fmtDim(abri.largeur_m, 'm')}`}
+                                      </div>
+                                    )}
+
+                                    {/* Terrasse — dimensions */}
+                                    {(terrasse.longueur_m || terrasse.largeur_m || terrasse.hauteur_au_dessus_sol_m != null || terrasse.hauteur_au_dessus_sol_unknown) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 6, lineHeight: 1.5 }}>
+                                        <strong>Dim.</strong> {fmtDim(terrasse.longueur_m, 'm')} × {fmtDim(terrasse.largeur_m, 'm')}
+                                        {(terrasse.hauteur_au_dessus_sol_m != null || terrasse.hauteur_au_dessus_sol_unknown) && ` · H/sol ${fmtNsp(terrasse.hauteur_au_dessus_sol_m, terrasse.hauteur_au_dessus_sol_unknown, 'm')}`}
+                                      </div>
+                                    )}
+
+                                    {/* Terrasse — matériaux */}
+                                    {(matTer.materiau_revetement || matTer.structure_portante) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 4, lineHeight: 1.5 }}>
+                                        <strong>Matériaux.</strong>
+                                        {matTer.materiau_revetement && ` ${matTer.materiau_revetement === 'Autre' && matTer.materiau_revetement_autre ? matTer.materiau_revetement_autre : matTer.materiau_revetement}`}
+                                        {matTer.structure_portante && ` · Struct. ${matTer.structure_portante}`}
+                                        {matTer.essence_bois && ` · ${matTer.essence_bois}`}
+                                        {matTer.sens_pose && ` · Pose ${matTer.sens_pose}`}
+                                      </div>
+                                    )}
+
+                                    {/* Terrasse — accessibilité */}
+                                    {(access.acces || access.garde_corps) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 4, lineHeight: 1.5 }}>
+                                        <strong>Accès.</strong>
+                                        {access.acces && ` ${access.acces}`}
+                                        {access.garde_corps && ` · Garde-corps ${access.garde_corps}${access.hauteur_garde_corps_m != null ? ` (${access.hauteur_garde_corps_m}m)` : ''}`}
+                                      </div>
+                                    )}
+
+                                    {/* Mur / Clôture — dimensions */}
+                                    {(dimMur.longueur_m != null || dimMur.hauteur_m != null || dimMur.hauteur_variable) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 6, lineHeight: 1.5 }}>
+                                        <strong>Dim.</strong> L {fmtDim(dimMur.longueur_m, 'm')}
+                                        {dimMur.hauteur_variable
+                                          ? ` · H ${fmtDim(dimMur.hauteur_min_m, 'm')}→${fmtDim(dimMur.hauteur_max_m, 'm')}`
+                                          : dimMur.hauteur_m != null && ` · H ${dimMur.hauteur_m}m`}
+                                      </div>
+                                    )}
+
+                                    {/* Mur / Clôture — matériaux */}
+                                    {(matMur.materiau || matMur.type_cloture) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 4, lineHeight: 1.5 }}>
+                                        <strong>Matériaux.</strong>
+                                        {matMur.materiau && ` ${matMur.materiau === 'Autre' && matMur.materiau_autre ? matMur.materiau_autre : matMur.materiau}`}
+                                        {matMur.parement && ` · ${matMur.parement}`}
+                                        {matMur.type_cloture && ` ${matMur.type_cloture === 'Autre' && matMur.type_cloture_autre ? matMur.type_cloture_autre : matMur.type_cloture}`}
+                                        {matMur.soubassement && ` · Soub. ${matMur.soubassement}`}
+                                        {matMur.occultation && ` · Occ. ${matMur.occultation}`}
+                                      </div>
+                                    )}
+
+                                    {/* Portail */}
+                                    {(portail.type_ouverture || portail.materiau || portail.largeur_m != null) && (
+                                      <div style={{ fontSize: 11, color: '#44433f', marginTop: 4, lineHeight: 1.5 }}>
+                                        <strong>Portail.</strong>
+                                        {portail.type_ouverture && ` ${portail.type_ouverture}`}
+                                        {(portail.largeur_m != null || portail.hauteur_m != null) && ` · ${fmtDim(portail.largeur_m, 'm')} × ${fmtDim(portail.hauteur_m, 'm')}`}
+                                        {portail.materiau && ` · ${portail.materiau === 'Autre' && portail.materiau_autre ? portail.materiau_autre : portail.materiau}`}
+                                        {portail.motorisation && ` · ${portail.motorisation}`}
+                                        {portail.avec_piliers && (
+                                          <> · Piliers {portail.materiau_piliers || '?'}{portail.chapeaux_piliers && portail.chapeaux_piliers !== 'Aucun' ? ` (chapeaux ${portail.chapeaux_piliers})` : ''}{portail.hauteur_piliers_m != null ? ` H ${portail.hauteur_piliers_m}m` : ''}</>
+                                        )}
                                       </div>
                                     )}
 
