@@ -410,14 +410,14 @@ export default function AdminPage() {
               {selected === p.id && (
                 <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #f0f0f0', fontSize: 14 }} onClick={e => e.stopPropagation()}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 24px' }}>
-                    <div><strong>Type :</strong> {p.project_type}</div>
-                    <div><strong>Adresse :</strong> {p.address}, {p.postal_code} {p.city}</div>
-                    <div><strong>Surface :</strong> {p.surface} m²</div>
-                    <div><strong>Niveaux :</strong> {p.floors}</div>
-                    <div><strong>Chambres :</strong> {p.rooms}</div>
+                    <div><strong>Type :</strong> {p.project_type || 'Devis custom'}</div>
+                    <div><strong>Adresse :</strong> {p.address ? `${p.address}, ${p.postal_code || ''} ${p.city || ''}`.trim() : 'À compléter'}</div>
+                    <div><strong>Surface :</strong> {p.surface ? `${p.surface} m²` : '-'}</div>
+                    <div><strong>Niveaux :</strong> {p.floors || '-'}</div>
+                    <div><strong>Chambres :</strong> {p.rooms || '-'}</div>
                     <div><strong>Toiture :</strong> {p.roof_type || '-'}</div>
                     <div><strong>Style :</strong> {p.style || '-'}</div>
-                    <div><strong>Email :</strong> {p.email}</div>
+                    <div><strong>Email :</strong> {p.email || '-'}</div>
                     <div><strong>Téléphone :</strong> {p.phone || '-'}</div>
                     <div><strong>Créé le :</strong> {new Date(p.created_at).toLocaleDateString('fr-FR')}</div>
                     {p.paid_at && <div><strong>Payé le :</strong> {new Date(p.paid_at).toLocaleDateString('fr-FR')}</div>}
