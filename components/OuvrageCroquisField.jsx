@@ -42,6 +42,13 @@ function deriveNameFromUrl(url) {
   }
 }
 
+function formatBytes(bytes) {
+  if (typeof bytes !== 'number' || !isFinite(bytes) || bytes < 0) return ''
+  if (bytes < 1024) return `${bytes} o`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} Ko`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`
+}
+
 function CheckboxStyled({ checked, onChange, label }) {
   return (
     <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, cursor: 'pointer', userSelect: 'none', padding: '4px 0' }}>
@@ -65,17 +72,34 @@ function CheckboxStyled({ checked, onChange, label }) {
 /**
  * OuvrageCroquisField
  *
- * Bloc de téléversement de croquis lié à un ouvrage.
- * Les fichiers sont stockés dans `${projectId}/ouvrages/${ouvrageId}/croquis-${timestamp}.${ext}`
- * et référencés dans `ouvrage.data.croquis = { photo_urls: [...], checklist: {...} }` (jsonb).
+ * Bloc de téléversement de croquis lié à un ouvrage. Deux modes :
+ *
+ *  1. Mode "ouvrage existant" (ouvrageId présent) : l'utilisateur sélectionne
+ *     ou drag-drop des fichiers → upload immédiat vers Supabase Storage et
+ *     maj de `ouvrage.data.croquis.photo_urls` via onChange.
+ *
+ *  2. Mode "nouveau ouvrage" (ouvrageId null) : les fichiers sélectionnés
+ *     sont gardés en mémoire dans le state du parent via pendingFiles /
+ *     onPendingFilesChange. Aucun upload tant que l'ouvrage n'est pas
+ *     créé. Le parent uploadera ces fichiers dans `saveOuvrage` une fois
+ *     l'ouvrage persisté.
  *
  * Props :
- *   - projectId : id du projet (pour le bucket path)
- *   - ouvrageId : id de l'ouvrage (nullable ; si null, upload désactivé tant que l'ouvrage n'est pas créé)
+ *   - projectId : id du projet (pour le bucket path, ouvrages existants uniquement)
+ *   - ouvrageId : id de l'ouvrage (null → mode pending)
  *   - croquis   : objet courant { photo_urls, checklist } depuis draft.data.croquis
- *   - onChange  : (newCroquis) => void ; appelé à chaque modification (upload, delete, checklist)
+ *   - onChange  : (newCroquis) => void ; upload/delete/checklist sur ouvrage existant
+ *   - pendingFiles      : File[] (mode pending uniquement)
+ *   - onPendingFilesChange : (newFiles) => void ; maj de la liste locale
  */
-export default function OuvrageCroquisField({ projectId, ouvrageId, croquis, onChange }) {
+export default function OuvrageCroquisField({
+  projectId,
+  ouvrageId,
+  croquis,
+  onChange,
+  pendingFiles = [],
+  onPendingFilesChange,
+}) {
   const [uploading, setUploading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
   const [uploadError, setUploadError] = useState(null)
@@ -84,23 +108,28 @@ export default function OuvrageCroquisField({ projectId, ouvrageId, croquis, onC
   const photoUrls = Array.isArray(croquis?.photo_urls) ? croquis.photo_urls : []
   const checklist = useMemo(() => normalizeChecklist(croquis?.checklist), [croquis?.checklist])
 
-  const canUpload = !!projectId && !!ouvrageId
+  const isPendingMode = !ouvrageId
+  const canInteract = !!projectId
 
   const emitChange = useCallback((next) => {
     onChange && onChange(next)
   }, [onChange])
 
+  const emitPendingChange = useCallback((nextFiles) => {
+    if (onPendingFilesChange) onPendingFilesChange(nextFiles)
+  }, [onPendingFilesChange])
+
   async function handleUpload(fileList) {
     if (!fileList || fileList.length === 0) return
     setUploadError(null)
 
-    if (!canUpload) {
-      setUploadError("Enregistrez l'ouvrage avant d'ajouter un croquis.")
+    if (!canInteract) {
+      setUploadError("Projet non identifié.")
       if (inputRef.current) inputRef.current.value = ''
       return
     }
 
-    // Valider tous les fichiers avant d'uploader quoi que ce soit
+    // Valider tous les fichiers avant de rien faire
     try {
       for (const file of fileList) validateUploadFile(file)
     } catch (err) {
@@ -109,6 +138,15 @@ export default function OuvrageCroquisField({ projectId, ouvrageId, croquis, onC
       return
     }
 
+    // Mode "nouveau ouvrage" : on accumule les fichiers en state parent.
+    if (isPendingMode) {
+      const merged = [...(pendingFiles || []), ...Array.from(fileList)]
+      emitPendingChange(merged)
+      if (inputRef.current) inputRef.current.value = ''
+      return
+    }
+
+    // Mode "ouvrage existant" : upload immédiat.
     setUploading(true)
     const newUrls = []
     const errors = []
@@ -159,6 +197,11 @@ export default function OuvrageCroquisField({ projectId, ouvrageId, croquis, onC
     })
   }
 
+  function handleDeletePending(index) {
+    const next = (pendingFiles || []).filter((_, i) => i !== index)
+    emitPendingChange(next)
+  }
+
   const updateChecklist = useCallback((key, value) => {
     const nextChecklist = { ...checklist, [key]: value }
     emitChange({
@@ -170,6 +213,7 @@ export default function OuvrageCroquisField({ projectId, ouvrageId, croquis, onC
 
   const checkedCount = [checklist.murs, checklist.pieces, checklist.ouvertures, checklist.dimensions_batiment].filter(Boolean).length
   const isPdf = (name) => (name || '').toLowerCase().endsWith('.pdf')
+  const hasAnyFile = photoUrls.length > 0 || (pendingFiles && pendingFiles.length > 0)
 
   return (
     <div>
@@ -337,31 +381,27 @@ export default function OuvrageCroquisField({ projectId, ouvrageId, croquis, onC
 
       {/* Upload zone */}
       <div
-        onClick={() => !uploading && canUpload && inputRef.current?.click()}
-        onDragOver={e => { if (canUpload) { e.preventDefault(); setDragOver(true) } }}
+        onClick={() => !uploading && canInteract && inputRef.current?.click()}
+        onDragOver={e => { if (canInteract) { e.preventDefault(); setDragOver(true) } }}
         onDragLeave={() => setDragOver(false)}
         onDrop={e => {
-          if (!canUpload) return
+          if (!canInteract) return
           e.preventDefault()
           setDragOver(false)
           handleUpload(Array.from(e.dataTransfer.files))
         }}
         style={{
           padding: '24px 20px', textAlign: 'center',
-          cursor: !canUpload ? 'not-allowed' : (uploading ? 'default' : 'pointer'),
+          cursor: !canInteract ? 'not-allowed' : (uploading ? 'default' : 'pointer'),
           border: `2px dashed ${dragOver ? ACCENT : GRAY_300}`,
           background: dragOver ? ACCENT_LIGHT : GRAY_50,
           borderRadius: 12, transition: 'all 0.15s',
-          marginBottom: photoUrls.length > 0 ? 16 : 0,
-          opacity: uploading || !canUpload ? 0.6 : 1,
+          marginBottom: hasAnyFile ? 16 : 0,
+          opacity: uploading || !canInteract ? 0.6 : 1,
         }}
       >
         {uploading ? (
           <div style={{ fontSize: 14, color: GRAY_500 }}>Envoi en cours...</div>
-        ) : !canUpload ? (
-          <div style={{ fontSize: 13, color: GRAY_500 }}>
-            Enregistrez d'abord l'ouvrage pour pouvoir y joindre un croquis.
-          </div>
         ) : (
           <>
             <div style={{ fontSize: 14, fontWeight: 600, color: GRAY_900, marginBottom: 4 }}>
@@ -377,27 +417,32 @@ export default function OuvrageCroquisField({ projectId, ouvrageId, croquis, onC
           accept={UPLOAD_ACCEPT_ATTR}
           style={{ display: 'none' }}
           onChange={e => handleUpload(Array.from(e.target.files))}
-          disabled={uploading || !canUpload}
+          disabled={uploading || !canInteract}
         />
       </div>
-      <div style={{ fontSize: 11, color: GRAY_500, marginTop: 6, marginBottom: photoUrls.length > 0 ? 12 : 0 }}>
+      <div style={{ fontSize: 11, color: GRAY_500, marginTop: 6, marginBottom: hasAnyFile ? 12 : 0 }}>
         {UPLOAD_HELP_TEXT}
       </div>
+      {isPendingMode && pendingFiles && pendingFiles.length > 0 && (
+        <div style={{ fontSize: 12, color: GRAY_500, marginTop: 6, fontStyle: 'italic' }}>
+          Ces croquis seront joints à l'ouvrage lors de l'enregistrement.
+        </div>
+      )}
       {uploadError && (
         <div style={{ fontSize: 12, color: '#b00020', marginTop: 6, marginBottom: 12 }}>
           {uploadError}
         </div>
       )}
 
-      {/* Files list */}
+      {/* Files list : uploadés (ouvrage existant) */}
       {photoUrls.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
+        <div style={{ marginBottom: pendingFiles && pendingFiles.length > 0 ? 8 : 20 }}>
           {photoUrls.map((url) => {
             const name = deriveNameFromUrl(url)
             return (
-              <div key={url} style={{
+              <div key={url} className="croquis-file-row" style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '10px 0', borderBottom: `1px solid ${GRAY_200}`,
+                padding: '10px 0', borderBottom: `1px solid ${GRAY_200}`, gap: 8,
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
                   {isPdf(name) ? (
@@ -432,8 +477,44 @@ export default function OuvrageCroquisField({ projectId, ouvrageId, croquis, onC
         </div>
       )}
 
+      {/* Files list : en attente (nouvel ouvrage) */}
+      {pendingFiles && pendingFiles.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          {pendingFiles.map((file, idx) => (
+            <div key={`pending-${idx}-${file.name}`} className="croquis-file-row" style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '10px 0', borderBottom: `1px solid ${GRAY_200}`, gap: 8,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 6, background: ACCENT_LIGHT, border: `1px dashed ${ACCENT}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: ACCENT, fontWeight: 600, flexShrink: 0 }}>
+                  {isPdf(file.name) ? 'PDF' : 'IMG'}
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 13, color: GRAY_900, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.name}</div>
+                  <div style={{ fontSize: 11, color: GRAY_500 }}>
+                    {formatBytes(file.size)} · <span style={{ color: ACCENT, fontWeight: 500 }}>en attente</span>
+                  </div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); handleDeletePending(idx) }}
+                  style={{ background: 'none', border: 'none', color: '#bbb', cursor: 'pointer', fontSize: 12, padding: 4, fontFamily: 'inherit' }}
+                  title="Retirer de la liste"
+                  onMouseOver={e => e.currentTarget.style.color = '#c0392b'}
+                  onMouseOut={e => e.currentTarget.style.color = '#bbb'}
+                >
+                  Retirer
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Checklist de validation */}
-      {photoUrls.length > 0 && (
+      {hasAnyFile && (
         <div style={{ background: GRAY_50, border: `1px solid ${GRAY_200}`, borderRadius: 10, padding: 16 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: GRAY_900, marginBottom: 10 }}>Vérification rapide</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>

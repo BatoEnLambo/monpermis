@@ -36,16 +36,26 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
   const [draft, setDraft] = useState(emptyDraft())
   const [editingId, setEditingId] = useState(null)
   const [saving, setSaving] = useState(false)
+  const [savingStatus, setSavingStatus] = useState(null) // null | 'create' | 'upload-croquis' | 'patch'
+  const [saveWarning, setSaveWarning] = useState(null)
+  const [nameError, setNameError] = useState(null)
   const [expandedId, setExpandedId] = useState(null)
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState(null)
+  // Fichiers croquis sélectionnés avant que l'ouvrage n'existe (mode création).
+  // Une fois l'ouvrage créé en base, ils sont uploadés puis référencés dans data.croquis.photo_urls.
+  const [pendingCroquisFiles, setPendingCroquisFiles] = useState([])
   const fileInputRef = useRef(null)
+  const nameInputRef = useRef(null)
 
   const startAdd = () => {
     setMode('add')
     setStep('type')
     setDraft(emptyDraft())
     setEditingId(null)
+    setNameError(null)
+    setSaveWarning(null)
+    setPendingCroquisFiles([])
   }
 
   const startEdit = (o) => {
@@ -60,6 +70,9 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
       photo_urls: o.photo_urls || [],
       data: o.data || {},
     })
+    setNameError(null)
+    setSaveWarning(null)
+    setPendingCroquisFiles([])
   }
 
   const cancelEdit = () => {
@@ -67,6 +80,9 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
     setStep('type')
     setDraft(emptyDraft())
     setEditingId(null)
+    setNameError(null)
+    setSaveWarning(null)
+    setPendingCroquisFiles([])
   }
 
   const pickType = (typeId) => {
@@ -84,18 +100,69 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
     setStep('details')
   }
 
+  const getExt = (filename) => {
+    const parts = (filename || '').split('.')
+    return parts.length > 1 ? parts.pop().toLowerCase() : 'jpg'
+  }
+
+  // Upload les fichiers croquis en attente vers Supabase Storage et renvoie
+  // la liste des URLs publiques créées. Best-effort : un échec d'un fichier
+  // ne bloque pas les autres, les erreurs sont agrégées.
+  const uploadPendingCroquis = async (ouvrageId, files) => {
+    const urls = []
+    const errors = []
+    for (const file of files) {
+      const ext = getExt(file.name)
+      const timestamp = Date.now() + Math.floor(Math.random() * 1000)
+      const filePath = `${projectId}/ouvrages/${ouvrageId}/croquis-${timestamp}.${ext}`
+      const { error: upErr } = await supabase.storage.from('documents').upload(filePath, file)
+      if (upErr) {
+        console.error('pending croquis upload error:', upErr)
+        errors.push(`${file.name} : ${upErr.message}`)
+        continue
+      }
+      const { data: urlData } = supabase.storage.from('documents').getPublicUrl(filePath)
+      if (urlData?.publicUrl) urls.push(urlData.publicUrl)
+    }
+    return { urls, errors }
+  }
+
   const saveOuvrage = async () => {
-    if (!draft.name.trim() || !draft.type) return
+    setSaveWarning(null)
+
+    // ─── Validation côté client ────────────────────────────────────
+    const trimmedName = (draft.name || '').trim()
+    if (!trimmedName) {
+      setNameError("Le nom de l'ouvrage est obligatoire.")
+      // Scroller jusqu'au champ et focus pour mettre en évidence
+      if (nameInputRef.current) {
+        try {
+          nameInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        } catch {}
+        nameInputRef.current.focus()
+      }
+      return
+    }
+    if (!draft.type) {
+      setSaveWarning("Type d'ouvrage manquant. Revenez à l'étape précédente pour choisir un type.")
+      return
+    }
+    setNameError(null)
+
     setSaving(true)
+    setSavingStatus(editingId ? 'patch' : 'create')
+
     const body = {
-      name: draft.name.trim(),
+      name: trimmedName,
       type: draft.type,
       subtype: draft.subtype,
       description_libre: draft.description_libre || null,
       photo_urls: draft.photo_urls || [],
       data: draft.data || {},
     }
+
     try {
+      // ─── Étape 1 : POST (création) ou PATCH (édition) ─────────────
       const url = editingId
         ? `/api/projet/${reference}/ouvrages/${editingId}?token=${token}`
         : `/api/projet/${reference}/ouvrages?token=${token}`
@@ -108,14 +175,73 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
         const err = await res.json().catch(() => ({}))
         alert('Erreur : ' + (err.error || res.statusText))
         setSaving(false)
+        setSavingStatus(null)
         return
       }
+      const resBody = await res.json().catch(() => ({}))
+      const savedOuvrage = resBody?.ouvrage
+
+      // ─── Étape 2 : upload des croquis en attente (création uniquement) ─
+      if (!editingId && savedOuvrage?.id && pendingCroquisFiles.length > 0) {
+        setSavingStatus('upload-croquis')
+        const { urls: uploadedUrls, errors: uploadErrors } = await uploadPendingCroquis(
+          savedOuvrage.id,
+          pendingCroquisFiles
+        )
+
+        if (uploadedUrls.length > 0) {
+          // ─── Étape 3 : PATCH l'ouvrage avec data.croquis.photo_urls ──
+          setSavingStatus('patch')
+          const existingCroquis = (body.data && body.data.croquis) || {}
+          const existingUrls = Array.isArray(existingCroquis.photo_urls) ? existingCroquis.photo_urls : []
+          const patchBody = {
+            data: {
+              ...(body.data || {}),
+              croquis: {
+                ...existingCroquis,
+                photo_urls: [...existingUrls, ...uploadedUrls],
+              },
+            },
+          }
+          const patchRes = await fetch(
+            `/api/projet/${reference}/ouvrages/${savedOuvrage.id}?token=${token}`,
+            {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(patchBody),
+            }
+          )
+          if (!patchRes.ok) {
+            console.error('PATCH data.croquis failed', await patchRes.text().catch(() => ''))
+            setSaveWarning("L'ouvrage a été créé mais l'enregistrement des croquis a échoué. Ouvrez l'ouvrage et réessayez.")
+            await onChange()
+            setSaving(false)
+            setSavingStatus(null)
+            return
+          }
+        }
+
+        if (uploadErrors.length > 0) {
+          setSaveWarning(
+            "L'ouvrage a été créé mais l'upload d'un ou plusieurs croquis a échoué : " +
+              uploadErrors.join(' — ') +
+              ". Réessayez depuis l'édition de l'ouvrage."
+          )
+          await onChange()
+          setSaving(false)
+          setSavingStatus(null)
+          return
+        }
+      }
+
       await onChange()
       cancelEdit()
     } catch (err) {
+      console.error('saveOuvrage exception:', err)
       alert("Erreur lors de l'enregistrement : " + err.message)
     }
     setSaving(false)
+    setSavingStatus(null)
   }
 
   const deleteOuvrage = async (id) => {
@@ -404,23 +530,39 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
                 </div>
 
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 6 }}>
-                  Nom de l'ouvrage *
+                  Nom de l'ouvrage <span style={{ color: '#b00020' }}>*</span>{' '}
+                  <span style={{ fontSize: 11, color: GRAY_500, fontWeight: 400 }}>(obligatoire)</span>
                 </label>
                 <input
+                  ref={nameInputRef}
                   type="text"
                   value={draft.name}
-                  onChange={e => setDraft(d => ({ ...d, name: e.target.value }))}
+                  onChange={e => {
+                    setDraft(d => ({ ...d, name: e.target.value }))
+                    if (nameError && e.target.value.trim()) setNameError(null)
+                  }}
+                  onFocus={e => { e.target.style.borderColor = nameError ? '#b00020' : ACCENT }}
+                  onBlur={e => { e.target.style.borderColor = nameError ? '#b00020' : GRAY_300 }}
                   placeholder="Ex : Garage, Piscine arrière, Maison principale"
                   style={{
                     width: '100%',
                     padding: '10px 12px',
                     borderRadius: 8,
-                    border: `1px solid ${GRAY_300}`,
+                    border: `1px solid ${nameError ? '#b00020' : GRAY_300}`,
                     fontSize: 14,
-                    marginBottom: 16,
+                    marginBottom: nameError ? 6 : 16,
                     boxSizing: 'border-box',
+                    outline: 'none',
+                    transition: 'border 0.15s',
+                    background: WHITE,
+                    fontFamily: 'inherit',
                   }}
                 />
+                {nameError && (
+                  <div style={{ fontSize: 12, color: '#b00020', marginBottom: 16, fontWeight: 500 }}>
+                    {nameError}
+                  </div>
+                )}
 
                 {/* Blocs conditionnels selon type+sous-type (bâti, serre, raccord, ouvertures, commentaire…) */}
                 <OuvrageDetailsFields
@@ -428,6 +570,8 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
                   setDraft={setDraft}
                   projectId={projectId}
                   ouvrageId={editingId}
+                  pendingCroquisFiles={pendingCroquisFiles}
+                  onPendingCroquisFilesChange={setPendingCroquisFiles}
                 />
 
                 {isAutre && (
@@ -470,25 +614,52 @@ export default function OuvragesSection({ reference, token, projectId, ouvrages,
                   </div>
                 )}
 
-                <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                {saveWarning && (
+                  <div style={{ fontSize: 12, color: '#e65100', background: '#fff3e0', border: '1px solid #ffe0b2', borderRadius: 8, padding: '8px 12px', marginTop: 12, marginBottom: 4, lineHeight: 1.5 }}>
+                    {saveWarning}
+                  </div>
+                )}
+
+                <div className="ouvrage-form-actions" style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
                   {!editingId && (
                     <button
                       onClick={() => setStep(type?.subtypes ? 'subtype' : 'type')}
-                      style={{ padding: '10px 16px', borderRadius: 8, border: `1px solid ${GRAY_300}`, background: WHITE, color: GRAY_700, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+                      disabled={saving}
+                      style={{ padding: '10px 16px', borderRadius: 8, border: `1px solid ${GRAY_300}`, background: WHITE, color: GRAY_700, fontSize: 13, fontWeight: 500, cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.5 : 1 }}
                     >
                       ← Retour
                     </button>
                   )}
                   <button
                     onClick={saveOuvrage}
-                    disabled={!draft.name.trim() || saving}
-                    style={{ flex: 1, padding: '12px 16px', borderRadius: 8, border: 'none', background: draft.name.trim() && !saving ? ACCENT : GRAY_300, color: WHITE, fontSize: 14, fontWeight: 600, cursor: draft.name.trim() && !saving ? 'pointer' : 'default' }}
+                    disabled={saving}
+                    style={{
+                      flex: 1,
+                      minWidth: 200,
+                      padding: '12px 16px',
+                      borderRadius: 8,
+                      border: 'none',
+                      background: saving ? GRAY_500 : ACCENT,
+                      color: WHITE,
+                      fontSize: 14,
+                      fontWeight: 600,
+                      cursor: saving ? 'default' : 'pointer',
+                    }}
                   >
-                    {saving ? 'Enregistrement...' : editingId ? 'Enregistrer les modifications' : "Enregistrer l'ouvrage"}
+                    {saving
+                      ? (savingStatus === 'upload-croquis'
+                          ? 'Envoi des croquis...'
+                          : savingStatus === 'patch' && !editingId
+                            ? 'Finalisation...'
+                            : 'Enregistrement...')
+                      : editingId
+                        ? 'Enregistrer les modifications'
+                        : "Enregistrer l'ouvrage"}
                   </button>
                   <button
                     onClick={cancelEdit}
-                    style={{ padding: '10px 16px', borderRadius: 8, border: `1px solid ${GRAY_300}`, background: WHITE, color: GRAY_700, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+                    disabled={saving}
+                    style={{ padding: '10px 16px', borderRadius: 8, border: `1px solid ${GRAY_300}`, background: WHITE, color: GRAY_700, fontSize: 13, fontWeight: 500, cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.5 : 1 }}
                   >
                     Annuler
                   </button>

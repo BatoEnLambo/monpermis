@@ -192,7 +192,14 @@ function getPath(obj, path) {
 }
 
 // ── Composant principal ─────────────────────────────────────────────
-export default function OuvrageDetailsFields({ draft, setDraft, projectId, ouvrageId }) {
+export default function OuvrageDetailsFields({
+  draft,
+  setDraft,
+  projectId,
+  ouvrageId,
+  pendingCroquisFiles,
+  onPendingCroquisFilesChange,
+}) {
   const fileInputRef = useRef(null)
 
   const data = draft.data || {}
@@ -2611,6 +2618,8 @@ export default function OuvrageDetailsFields({ draft, setDraft, projectId, ouvra
         ouvrageId={ouvrageId}
         croquis={readData('croquis')}
         onChange={(next) => updateData('croquis', next)}
+        pendingFiles={pendingCroquisFiles}
+        onPendingFilesChange={onPendingCroquisFilesChange}
       />
     </div>
   )
