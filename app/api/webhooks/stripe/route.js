@@ -11,6 +11,9 @@ export const config = {
   api: { bodyParser: false },
 }
 
+// Postgres unique_violation
+const PG_UNIQUE_VIOLATION = '23505'
+
 export async function POST(request) {
   let event
 
@@ -41,11 +44,14 @@ export async function POST(request) {
     const quoteId = session.metadata?.quote_id
     if (quoteId) {
       try {
-        await handleQuotePayment(session, quoteId)
+        const result = await handleQuotePayment(session, quoteId)
+        if (result?.alreadyProcessed) {
+          return NextResponse.json({ received: true, already_processed: true })
+        }
       } catch (err) {
         console.error('Quote webhook handler error:', err)
-        // Return 200 anyway to prevent Stripe retries on logic errors
-        // The error is logged for manual investigation
+        // Return 200 anyway to prevent Stripe retries on logic errors.
+        // L'erreur est loggée pour investigation manuelle.
       }
     }
 
@@ -53,7 +59,10 @@ export async function POST(request) {
     const projectId = session.metadata?.project_id
     if (projectId) {
       try {
-        await handleSelfServicePayment(session, projectId)
+        const result = await handleSelfServicePayment(session, projectId)
+        if (result?.alreadyProcessed) {
+          return NextResponse.json({ received: true, already_processed: true })
+        }
       } catch (err) {
         console.error('Self-service webhook handler error:', err)
       }
@@ -65,31 +74,52 @@ export async function POST(request) {
 }
 
 async function handleQuotePayment(session, quoteId) {
-  // Fetch quote
-  const { data: quote, error: qErr } = await supabase
-    .from('quotes')
-    .select('*')
-    .eq('id', quoteId)
-    .single()
+  // ─── Étape 1 : CLAIM atomique ───
+  // UPDATE ... WHERE id=? AND status != 'paid' : si le retry arrive, 0 row affectée.
+  // La contrainte UNIQUE sur stripe_session_id est un second garde-fou côté DB.
+  const nowIso = new Date().toISOString()
 
-  if (qErr || !quote) {
-    console.error('Webhook: quote not found', quoteId, qErr)
+  let claimed
+  try {
+    const { data, error } = await supabase
+      .from('quotes')
+      .update({
+        status: 'paid',
+        paid_at: nowIso,
+        stripe_session_id: session.id,
+      })
+      .eq('id', quoteId)
+      .neq('status', 'paid')
+      .select()
+      .maybeSingle()
+
+    if (error) {
+      // Violation unique → un autre handler a déjà claim avec cette session → retry Stripe
+      if (error.code === PG_UNIQUE_VIOLATION) {
+        console.log('Webhook: quote already processed (unique violation)', quoteId)
+        return { alreadyProcessed: true }
+      }
+      console.error('Webhook: quote claim error', quoteId, error)
+      return
+    }
+
+    claimed = data
+  } catch (err) {
+    console.error('Webhook: quote claim exception', quoteId, err)
     return
   }
 
-  // Idempotence: skip if already paid
-  if (quote.status === 'paid') {
+  // 0 row affectée → status était déjà 'paid' → retry Stripe, déjà traité
+  if (!claimed) {
     console.log('Webhook: quote already paid, skipping', quoteId)
-    return
+    return { alreadyProcessed: true }
   }
 
-  // Use Stripe email if missing from quote
-  const clientEmail = quote.client_email || session.customer_details?.email || null
-
-  // Create project
+  // ─── Étape 2 : création du projet ───
+  const clientEmail = claimed.client_email || session.customer_details?.email || null
   const reference = 'PC-' + Date.now().toString(36).toUpperCase()
   const token = generateAccessToken()
-  const nameParts = (quote.client_name || '').split(' ')
+  const nameParts = (claimed.client_name || '').split(' ')
   const firstName = nameParts[0] || ''
   const lastName = nameParts.slice(1).join(' ') || ''
 
@@ -102,37 +132,38 @@ async function handleQuotePayment(session, quoteId) {
       first_name: firstName,
       last_name: lastName,
       email: clientEmail,
-      price: quote.amount,
+      price: claimed.amount,
       status: 'paid',
-      paid_at: new Date().toISOString(),
+      paid_at: nowIso,
+      stripe_session_id: session.id,
     })
     .select()
     .single()
 
-  if (pErr || !project) {
+  if (pErr) {
+    // Second garde-fou : si un projet avec ce session.id existe déjà, c'est un retry
+    if (pErr.code === PG_UNIQUE_VIOLATION) {
+      console.log('Webhook: project already created for this session', quoteId, session.id)
+      return { alreadyProcessed: true }
+    }
     console.error('Webhook: project creation failed', pErr)
     return
   }
 
-  // Update quote: paid + link to project + fill email if was missing
-  const quoteUpdate = {
-    status: 'paid',
-    paid_at: new Date().toISOString(),
-    stripe_session_id: session.id,
-    project_id: project.id,
+  // ─── Étape 3 : lier le projet au devis + renseigner email si manquait ───
+  const quotePatch = { project_id: project.id }
+  if (!claimed.client_email && clientEmail) {
+    quotePatch.client_email = clientEmail
   }
-  if (!quote.client_email && clientEmail) {
-    quoteUpdate.client_email = clientEmail
-  }
+  await supabase.from('quotes').update(quotePatch).eq('id', quoteId)
 
-  await supabase
-    .from('quotes')
-    .update(quoteUpdate)
-    .eq('id', quoteId)
+  console.log('Webhook: quote paid, project created', {
+    quoteId,
+    projectId: project.id,
+    reference,
+  })
 
-  console.log('Webhook: quote paid, project created', { quoteId, projectId: project.id, reference })
-
-  // Send welcome email (fire-and-forget, don't block webhook response)
+  // ─── Étape 4 : welcome email (fire-and-forget) ───
   try {
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.permisclair.fr'
     await fetch(`${baseUrl}/api/send-welcome-email`, {
@@ -143,8 +174,8 @@ async function handleQuotePayment(session, quoteId) {
         firstName,
         reference,
         token,
-        projectType: quote.project_title,
-        price: quote.amount,
+        projectType: claimed.project_title,
+        price: claimed.amount,
         options: [],
       }),
     })
@@ -154,46 +185,63 @@ async function handleQuotePayment(session, quoteId) {
 }
 
 async function handleSelfServicePayment(session, projectId) {
-  // Fetch project
-  const { data: project, error: pErr } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('id', projectId)
-    .single()
+  // ─── CLAIM atomique ───
+  // UPDATE ... WHERE id=? AND status != 'paid' : 0 row affectée si retry.
+  const nowIso = new Date().toISOString()
 
-  if (pErr || !project) {
-    console.error('Webhook: project not found', projectId, pErr)
+  let claimed
+  try {
+    const { data, error } = await supabase
+      .from('projects')
+      .update({
+        status: 'paid',
+        paid_at: nowIso,
+        stripe_session_id: session.id,
+      })
+      .eq('id', projectId)
+      .neq('status', 'paid')
+      .select()
+      .maybeSingle()
+
+    if (error) {
+      if (error.code === PG_UNIQUE_VIOLATION) {
+        console.log('Webhook: self-service already processed (unique violation)', projectId)
+        return { alreadyProcessed: true }
+      }
+      console.error('Webhook: self-service claim error', projectId, error)
+      return
+    }
+
+    claimed = data
+  } catch (err) {
+    console.error('Webhook: self-service claim exception', projectId, err)
     return
   }
 
-  // Idempotence: skip if already paid
-  if (project.status === 'paid' || project.paid_at) {
+  if (!claimed) {
     console.log('Webhook: project already paid, skipping', projectId)
-    return
+    return { alreadyProcessed: true }
   }
 
-  // Update project status
-  await supabase
-    .from('projects')
-    .update({ status: 'paid', paid_at: new Date().toISOString() })
-    .eq('id', projectId)
+  console.log('Webhook: self-service project paid', {
+    projectId,
+    reference: claimed.reference,
+  })
 
-  console.log('Webhook: self-service project paid', { projectId, reference: project.reference })
-
-  // Send welcome email
+  // ─── Welcome email ───
   try {
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.permisclair.fr'
     await fetch(`${baseUrl}/api/send-welcome-email`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email: project.email,
-        firstName: project.first_name,
-        reference: project.reference,
-        token: project.token,
-        projectType: project.project_type,
-        price: project.price,
-        options: project.options || [],
+        email: claimed.email,
+        firstName: claimed.first_name,
+        reference: claimed.reference,
+        token: claimed.token,
+        projectType: claimed.project_type,
+        price: claimed.price,
+        options: claimed.options || [],
       }),
     })
   } catch (emailErr) {

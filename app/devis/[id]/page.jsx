@@ -41,6 +41,7 @@ export default function DevisPublicPage() {
   const formRef = useRef(null)
 
   const emailValid = EMAIL_RE.test(email)
+  const emailLocked = !!quote?.client_email
 
   useEffect(() => {
     const fetchQuote = async () => {
@@ -148,16 +149,22 @@ export default function DevisPublicPage() {
             <input
               type="email"
               value={email}
-              onChange={e => { setEmail(e.target.value); setError(null) }}
+              onChange={e => { if (!emailLocked) { setEmail(e.target.value); setError(null) } }}
               placeholder="jean@exemple.fr"
+              readOnly={emailLocked}
               style={{
                 width: '100%', padding: '10px 14px', borderRadius: 8, fontSize: 14, fontFamily: FONT,
                 border: `1px solid ${email && !emailValid ? '#e65100' : GRAY_300}`,
+                background: emailLocked ? GRAY_100 : WHITE,
+                color: emailLocked ? GRAY_700 : GRAY_900,
+                cursor: emailLocked ? 'default' : 'text',
                 boxSizing: 'border-box', transition: 'border-color 0.15s',
               }}
             />
             <div style={{ fontSize: 12, color: GRAY_500, marginTop: 4 }}>
-              Nous vous enverrons l'accès à votre espace client à cette adresse.
+              {emailLocked
+                ? 'Email renseigné — contactez-nous si besoin de le modifier.'
+                : "Nous vous enverrons l'accès à votre espace client à cette adresse."}
             </div>
             {error && <div style={{ fontSize: 13, color: '#e65100', marginTop: 6 }}>{error}</div>}
           </div>
