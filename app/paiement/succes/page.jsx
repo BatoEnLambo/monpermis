@@ -4,121 +4,104 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../../../lib/supabase'
-import { generateToken } from '../../../lib/token'
 import { Suspense } from 'react'
+
+const ACCENT = "#1a5c3a"
+const GRAY_500 = "#8a8985"
+const GRAY_900 = "#1c1c1a"
+const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 
 function SuccesContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [projectInfo, setProjectInfo] = useState(null)
+  const [polling, setPolling] = useState(false)
 
   useEffect(() => {
     const init = async () => {
       // ── Mode devis ──
+      // Le webhook Stripe gère la création du projet.
+      // On poll Supabase pour récupérer le project_id dès qu'il est créé.
       const quoteId = searchParams.get('quote_id')
       if (quoteId) {
-        // Fetch le devis
-        const { data: quote } = await supabase
-          .from('quotes')
-          .select('*')
-          .eq('id', quoteId)
-          .single()
+        setPolling(true)
+        let attempts = 0
+        const maxAttempts = 20 // 20 x 2s = 40s max
 
-        if (!quote || quote.status === 'paid') {
-          // Déjà traité ou invalide
-          return
-        }
-
-        // Créer le projet
-        const reference = 'PC-' + Date.now().toString(36).toUpperCase()
-        const token = generateToken()
-        const nameParts = (quote.client_name || '').split(' ')
-        const firstName = nameParts[0] || ''
-        const lastName = nameParts.slice(1).join(' ') || ''
-
-        const { data: project } = await supabase
-          .from('projects')
-          .insert({
-            reference,
-            token,
-            project_type: 'custom',
-            first_name: firstName,
-            last_name: lastName,
-            email: quote.client_email,
-            price: quote.amount,
-            status: 'paid',
-            paid_at: new Date().toISOString(),
-          })
-          .select()
-          .single()
-
-        if (project) {
-          // Lier le projet au devis et marquer payé
-          await supabase
+        const poll = async () => {
+          const { data: quote } = await supabase
             .from('quotes')
-            .update({ status: 'paid', paid_at: new Date().toISOString(), project_id: project.id })
+            .select('status, project_id')
             .eq('id', quoteId)
+            .single()
 
-          // Email de bienvenue
-          await fetch('/api/send-welcome-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: quote.client_email,
-              firstName,
-              reference,
-              token,
-              projectType: quote.project_title,
-              price: quote.amount,
-              options: [],
-            }),
-          })
+          if (quote?.status === 'paid' && quote?.project_id) {
+            // Récupérer les infos du projet créé par le webhook
+            const { data: project } = await supabase
+              .from('projects')
+              .select('reference, token')
+              .eq('id', quote.project_id)
+              .single()
 
-          setProjectInfo({ reference, token })
+            if (project) {
+              setProjectInfo({ reference: project.reference, token: project.token })
+              setPolling(false)
+              return
+            }
+          }
+
+          attempts++
+          if (attempts < maxAttempts) {
+            setTimeout(poll, 2000)
+          } else {
+            // Timeout — le webhook n'a peut-être pas encore tourné
+            setPolling(false)
+          }
         }
+
+        poll()
         return
       }
 
       // ── Mode self-service ──
+      // Le webhook Stripe gère le passage à 'paid' et l'envoi d'email.
+      // On poll pour vérifier que c'est fait, puis on affiche le lien.
       const projectId = searchParams.get('project_id')
-
       if (projectId) {
-        // Met à jour le statut en base
-        await supabase
-          .from('projects')
-          .update({ status: 'paid', paid_at: new Date().toISOString() })
-          .eq('id', projectId)
+        setPolling(true)
+        let attempts = 0
+        const maxAttempts = 20
 
-        // Récupère les données complètes du projet
-        const { data: projectData } = await supabase
-          .from('projects')
-          .select('*')
-          .eq('id', projectId)
-          .single()
+        const poll = async () => {
+          const { data: project } = await supabase
+            .from('projects')
+            .select('reference, token, status')
+            .eq('id', projectId)
+            .single()
 
-        if (projectData) {
-          // Envoie l'email de bienvenue
-          await fetch('/api/send-welcome-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: projectData.email,
-              firstName: projectData.first_name,
-              reference: projectData.reference,
-              token: projectData.token,
-              projectType: projectData.project_type,
-              price: projectData.price,
-              options: projectData.options || [],
-            }),
-          })
+          if (project?.status === 'paid') {
+            setProjectInfo({ reference: project.reference, token: project.token })
+            setPolling(false)
+            return
+          }
 
-          // Stocke les infos pour le bouton
-          setProjectInfo({ reference: projectData.reference, token: projectData.token })
-          return
+          attempts++
+          if (attempts < maxAttempts) {
+            setTimeout(poll, 2000)
+          } else {
+            // Fallback: afficher quand même si le projet existe
+            if (project) {
+              setProjectInfo({ reference: project.reference, token: project.token })
+            }
+            setPolling(false)
+          }
         }
+
+        poll()
+        return
       }
 
-      // Fallback: essaie localStorage
+      // Fallback: localStorage
       const localData = JSON.parse(localStorage.getItem('projectData'))
       if (localData?.reference && localData?.token) {
         setProjectInfo({ reference: localData.reference, token: localData.token })
@@ -129,13 +112,18 @@ function SuccesContent() {
   }, [searchParams])
 
   return (
-    <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+    <div style={{ textAlign: 'center', padding: '60px 20px', fontFamily: FONT }}>
       <div style={{ fontSize: 48, marginBottom: 16 }}>✓</div>
-      <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8, letterSpacing: '-0.02em' }}>Paiement confirmé !</h1>
-      <p style={{ fontSize: 15, color: '#666', marginBottom: 32, lineHeight: 1.6 }}>
+      <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8, letterSpacing: '-0.02em', color: GRAY_900 }}>Paiement confirmé !</h1>
+      <p style={{ fontSize: 15, color: GRAY_500, marginBottom: 32, lineHeight: 1.6 }}>
         Votre dossier est en cours de préparation.<br />
-        Vous recevrez un email de confirmation sous peu.
+        Vous recevrez un email de confirmation sous quelques instants.
       </p>
+      {polling && !projectInfo && (
+        <p style={{ fontSize: 13, color: GRAY_500, marginBottom: 16 }}>
+          Préparation de votre espace client...
+        </p>
+      )}
       <button
         onClick={() => projectInfo && router.push(`/projet/${projectInfo.reference}?token=${projectInfo.token}`)}
         disabled={!projectInfo}
@@ -143,12 +131,12 @@ function SuccesContent() {
           padding: '12px 32px',
           borderRadius: 10,
           border: 'none',
-          background: projectInfo ? '#1a5c3a' : '#d1d5db',
+          background: projectInfo ? ACCENT : '#d1d5db',
           color: projectInfo ? '#fff' : '#9ca3af',
           fontSize: 15,
           fontWeight: 600,
           cursor: projectInfo ? 'pointer' : 'default',
-          fontFamily: "'DM Sans', system-ui, sans-serif",
+          fontFamily: FONT,
         }}
       >
         {projectInfo ? 'Accéder à mon espace client →' : 'Chargement...'}

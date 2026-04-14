@@ -14,10 +14,10 @@ const GRAY_900 = "#1c1c1a"
 const WHITE = "#ffffff"
 const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 
-const STATUS_BADGE = {
-  draft: { bg: '#f5f4f2', color: '#888', label: 'Brouillon' },
-  sent: { bg: '#fff3e0', color: '#e65100', label: 'Envoyé' },
-  paid: { bg: ACCENT_LIGHT, color: ACCENT, label: 'Payé' },
+const STATUS_CONFIG = {
+  draft: { bg: '#f5f4f2', color: '#888', label: 'Brouillon', border: '#ddd' },
+  sent: { bg: '#fff3e0', color: '#e65100', label: 'Envoyé', border: '#e6510044' },
+  paid: { bg: ACCENT, color: WHITE, label: 'Payé', border: ACCENT },
 }
 
 export default function DevisDetailPage() {
@@ -60,24 +60,62 @@ export default function DevisDetailPage() {
   if (loading) return <p style={{ textAlign: 'center', padding: 60, color: GRAY_500, fontFamily: FONT }}>Chargement...</p>
   if (!quote) return <p style={{ textAlign: 'center', padding: 60, color: GRAY_500, fontFamily: FONT }}>Devis introuvable.</p>
 
-  const badge = STATUS_BADGE[quote.status] || STATUS_BADGE.draft
+  const status = STATUS_CONFIG[quote.status] || STATUS_CONFIG.draft
   const publicUrl = `https://permisclair.fr/devis/${quote.id}`
 
   return (
     <div style={{ maxWidth: 520, margin: '40px auto', fontFamily: FONT, padding: '0 16px' }}>
       <AdminNav />
 
+      {/* Bandeau statut */}
+      <div style={{
+        background: status.bg,
+        color: status.color,
+        border: `1px solid ${status.border}`,
+        borderRadius: 10,
+        padding: '12px 20px',
+        marginBottom: 16,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        fontSize: 14,
+        fontWeight: 600,
+      }}>
+        <span>{status.label}</span>
+        {quote.status === 'paid' && quote.paid_at && (
+          <span style={{ fontWeight: 400, fontSize: 13 }}>
+            Payé le {new Date(quote.paid_at).toLocaleDateString('fr-FR')}
+          </span>
+        )}
+      </div>
+
       <div style={{ border: `1px solid ${GRAY_200}`, borderRadius: 14, background: WHITE, overflow: 'hidden' }}>
         <div style={{ padding: '24px 28px', borderBottom: `1px solid ${GRAY_200}` }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <h1 style={{ fontSize: 20, fontWeight: 700, color: GRAY_900, margin: 0 }}>{quote.project_title}</h1>
-            <span style={{ fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 6, background: badge.bg, color: badge.color }}>{badge.label}</span>
-          </div>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: GRAY_900, margin: '0 0 12px' }}>{quote.project_title}</h1>
           <div style={{ fontSize: 14, color: GRAY_700 }}>{quote.client_name}</div>
           <div style={{ fontSize: 13, color: GRAY_500 }}>{quote.client_email || '—'}</div>
           <div style={{ fontSize: 13, color: GRAY_500, marginTop: 4 }}>Créé le {new Date(quote.created_at).toLocaleDateString('fr-FR')}</div>
           <div style={{ fontSize: 28, fontWeight: 700, color: GRAY_900, marginTop: 16 }}>{quote.amount} € <span style={{ fontSize: 14, fontWeight: 400, color: GRAY_500 }}>TTC</span></div>
         </div>
+
+        {/* Infos Stripe / projet (si payé) */}
+        {quote.status === 'paid' && (
+          <div style={{ padding: '16px 28px', borderBottom: `1px solid ${GRAY_200}`, background: '#fafaf9' }}>
+            {quote.stripe_session_id && (
+              <div style={{ fontSize: 12, color: GRAY_500, marginBottom: 4 }}>
+                Session Stripe : <span style={{ fontFamily: 'monospace', color: GRAY_700 }}>{quote.stripe_session_id}</span>
+              </div>
+            )}
+            {quote.project_id && (
+              <div style={{ fontSize: 13, marginTop: 8 }}>
+                <button onClick={() => router.push('/admin')}
+                  style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${ACCENT}`, background: ACCENT_LIGHT, color: ACCENT, fontWeight: 600, fontSize: 13, cursor: 'pointer', fontFamily: FONT }}>
+                  Voir le projet lié →
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         <div style={{ padding: '20px 28px', borderBottom: `1px solid ${GRAY_200}` }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: GRAY_700, marginBottom: 8 }}>Lien public</div>
@@ -100,16 +138,8 @@ export default function DevisDetailPage() {
           {quote.status === 'sent' && (
             <div style={{ fontSize: 14, color: GRAY_500, textAlign: 'center' }}>En attente de paiement du client.</div>
           )}
-          {quote.status === 'paid' && (
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 14, color: ACCENT, fontWeight: 600, marginBottom: 8 }}>Payé le {new Date(quote.paid_at).toLocaleDateString('fr-FR')}</div>
-              {quote.project_id && (
-                <button onClick={() => router.push(`/admin`)}
-                  style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${GRAY_200}`, background: WHITE, color: GRAY_700, fontWeight: 600, fontSize: 13, cursor: 'pointer', fontFamily: FONT }}>
-                  Voir le projet dans l'admin →
-                </button>
-              )}
-            </div>
+          {quote.status === 'paid' && !quote.project_id && (
+            <div style={{ fontSize: 13, color: GRAY_500, textAlign: 'center' }}>Payé — projet en cours de création par le webhook.</div>
           )}
         </div>
       </div>
