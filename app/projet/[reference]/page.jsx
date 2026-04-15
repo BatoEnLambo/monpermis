@@ -301,12 +301,54 @@ function ProjetContent() {
       {/* 1. Titre + référence */}
       <div className="dash-header" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 28 }}>
         <div>
-          <h1 className="dash-title" style={{ fontSize: 24, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>
-            {project.project_type}
-          </h1>
-          <p className="dash-address" style={{ fontSize: 14, color: GRAY_500, margin: 0 }}>
-            {project.address}, {project.postal_code} {project.city} · {project.surface} m²
-          </p>
+          {(() => {
+            // Priorité : title (devis custom) > project_type (self-service)
+            // > "Votre projet" (cas extrême : ni l'un ni l'autre, ou
+            // project_type brut = 'custom' sans title rempli).
+            const rawTitle =
+              (project.title && project.title.trim()) ||
+              (project.project_type && project.project_type !== 'custom'
+                ? project.project_type
+                : null) ||
+              'Votre projet'
+
+            // Sous-titre : composer uniquement avec ce qui existe.
+            // - address seule → "899 Rue Maréchal Leclerc"
+            // - postal+city seuls → "59310 Landas"
+            // - les trois → "899 Rue Maréchal Leclerc, 59310 Landas"
+            // - surface > 0 → rajoutée en fin avec " · "
+            // - si tout est null → pas de sous-titre du tout
+            const addressPart = project.address?.trim() || ''
+            const cityPart = [project.postal_code, project.city]
+              .filter(Boolean)
+              .map((s) => String(s).trim())
+              .filter(Boolean)
+              .join(' ')
+
+            const addrLine = [addressPart, cityPart]
+              .filter(Boolean)
+              .join(', ')
+
+            const subtitleParts = []
+            if (addrLine) subtitleParts.push(addrLine)
+            if (project.surface && Number(project.surface) > 0) {
+              subtitleParts.push(`${project.surface} m²`)
+            }
+            const subtitle = subtitleParts.join(' · ')
+
+            return (
+              <>
+                <h1 className="dash-title" style={{ fontSize: 24, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-0.02em" }}>
+                  {rawTitle}
+                </h1>
+                {subtitle && (
+                  <p className="dash-address" style={{ fontSize: 14, color: GRAY_500, margin: 0 }}>
+                    {subtitle}
+                  </p>
+                )}
+              </>
+            )
+          })()}
         </div>
         <div className="dash-id" style={{ background: ACCENT_LIGHT, color: ACCENT, fontSize: 12, fontWeight: 600, padding: "4px 12px", borderRadius: 6 }}>
           {project.reference}

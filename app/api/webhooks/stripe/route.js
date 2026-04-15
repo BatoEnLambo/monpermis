@@ -129,6 +129,10 @@ async function handleQuotePayment(session, quoteId) {
       reference,
       token,
       project_type: 'custom',
+      // Titre affichable sur l'espace client : on fige le libellé du devis
+      // au moment du paiement. Le header de /projet/[reference] utilise
+      // ce champ en priorité, avec un fallback sur project_type.
+      title: claimed.project_title,
       first_name: firstName,
       last_name: lastName,
       email: clientEmail,

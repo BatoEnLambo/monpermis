@@ -426,7 +426,10 @@ export default function AdminPage() {
               {selected === p.id && (
                 <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #f0f0f0', fontSize: 14 }} onClick={e => e.stopPropagation()}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 24px' }}>
-                    <div><strong>Type :</strong> {p.project_type || 'Devis custom'}</div>
+                    {p.title && (
+                      <div style={{ gridColumn: '1 / -1' }}><strong>Titre :</strong> {p.title}</div>
+                    )}
+                    <div><strong>Type :</strong> {p.project_type === 'custom' ? 'Devis custom' : (p.project_type || '-')}</div>
                     <div><strong>Adresse :</strong> {p.address ? `${p.address}, ${p.postal_code || ''} ${p.city || ''}`.trim() : 'À compléter'}</div>
                     <div><strong>Surface :</strong> {p.surface ? `${p.surface} m²` : '-'}</div>
                     <div><strong>Niveaux :</strong> {p.floors || '-'}</div>

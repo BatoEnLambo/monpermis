@@ -247,7 +247,15 @@ export async function GET(request) {
       const percentage = computeProgress(details, ouvrages || [])
       const clientUrl = `${BASE_URL}/projet/${p.reference}?token=${p.token}`
       const prenom = details?.client_prenom || p.first_name || ''
-      const typeProjet = (p.project_type || 'projet').toLowerCase()
+      // On évite d'injecter "custom" dans le mail client — c'est une valeur
+      // technique interne qui apparaîtrait sous la forme "Votre dossier custom
+      // est en attente…". Pour les projects issus de devis, le type est
+      // remplacé par un libellé neutre ("projet"). Les self-service gardent
+      // leur type réel (maison neuve, piscine, extension…).
+      const typeProjet =
+        p.project_type && p.project_type !== 'custom'
+          ? p.project_type.toLowerCase()
+          : 'projet'
 
       // Un seul email par exécution par projet
       let sentThisRun = false
