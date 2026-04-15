@@ -103,9 +103,10 @@ export default function AdminPage() {
         console.error('Error loading messages:', err)
       }
     }
-    // Fetch project_details for Maison neuve + devis custom
+    // Fetch project_details dès que le project est payé, quel que soit project_type
+    // (le système d'ouvrages est universel).
     const proj = projects.find(pr => pr.id === projectId)
-    if (proj?.project_type?.startsWith('Maison neuve') || proj?.project_type === 'custom' || !proj?.project_type) {
+    if (proj && proj.status !== 'pending') {
       fetchProjectDetails(projectId)
     }
     // Fetch ouvrages (tous les projets sont susceptibles d'en avoir)
@@ -406,7 +407,7 @@ export default function AdminPage() {
                     <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 6, background: '#e8f5ee', color: '#1a5c3a' }}>RE2020</span>
                   )}
                   <span style={{ fontSize: 12 }}>{STATUS_LABELS[p.status] || p.status}</span>
-                  {(p.project_type?.startsWith('Maison neuve') || p.project_type === 'custom' || !p.project_type) && projectDetails[p.id] && (() => {
+                  {p.status !== 'pending' && projectDetails[p.id] && (() => {
                     const pct = computeDetailsProgress(projectDetails[p.id], projectPhotos[p.id] || [], projectCroquis[p.id] || [])
                     const cfg = pct === 100 ? { bg: '#e8f5ee', color: '#1a5c3a', text: 'Complet' }
                       : pct >= 70 ? { bg: '#fff3e0', color: '#e65100', text: 'Quasi complet' }
@@ -866,8 +867,8 @@ export default function AdminPage() {
                     )
                   })()}
 
-                  {/* Fiche technique client (Maison neuve + devis custom) */}
-                  {(p.project_type?.startsWith('Maison neuve') || p.project_type === 'custom' || !p.project_type) && projectDetails[p.id] && (() => {
+                  {/* Fiche technique client (tous types, dès que le project est payé) */}
+                  {p.status !== 'pending' && projectDetails[p.id] && (() => {
                     const d = projectDetails[p.id]
                     const photos = projectPhotos[p.id] || []
                     const croquis = projectCroquis[p.id] || []

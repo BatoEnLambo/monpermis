@@ -167,8 +167,10 @@ function ProjetContent() {
     return () => clearInterval(interval)
   }, [project])
 
-  // Charge les project_details pour Maison neuve et devis custom
-  const showFicheTechnique = project?.project_type?.startsWith('Maison neuve') || project?.project_type === 'custom' || !project?.project_type
+  // Charge les project_details dès que le project est payé, quel que soit project_type.
+  // Le système d'ouvrages (prompts 1/2) est universel et couvre 99% des cas DP/PC,
+  // donc tous les projets self-service comme custom ont droit à la fiche technique.
+  const showFicheTechnique = !!project && project.status !== 'pending'
   useEffect(() => {
     if (!project?.id || !showFicheTechnique) return
     const loadDetails = async () => {
