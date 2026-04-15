@@ -216,19 +216,18 @@ Protection : [app/admin/layout.jsx](app/admin/layout.jsx) wrap avec `AdminAuthPr
 - Lookup : `SELECT * FROM projects WHERE reference = :ref AND token = :token`
 - Si trouvé : pose le cookie `pc_{reference}` pour les visites suivantes
 
-**⚠️ Affichage conditionnel de la fiche technique** ([page.jsx:171](app/projet/[reference]/page.jsx:171))
+**Affichage conditionnel de la fiche technique** ([page.jsx:171](app/projet/[reference]/page.jsx:171))
 
-Les Sections 1/2/3 ci-dessous **ne sont PAS affichées pour tous les projets**. Le flag est :
+Le formulaire de fiche technique (système d'ouvrages universel) est affiché pour **tout project payé, indépendamment du `project_type`**. Le flag est :
 ```js
-showFicheTechnique = project.project_type?.startsWith('Maison neuve')
-                  || project.project_type === 'custom'
-                  || !project.project_type
+showFicheTechnique = !!project && project.status !== 'pending'
 ```
-Donc :
-- **Affichée** : « Maison neuve », projets devis (`project_type='custom'` posé par `handleQuotePayment`), et projets sans type
-- **Masquée** : « Piscine », « Garage / Carport », « Terrasse / Pergola », « Extension / Agrandissement », « Surélévation », « Autre »
+- **Affichée** : dès que le project sort de l'état `pending` (statuts `paid`, `in_progress`, `review`, `delivered`, `deposited`, `accepted`), quel que soit `project_type` — y compris « Piscine », « Garage / Carport », « Terrasse / Pergola », « Extension / Agrandissement », « Surélévation », « Autre », « Maison neuve », `custom`, ou null.
+- **Masquée** : uniquement pour les projects non payés (`status = 'pending'`), qui n'ont pas encore d'espace client actif.
 
-Pour les projets sans fiche technique, l'espace client n'expose que la timeline, le chat et le téléchargement des documents livrés. Un projet « Extension » payé n'a donc aucun moyen pour le client de fournir des informations via l'interface — c'est une omission probable du parcours self-service.
+Cette logique s'applique **côté espace client** ([app/projet/[reference]/page.jsx:171](app/projet/[reference]/page.jsx:171)) et **côté admin** à 3 endroits ([app/admin/page.jsx:108](app/admin/page.jsx:108) pour le fetch des `project_details`, [L409](app/admin/page.jsx:409) pour le badge de progression dans la liste, [L870](app/admin/page.jsx:870) pour le rendu de la fiche technique détaillée).
+
+**Pourquoi universel ?** Le système d'ouvrages introduit aux prompts 1 et 2 couvre 99% des cas DP/PC français (8 types, 30+ sous-types), donc le formulaire est adapté à tout project payé. Historiquement le gate filtrait sur `project_type` (uniquement `Maison neuve*`, `custom`, ou null), ce qui laissait les projects self-service des autres types sans aucun moyen de remplir leurs infos — corrigé le 15 avril 2026 (commit `1778d56`).
 
 **Section 1 — Coordonnées CERFA** ([components/CoordonneesCerfaForm.jsx](components/CoordonneesCerfaForm.jsx))
 - 8 champs (civilité, nom, prénom, date/commune/département naissance, téléphone, email)
