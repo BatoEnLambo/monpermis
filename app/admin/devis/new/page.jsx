@@ -16,7 +16,7 @@ const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 export default function NewDevisPage() {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
-  const [form, setForm] = useState({ client_name: '', client_email: '', project_title: '', amount: '' })
+  const [form, setForm] = useState({ client_name: '', client_email: '', project_title: '', details: '', amount: '' })
 
   const handleChange = (field) => (e) => setForm(prev => ({ ...prev, [field]: e.target.value }))
 
@@ -27,12 +27,14 @@ export default function NewDevisPage() {
       return
     }
     setSaving(true)
+    const trimmedDetails = (form.details || '').trim()
     const { data, error } = await supabase
       .from('quotes')
       .insert({
         client_name: form.client_name.trim(),
         client_email: form.client_email.trim() || null,
         project_title: form.project_title.trim(),
+        details: trimmedDetails || null,
         amount: parseInt(form.amount, 10),
       })
       .select()
@@ -67,6 +69,28 @@ export default function NewDevisPage() {
         <div>
           <label style={{ fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 4, display: 'block' }}>Titre du projet</label>
           <input type="text" value={form.project_title} onChange={handleChange('project_title')} placeholder="Permis de construire — Garage et écurie" style={inputStyle} />
+        </div>
+        <div>
+          <label style={{ fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 4, display: 'block' }}>Détail de la prestation</label>
+          <div style={{ fontSize: 12, color: GRAY_500, marginBottom: 6 }}>
+            Décrivez ce qui est inclus dans cette prestation. Ce texte sera affiché au client sur sa page de devis.
+          </div>
+          <textarea
+            value={form.details}
+            onChange={handleChange('details')}
+            placeholder="Ex : Permis de construire pour garage 100m² et écurie 50m² sur même parcelle. Inclus : analyse PLU, plans 2D et 3D pour chaque bâtiment, CERFA 13406, notice descriptive, dossier complet prêt à déposer en mairie. Modifications gratuites jusqu'à acceptation."
+            rows={6}
+            style={{ ...inputStyle, resize: 'vertical', minHeight: 140, lineHeight: 1.5 }}
+          />
+          <div style={{
+            fontSize: 11,
+            color: form.details.length > 500 ? '#e65100' : GRAY_500,
+            marginTop: 4,
+            textAlign: 'right',
+          }}>
+            {form.details.length} caractère{form.details.length > 1 ? 's' : ''}
+            {form.details.length > 500 && ' — ~500 max conseillé pour rester lisible'}
+          </div>
         </div>
         <div>
           <label style={{ fontSize: 13, fontWeight: 500, color: GRAY_700, marginBottom: 4, display: 'block' }}>Prix en €</label>

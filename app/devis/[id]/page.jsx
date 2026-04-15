@@ -21,7 +21,9 @@ const FONT = `'DM Sans', system-ui, -apple-system, sans-serif`
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-const INCLUDES = [
+// Liste par défaut affichée quand le devis n'a pas de `details` custom renseigné
+// (anciens devis pré-migration, ou devis créés sans détail spécifique).
+const DEFAULT_INCLUDES = [
   "Plans complets (PCMI1 à PCMI8)",
   "Notice descriptive",
   "CERFA rempli",
@@ -118,13 +120,27 @@ export default function DevisPublicPage() {
 
         <div className="payment-card-includes" style={{ padding: '20px 28px', borderBottom: `1px solid ${GRAY_100}` }}>
           <div className="pay-includes-title" style={{ fontSize: 13, fontWeight: 600, color: GRAY_700, marginBottom: 12 }}>Ce qui est inclus :</div>
-          {INCLUDES.map((item, i) => (
-            <div key={i} className="pay-includes-item" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 0', fontSize: 13, color: GRAY_700 }}>
-              <span className="pay-check" style={{ color: ACCENT, fontSize: 14 }}>✓</span>
-              {item}
+          {quote.details && quote.details.trim() ? (
+            <div
+              className="pay-includes-custom"
+              style={{
+                fontSize: 13,
+                color: GRAY_700,
+                lineHeight: 1.6,
+                whiteSpace: 'pre-line',
+              }}
+            >
+              {quote.details}
             </div>
-          ))}
-          <div className="pay-delivery" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 0', fontSize: 13, color: ACCENT, fontWeight: 500, marginTop: 4 }}>
+          ) : (
+            DEFAULT_INCLUDES.map((item, i) => (
+              <div key={i} className="pay-includes-item" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 0', fontSize: 13, color: GRAY_700 }}>
+                <span className="pay-check" style={{ color: ACCENT, fontSize: 14 }}>✓</span>
+                {item}
+              </div>
+            ))
+          )}
+          <div className="pay-delivery" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 0', fontSize: 13, color: ACCENT, fontWeight: 500, marginTop: 12 }}>
             <span style={{ fontSize: 14 }}>⚡</span>
             Livraison en 5 jours ouvrés
           </div>

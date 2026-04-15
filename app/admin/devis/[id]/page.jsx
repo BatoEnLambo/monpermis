@@ -7,6 +7,7 @@ import AdminNav from '../../../../components/AdminNav'
 
 const ACCENT = "#1a5c3a"
 const ACCENT_LIGHT = "#e8f5ee"
+const GRAY_100 = "#f5f4f2"
 const GRAY_200 = "#e8e7e4"
 const GRAY_500 = "#8a8985"
 const GRAY_700 = "#44433f"
@@ -27,6 +28,10 @@ export default function DevisDetailPage() {
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
   const [updating, setUpdating] = useState(false)
+  const [editingDetails, setEditingDetails] = useState(false)
+  const [detailsDraft, setDetailsDraft] = useState('')
+  const [savingDetails, setSavingDetails] = useState(false)
+  const [detailsError, setDetailsError] = useState(null)
 
   const fetchQuote = async () => {
     setLoading(true)
@@ -55,6 +60,44 @@ export default function DevisDetailPage() {
     await supabase.from('quotes').update({ status: 'sent' }).eq('id', quote.id)
     setQuote(prev => ({ ...prev, status: 'sent' }))
     setUpdating(false)
+  }
+
+  const startEditDetails = () => {
+    setDetailsDraft(quote.details || '')
+    setDetailsError(null)
+    setEditingDetails(true)
+  }
+
+  const cancelEditDetails = () => {
+    setEditingDetails(false)
+    setDetailsDraft('')
+    setDetailsError(null)
+  }
+
+  const saveDetails = async () => {
+    setSavingDetails(true)
+    setDetailsError(null)
+    try {
+      const res = await fetch(`/api/devis/${quote.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ details: detailsDraft }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setDetailsError(data.error || 'Erreur lors de la sauvegarde')
+        setSavingDetails(false)
+        return
+      }
+      const body = await res.json().catch(() => ({}))
+      const updatedDetails = body?.quote?.details ?? (detailsDraft.trim() || null)
+      setQuote(prev => ({ ...prev, details: updatedDetails }))
+      setEditingDetails(false)
+      setDetailsDraft('')
+    } catch (err) {
+      setDetailsError(err.message || 'Erreur réseau')
+    }
+    setSavingDetails(false)
   }
 
   if (loading) return <p style={{ textAlign: 'center', padding: 60, color: GRAY_500, fontFamily: FONT }}>Chargement...</p>
@@ -97,6 +140,93 @@ export default function DevisDetailPage() {
           <div style={{ fontSize: 13, color: GRAY_500, marginTop: 4 }}>Créé le {new Date(quote.created_at).toLocaleDateString('fr-FR')}</div>
           <div style={{ fontSize: 28, fontWeight: 700, color: GRAY_900, marginTop: 16 }}>{quote.amount} € <span style={{ fontSize: 14, fontWeight: 400, color: GRAY_500 }}>TTC</span></div>
         </div>
+
+        {/* Détail de la prestation (édition inline si status != 'paid') */}
+        {(quote.details || editingDetails || quote.status !== 'paid') && (
+          <div style={{ padding: '20px 28px', borderBottom: `1px solid ${GRAY_200}` }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: GRAY_700 }}>Détail de la prestation</div>
+              {!editingDetails && quote.status !== 'paid' && (
+                <button
+                  onClick={startEditDetails}
+                  style={{ padding: '6px 12px', borderRadius: 6, border: `1px solid ${GRAY_200}`, background: WHITE, color: GRAY_700, fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: FONT }}
+                >
+                  {quote.details ? 'Modifier' : 'Ajouter'}
+                </button>
+              )}
+            </div>
+
+            {editingDetails ? (
+              <div>
+                <textarea
+                  value={detailsDraft}
+                  onChange={e => setDetailsDraft(e.target.value)}
+                  placeholder="Décrivez ce qui est inclus dans cette prestation. Ce texte sera affiché au client sur sa page de devis."
+                  rows={6}
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px',
+                    borderRadius: 8,
+                    border: `1px solid ${GRAY_200}`,
+                    fontSize: 14,
+                    fontFamily: FONT,
+                    lineHeight: 1.5,
+                    resize: 'vertical',
+                    minHeight: 140,
+                    boxSizing: 'border-box',
+                  }}
+                />
+                <div style={{
+                  fontSize: 11,
+                  color: detailsDraft.length > 500 ? '#e65100' : GRAY_500,
+                  marginTop: 4,
+                  textAlign: 'right',
+                }}>
+                  {detailsDraft.length} caractère{detailsDraft.length > 1 ? 's' : ''}
+                  {detailsDraft.length > 500 && ' — ~500 max conseillé'}
+                </div>
+                {detailsError && (
+                  <div style={{ fontSize: 12, color: '#b00020', marginTop: 6 }}>
+                    {detailsError}
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+                  <button
+                    onClick={saveDetails}
+                    disabled={savingDetails}
+                    style={{ flex: 1, padding: '10px 14px', borderRadius: 8, border: 'none', background: savingDetails ? '#ccc' : ACCENT, color: WHITE, fontSize: 13, fontWeight: 600, cursor: savingDetails ? 'default' : 'pointer', fontFamily: FONT }}
+                  >
+                    {savingDetails ? 'Enregistrement...' : 'Enregistrer'}
+                  </button>
+                  <button
+                    onClick={cancelEditDetails}
+                    disabled={savingDetails}
+                    style={{ padding: '10px 14px', borderRadius: 8, border: `1px solid ${GRAY_200}`, background: WHITE, color: GRAY_700, fontSize: 13, fontWeight: 500, cursor: savingDetails ? 'default' : 'pointer', fontFamily: FONT, opacity: savingDetails ? 0.5 : 1 }}
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            ) : quote.details ? (
+              <div style={{
+                fontSize: 13,
+                color: GRAY_700,
+                lineHeight: 1.6,
+                whiteSpace: 'pre-line',
+                background: GRAY_100,
+                border: `1px solid ${GRAY_200}`,
+                borderRadius: 8,
+                padding: '12px 14px',
+              }}>
+                {quote.details}
+              </div>
+            ) : (
+              <div style={{ fontSize: 12, color: GRAY_500, fontStyle: 'italic' }}>
+                Aucun détail renseigné — le client verra la liste par défaut (plans, CERFA, notice…).
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Infos Stripe / projet (si payé) */}
         {quote.status === 'paid' && (
