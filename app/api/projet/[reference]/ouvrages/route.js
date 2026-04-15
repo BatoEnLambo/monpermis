@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '../../../../../lib/supabase'
+import { supabaseAdmin as supabase } from '../../../../../lib/supabaseAdmin'
 
 // Vérifie que le token dans l'URL correspond bien au project identifié par reference.
 // Retourne { project } si OK, ou { error, status } sinon.

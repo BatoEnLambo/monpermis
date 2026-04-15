@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '../../../../../../lib/supabase'
+import { supabaseAdmin as supabase } from '../../../../../../lib/supabaseAdmin'
 import { extractStorageKeyFromUrl } from '../../../../../../lib/storage'
 
 async function verifyAccess(reference, token) {
