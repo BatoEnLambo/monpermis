@@ -1,3 +1,11 @@
 node_modules
 .next
 .env.local
+.claude/
+PERMISCLAIR-CONTEXT.md
+PermisClair-SEO-System.md
+.DS_Store
+*.log
+.vercel/
+.vscode/
+.idea/
