@@ -444,15 +444,15 @@ export default function AdminPage() {
                   {/* Ouvrages déclarés par le client */}
                   {(() => {
                     const list = projectOuvrages[p.id] || []
-                    const v = (val) => (val == null || val === '') ? '—' : String(val)
                     const vUnit = (val, unit) => (val == null || val === '') ? '—' : `${val} ${unit}`
                     const vNsp = (val, unknown, unit) => unknown ? 'NSP' : vUnit(val, unit)
                     const matVal = (val, autre) => (val === 'Autre' && autre) ? autre : (val || '—')
-                    const MONO = { fontFamily: ui.font.mono }
-                    const ROW = { display: 'grid', gridTemplateColumns: '180px 1fr', gap: `${ui.space.xs}px ${ui.space.md}px`, fontSize: ui.size.sm, lineHeight: 1.6 }
-                    const LBL = { fontSize: ui.size.sm, fontWeight: ui.weight.semibold, color: ui.color.textMuted }
-                    const VAL = { fontSize: ui.size.base, color: ui.color.text, ...MONO }
-                    const HDR = { fontSize: ui.size.sm, fontWeight: ui.weight.bold, color: ui.color.primary, textTransform: 'uppercase', letterSpacing: '0.04em', marginTop: ui.space.lg, marginBottom: ui.space.sm }
+
+                    // Style aligné sur les Groupes 1 (Informations client) et 3 (Terrain) :
+                    // grille 2 colonnes serrées, sous-titres vert, séparateurs <hr>.
+                    const GROW = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13 }
+                    const GHDR = { fontSize: 12, fontWeight: 600, color: ui.color.primary, marginBottom: 6 }
+                    const GHR = <hr style={{ border: 'none', borderTop: `1px solid ${ui.color.border}`, margin: '12px 0' }} />
 
                     const exportJson = (o) => {
                       const blob = new Blob([JSON.stringify({ name: o.name, type: o.type, subtype: o.subtype, data: o.data }, null, 2)], { type: 'application/json' })
@@ -474,7 +474,7 @@ export default function AdminPage() {
                         {list.length === 0 ? (
                           <div style={{ fontSize: ui.size.sm, color: ui.color.textLight }}>Aucun ouvrage déclaré.</div>
                         ) : (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: ui.space.lg }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: ui.space.md }}>
                             {list.map(o => {
                               const type = getOuvrageType(o.type)
                               const data = o.data || {}
@@ -506,363 +506,423 @@ export default function AdminPage() {
                               const croquisUrls = Array.isArray(data?.croquis?.photo_urls) ? data.croquis.photo_urls : []
                               const isPdf = (u) => (u || '').toLowerCase().endsWith('.pdf')
 
-                              return (
-                                <div key={o.id} style={{ background: '#fff', border: `1px solid ${ui.color.border}`, borderRadius: ui.radius.xl, padding: ui.space.xl, boxShadow: ui.shadow.card }}>
+                              // Déterminer quelles sections sont affichées pour gérer les séparateurs.
+                              const hasDims = dims.longueur_m || dims.largeur_m || dims.type_toiture || dims.hauteur_faitage_m || dims.hauteur_faitage_unknown
+                              const hasMat = mat.materiau_facade || mat.materiau_couverture || mat.materiau_menuiseries
+                              const hasOuvs = ouvs.length > 0
+                              const hasRaccord = raccord.description_existant || raccord.mode_raccord
+                              const hasSerre = serre.longueur_m || serre.type_serre
+                              const hasBassin = bassin.forme || bassin.longueur_m || bassin.diametre_m
+                              const hasCarac = carac.type_construction || carac.revetement || carac.local_technique || carac.chauffage
+                              const hasHorsSol = carac.type_hors_sol || carac.hauteur_bassin_m != null || carac.habillage
+                              const hasSpa = carac.nombre_places != null || carac.type_encastrement || carac.abri_spa
+                              const hasSecurite = Array.isArray(securite.dispositifs) && securite.dispositifs.length > 0
+                              const hasAbri = abri.type_abri || abri.longueur_m != null
+                              const hasTerDims = terrasse.longueur_m || terrasse.largeur_m || terrasse.hauteur_au_dessus_sol_m != null || terrasse.hauteur_au_dessus_sol_unknown
+                              const hasTerMat = matTer.materiau_revetement || matTer.structure_portante
+                              const hasTerAcc = access.acces || access.garde_corps
+                              const hasMurDims = dimMur.longueur_m != null || dimMur.hauteur_m != null || dimMur.hauteur_variable
+                              const hasMurMat = matMur.materiau || matMur.type_cloture
+                              const hasPortail = portail.type_ouverture || portail.materiau || portail.largeur_m != null
+                              const hasModifOuvs = modifOuvs.length > 0
+                              const hasRaval = ravalement.materiau_actuel || ravalement.materiau_futur || ravalement.surface_totale_m2 != null
+                              const hasMenuis = changMenuis.length > 0
+                              const hasCouv = changCouv.materiau_actuel || changCouv.materiau_futur || changCouv.surface_totale_m2 != null
+                              const hasIte = ite.materiau_isolant || ite.surface_totale_m2 != null
+                              const hasSolaires = solaires.type || solaires.nombre_panneaux != null
+                              const hasDimApprox = dimApprox.surface_au_sol_m2 != null || dimApprox.hauteur_m != null || dimApprox.longueur_m != null || dimApprox.largeur_m != null
+                              const hasMatPrinc = matPrinc && typeof matPrinc === 'string' && matPrinc.trim()
+                              const hasCroquis = croquisUrls.length > 0
+                              const hasPhotos = (o.photo_urls || []).length > 0
 
-                                  {/* ── HEADER ── */}
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: ui.space.md, marginBottom: ui.space.lg }}>
-                                    <span style={{ fontSize: 28 }}>{type?.icon || '📦'}</span>
+                              // Permet d'insérer un <hr> entre blocs actifs consécutifs
+                              // (pas avant le premier bloc — il est collé au header/croquis).
+                              let firstShown = true
+                              const maybeHr = (cond) => {
+                                if (!cond) return null
+                                if (firstShown) { firstShown = false; return null }
+                                return GHR
+                              }
+
+                              return (
+                                <div key={o.id} style={{ background: '#fff', border: `1px solid ${ui.color.border}`, borderRadius: 10, padding: 16, marginBottom: 12 }}>
+
+                                  {/* ── HEADER : icône + nom + type + % + bouton ── */}
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                                    <span style={{ fontSize: 20 }}>{type?.icon || '📦'}</span>
                                     <div style={{ flex: 1, minWidth: 0 }}>
-                                      <div style={{ fontSize: ui.size.xl, fontWeight: ui.weight.bold, color: ui.color.text }}>{o.name}</div>
-                                      <div style={{ fontSize: ui.size.sm, color: ui.color.textLight, marginTop: 2 }}>{formatOuvrageType(o.type, o.subtype)}</div>
+                                      <div style={{ fontSize: 14, fontWeight: 700, color: ui.color.text }}>{o.name}</div>
+                                      <div style={{ fontSize: 12, color: ui.color.textLight, marginTop: 2 }}>{formatOuvrageType(o.type, o.subtype)}</div>
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-                                      <span style={{ fontSize: ui.size.xs, fontWeight: ui.weight.bold, padding: `${ui.space.xs}px 10px`, borderRadius: ui.radius.lg, background: pct === 100 ? ui.color.bgSuccess : ui.color.bgWarning, color: pct === 100 ? ui.color.textSuccess : ui.color.textWarning }}>{pct}%</span>
-                                      <button onClick={(e) => { e.stopPropagation(); exportJson(o) }} style={{ fontSize: ui.size.xs, fontWeight: ui.weight.semibold, padding: `${ui.space.xs}px 10px`, borderRadius: ui.radius.md, border: `1px solid ${ui.color.border}`, background: '#fff', color: ui.color.textMuted, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                                      <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 10, background: pct === 100 ? ui.color.bgSuccess : ui.color.bgWarning, color: pct === 100 ? ui.color.textSuccess : ui.color.textWarning }}>{pct}%</span>
+                                      <button onClick={(e) => { e.stopPropagation(); exportJson(o) }} style={{ padding: '6px 14px', borderRadius: 8, border: `1px solid ${ui.color.border}`, background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', color: ui.color.primary }}>
                                         📋 Exporter JSON
                                       </button>
                                     </div>
                                   </div>
 
-                                  {/* ── CROQUIS DU CLIENT ── */}
-                                  {croquisUrls.length > 0 && (
-                                    <div style={{ marginBottom: ui.space.xl }}>
-                                      <div style={{ fontSize: ui.size.sm, fontWeight: ui.weight.bold, color: ui.color.text, marginBottom: ui.space.sm }}>Croquis du client</div>
+                                  {/* ── CROQUIS DU CLIENT (grand format, conservé) ── */}
+                                  {hasCroquis && (
+                                    <>
+                                      {GHR}
+                                      <div style={GHDR}>Croquis du client</div>
                                       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                                         {croquisUrls.map(url => isPdf(url) ? (
-                                          <a key={url} href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: ui.space.sm, fontSize: ui.size.sm, fontWeight: ui.weight.semibold, color: ui.color.primary, textDecoration: 'none' }}>
+                                          <a key={url} href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: ui.color.primary, textDecoration: 'none' }}>
                                             📄 Ouvrir le PDF
                                           </a>
                                         ) : (
                                           <a key={url} href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'block' }}>
-                                            <img src={url} alt="croquis" style={{ maxWidth: 600, width: '100%', objectFit: 'contain', borderRadius: ui.radius.md, border: `1px solid ${ui.color.border}` }} />
+                                            <img src={url} alt="croquis" style={{ maxWidth: 600, width: '100%', objectFit: 'contain', borderRadius: 8, border: `1px solid ${ui.color.border}` }} />
                                           </a>
                                         ))}
                                       </div>
-                                    </div>
+                                    </>
                                   )}
 
-                                  {/* ── Photos ouvrage (anciennes photo_urls) ── */}
-                                  {(o.photo_urls || []).length > 0 && (
-                                    <div style={{ marginBottom: ui.space.xl }}>
-                                      <div style={{ fontSize: ui.size.sm, fontWeight: ui.weight.bold, color: ui.color.text, marginBottom: ui.space.sm }}>Photos</div>
-                                      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                                  {/* ── Photos ouvrage ── */}
+                                  {hasPhotos && (
+                                    <>
+                                      {GHR}
+                                      <div style={GHDR}>Photos</div>
+                                      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                                         {o.photo_urls.map(url => (
                                           <a key={url} href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'block' }}>
-                                            <img src={url} alt="" style={{ maxWidth: 280, maxHeight: 200, objectFit: 'contain', borderRadius: ui.radius.md, border: `1px solid ${ui.color.border}` }} />
+                                            <img src={url} alt="" style={{ maxWidth: 280, maxHeight: 200, objectFit: 'contain', borderRadius: 8, border: `1px solid ${ui.color.border}` }} />
                                           </a>
                                         ))}
                                       </div>
-                                    </div>
+                                    </>
                                   )}
 
                                   {/* ── DIMENSIONS (bâti) ── */}
-                                  {(dims.longueur_m || dims.largeur_m || dims.type_toiture || dims.hauteur_faitage_m || dims.hauteur_faitage_unknown) && (<>
-                                    <div style={HDR}>Dimensions</div>
-                                    <div style={ROW}>
-                                      {dims.longueur_m != null && <><div style={LBL}>Longueur</div><div style={VAL}>{dims.longueur_m} m</div></>}
-                                      {dims.largeur_m != null && <><div style={LBL}>Largeur</div><div style={VAL}>{dims.largeur_m} m</div></>}
-                                      {(dims.hauteur_faitage_m != null || dims.hauteur_faitage_unknown) && <><div style={LBL}>Hauteur faîtage</div><div style={VAL}>{vNsp(dims.hauteur_faitage_m, dims.hauteur_faitage_unknown, 'm')}</div></>}
-                                      {(dims.hauteur_egout_m != null || dims.hauteur_egout_unknown) && <><div style={LBL}>Hauteur égout</div><div style={VAL}>{vNsp(dims.hauteur_egout_m, dims.hauteur_egout_unknown, 'm')}</div></>}
-                                      {dims.type_toiture && dims.type_toiture !== 'Toit plat' && (dims.pente_toiture_deg != null || dims.pente_toiture_unknown) && <><div style={LBL}>Pente toiture</div><div style={VAL}>{vNsp(dims.pente_toiture_deg, dims.pente_toiture_unknown, '°')}</div></>}
-                                      {(dims.debords_cm != null || dims.debords_unknown) && <><div style={LBL}>Débords</div><div style={VAL}>{vNsp(dims.debords_cm, dims.debords_unknown, 'cm')}</div></>}
-                                      {dims.type_toiture && <><div style={LBL}>Type toiture</div><div style={VAL}>{dims.type_toiture}</div></>}
+                                  {hasDims && (<>
+                                    {maybeHr(hasDims)}
+                                    <div style={GHDR}>Dimensions</div>
+                                    <div style={GROW}>
+                                      {dims.longueur_m != null && <div><strong>Longueur :</strong> {dims.longueur_m} m</div>}
+                                      {dims.largeur_m != null && <div><strong>Largeur :</strong> {dims.largeur_m} m</div>}
+                                      {(dims.hauteur_faitage_m != null || dims.hauteur_faitage_unknown) && <div><strong>Hauteur faîtage :</strong> {vNsp(dims.hauteur_faitage_m, dims.hauteur_faitage_unknown, 'm')}</div>}
+                                      {(dims.hauteur_egout_m != null || dims.hauteur_egout_unknown) && <div><strong>Hauteur égout :</strong> {vNsp(dims.hauteur_egout_m, dims.hauteur_egout_unknown, 'm')}</div>}
+                                      {dims.type_toiture && dims.type_toiture !== 'Toit plat' && (dims.pente_toiture_deg != null || dims.pente_toiture_unknown) && <div><strong>Pente toiture :</strong> {vNsp(dims.pente_toiture_deg, dims.pente_toiture_unknown, '°')}</div>}
+                                      {(dims.debords_cm != null || dims.debords_unknown) && <div><strong>Débords :</strong> {vNsp(dims.debords_cm, dims.debords_unknown, 'cm')}</div>}
+                                      {dims.type_toiture && <div><strong>Type toiture :</strong> {dims.type_toiture}</div>}
                                     </div>
                                   </>)}
 
                                   {/* ── MATÉRIAUX ── */}
-                                  {(mat.materiau_facade || mat.materiau_couverture || mat.materiau_menuiseries) && (<>
-                                    <div style={HDR}>Matériaux</div>
-                                    <div style={ROW}>
-                                      {mat.materiau_facade && <><div style={LBL}>Façade</div><div style={VAL}>{matVal(mat.materiau_facade, mat.materiau_facade_autre)}{mat.couleur_facade_ral ? ` — ${mat.couleur_facade_ral}` : ''}</div></>}
-                                      {mat.materiau_couverture && <><div style={LBL}>Couverture</div><div style={VAL}>{matVal(mat.materiau_couverture, mat.materiau_couverture_autre)}{mat.couleur_couverture ? ` — ${mat.couleur_couverture}` : ''}</div></>}
-                                      {mat.materiau_menuiseries && <><div style={LBL}>Menuiseries</div><div style={VAL}>{matVal(mat.materiau_menuiseries, mat.materiau_menuiseries_autre)}{mat.couleur_menuiseries_ral ? ` — ${mat.couleur_menuiseries_ral}` : ''}</div></>}
+                                  {hasMat && (<>
+                                    {maybeHr(hasMat)}
+                                    <div style={GHDR}>Matériaux</div>
+                                    <div style={GROW}>
+                                      {mat.materiau_facade && <div><strong>Façade :</strong> {matVal(mat.materiau_facade, mat.materiau_facade_autre)}{mat.couleur_facade_ral ? ` — ${mat.couleur_facade_ral}` : ''}</div>}
+                                      {mat.materiau_couverture && <div><strong>Couverture :</strong> {matVal(mat.materiau_couverture, mat.materiau_couverture_autre)}{mat.couleur_couverture ? ` — ${mat.couleur_couverture}` : ''}</div>}
+                                      {mat.materiau_menuiseries && <div><strong>Menuiseries :</strong> {matVal(mat.materiau_menuiseries, mat.materiau_menuiseries_autre)}{mat.couleur_menuiseries_ral ? ` — ${mat.couleur_menuiseries_ral}` : ''}</div>}
                                     </div>
                                   </>)}
 
-                                  {/* ── OUVERTURES ── */}
-                                  {ouvs.length > 0 && (<>
-                                    <div style={HDR}>Ouvertures ({ouvs.length})</div>
-                                    <div style={{ fontSize: ui.size.sm, lineHeight: 1.8 }}>
+                                  {/* ── OUVERTURES : liste simple, une ligne par ouverture ── */}
+                                  {hasOuvs && (<>
+                                    {maybeHr(hasOuvs)}
+                                    <div style={GHDR}>Ouvertures ({ouvs.length})</div>
+                                    <div style={{ fontSize: 13, lineHeight: 1.8 }}>
                                       {ouvs.map((ou, i) => (
-                                        <div key={i} style={{ display: 'grid', gridTemplateColumns: '50px 1fr 140px 1fr', gap: `0 ${ui.space.md}px`, ...MONO, fontSize: ui.size.base, color: ui.color.text }}>
-                                          <span>{ou.nombre || 1}×</span>
-                                          <span>{ou.type || '—'}</span>
-                                          <span>{(ou.largeur_cm && ou.hauteur_cm) ? `${ou.largeur_cm} × ${ou.hauteur_cm} cm` : '—'}</span>
-                                          <span style={{ color: ui.color.textLight }}>{ou.facade || '—'}</span>
+                                        <div key={i}>
+                                          {ou.nombre && ou.nombre > 1 ? `${ou.nombre}× ` : ''}{ou.type || '—'}
+                                          {(ou.largeur_cm && ou.hauteur_cm) ? ` — ${ou.largeur_cm} × ${ou.hauteur_cm} cm` : ''}
+                                          {ou.facade ? ` (${ou.facade})` : ''}
                                         </div>
                                       ))}
                                     </div>
                                   </>)}
 
                                   {/* ── RACCORD À L'EXISTANT ── */}
-                                  {(raccord.description_existant || raccord.mode_raccord) && (<>
-                                    <div style={HDR}>Raccord à l'existant</div>
-                                    <div style={ROW}>
-                                      {raccord.mode_raccord && <><div style={LBL}>Mode</div><div style={VAL}>{matVal(raccord.mode_raccord, raccord.mode_raccord_autre)}</div></>}
-                                      {raccord.hauteur_ajoutee_m != null && <><div style={LBL}>Hauteur ajoutée</div><div style={VAL}>{raccord.hauteur_ajoutee_m} m</div></>}
-                                      {raccord.emprise_conservee && <><div style={LBL}>Emprise conservée</div><div style={VAL}>{raccord.emprise_conservee}</div></>}
+                                  {hasRaccord && (<>
+                                    {maybeHr(hasRaccord)}
+                                    <div style={GHDR}>Raccord à l'existant</div>
+                                    <div style={GROW}>
+                                      {raccord.mode_raccord && <div><strong>Mode :</strong> {matVal(raccord.mode_raccord, raccord.mode_raccord_autre)}</div>}
+                                      {raccord.hauteur_ajoutee_m != null && <div><strong>Hauteur ajoutée :</strong> {raccord.hauteur_ajoutee_m} m</div>}
+                                      {raccord.emprise_conservee && <div><strong>Emprise conservée :</strong> {raccord.emprise_conservee}</div>}
                                     </div>
                                     {raccord.description_existant && (
-                                      <div style={{ marginTop: 8 }}>
-                                        <div style={LBL}>Existant</div>
-                                        <div style={{ fontSize: ui.size.base, color: ui.color.text, marginTop: ui.space.xs, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{raccord.description_existant}</div>
+                                      <div style={{ marginTop: 8, fontSize: 13 }}>
+                                        <strong>Existant :</strong> <span style={{ whiteSpace: 'pre-wrap' }}>{raccord.description_existant}</span>
                                       </div>
                                     )}
                                   </>)}
 
                                   {/* ── SERRE ── */}
-                                  {(serre.longueur_m || serre.type_serre) && (<>
-                                    <div style={HDR}>Serre</div>
-                                    <div style={ROW}>
-                                      {serre.longueur_m && <><div style={LBL}>Longueur</div><div style={VAL}>{serre.longueur_m} m</div></>}
-                                      {serre.largeur_m && <><div style={LBL}>Largeur</div><div style={VAL}>{serre.largeur_m} m</div></>}
-                                      {serre.hauteur_faitiere_m && <><div style={LBL}>Hauteur faîtière</div><div style={VAL}>{serre.hauteur_faitiere_m} m</div></>}
-                                      {serre.type_serre && <><div style={LBL}>Type</div><div style={VAL}>{serre.type_serre}</div></>}
-                                      {serre.materiau_couverture_serre && <><div style={LBL}>Couverture</div><div style={VAL}>{serre.materiau_couverture_serre}</div></>}
+                                  {hasSerre && (<>
+                                    {maybeHr(hasSerre)}
+                                    <div style={GHDR}>Serre</div>
+                                    <div style={GROW}>
+                                      {serre.longueur_m && <div><strong>Longueur :</strong> {serre.longueur_m} m</div>}
+                                      {serre.largeur_m && <div><strong>Largeur :</strong> {serre.largeur_m} m</div>}
+                                      {serre.hauteur_faitiere_m && <div><strong>Hauteur faîtière :</strong> {serre.hauteur_faitiere_m} m</div>}
+                                      {serre.type_serre && <div><strong>Type :</strong> {serre.type_serre}</div>}
+                                      {serre.materiau_couverture_serre && <div><strong>Couverture :</strong> {serre.materiau_couverture_serre}</div>}
                                     </div>
                                   </>)}
 
                                   {/* ── PISCINE — BASSIN ── */}
-                                  {(bassin.forme || bassin.longueur_m || bassin.diametre_m) && (<>
-                                    <div style={HDR}>Bassin</div>
-                                    <div style={ROW}>
-                                      {bassin.forme && <><div style={LBL}>Forme</div><div style={VAL}>{bassin.forme}</div></>}
-                                      {bassin.forme === 'Ronde' && bassin.diametre_m != null && <><div style={LBL}>Diamètre</div><div style={VAL}>{bassin.diametre_m} m</div></>}
-                                      {bassin.forme !== 'Ronde' && bassin.longueur_m != null && <><div style={LBL}>Longueur</div><div style={VAL}>{bassin.longueur_m} m</div></>}
-                                      {bassin.forme !== 'Ronde' && bassin.largeur_m != null && <><div style={LBL}>Largeur</div><div style={VAL}>{bassin.largeur_m} m</div></>}
-                                      {bassin.profondeur_min_m != null && <><div style={LBL}>Profondeur min</div><div style={VAL}>{bassin.profondeur_min_m} m</div></>}
-                                      {bassin.profondeur_max_m != null && <><div style={LBL}>Profondeur max</div><div style={VAL}>{bassin.profondeur_max_m} m</div></>}
+                                  {hasBassin && (<>
+                                    {maybeHr(hasBassin)}
+                                    <div style={GHDR}>Bassin</div>
+                                    <div style={GROW}>
+                                      {bassin.forme && <div><strong>Forme :</strong> {bassin.forme}</div>}
+                                      {bassin.forme === 'Ronde' && bassin.diametre_m != null && <div><strong>Diamètre :</strong> {bassin.diametre_m} m</div>}
+                                      {bassin.forme !== 'Ronde' && bassin.longueur_m != null && <div><strong>Longueur :</strong> {bassin.longueur_m} m</div>}
+                                      {bassin.forme !== 'Ronde' && bassin.largeur_m != null && <div><strong>Largeur :</strong> {bassin.largeur_m} m</div>}
+                                      {bassin.profondeur_min_m != null && <div><strong>Profondeur min :</strong> {bassin.profondeur_min_m} m</div>}
+                                      {bassin.profondeur_max_m != null && <div><strong>Profondeur max :</strong> {bassin.profondeur_max_m} m</div>}
                                     </div>
                                   </>)}
 
                                   {/* ── PISCINE — CARACTÉRISTIQUES ── */}
-                                  {(carac.type_construction || carac.revetement || carac.local_technique || carac.chauffage) && (<>
-                                    <div style={HDR}>Caractéristiques piscine</div>
-                                    <div style={ROW}>
-                                      {carac.type_construction && <><div style={LBL}>Construction</div><div style={VAL}>{matVal(carac.type_construction, carac.type_construction_autre)}</div></>}
-                                      {carac.revetement && <><div style={LBL}>Revêtement</div><div style={VAL}>{matVal(carac.revetement, carac.revetement_autre)}</div></>}
-                                      {carac.local_technique && <><div style={LBL}>Local technique</div><div style={VAL}>{carac.local_technique}</div></>}
-                                      {carac.chauffage && <><div style={LBL}>Chauffage</div><div style={VAL}>{carac.chauffage}</div></>}
+                                  {hasCarac && (<>
+                                    {maybeHr(hasCarac)}
+                                    <div style={GHDR}>Caractéristiques piscine</div>
+                                    <div style={GROW}>
+                                      {carac.type_construction && <div><strong>Construction :</strong> {matVal(carac.type_construction, carac.type_construction_autre)}</div>}
+                                      {carac.revetement && <div><strong>Revêtement :</strong> {matVal(carac.revetement, carac.revetement_autre)}</div>}
+                                      {carac.local_technique && <div><strong>Local technique :</strong> {carac.local_technique}</div>}
+                                      {carac.chauffage && <div><strong>Chauffage :</strong> {carac.chauffage}</div>}
                                     </div>
                                   </>)}
 
                                   {/* ── PISCINE — HORS-SOL ── */}
-                                  {(carac.type_hors_sol || carac.hauteur_bassin_m != null || carac.habillage) && (<>
-                                    <div style={HDR}>Hors-sol</div>
-                                    <div style={ROW}>
-                                      {carac.type_hors_sol && <><div style={LBL}>Type</div><div style={VAL}>{carac.type_hors_sol}</div></>}
-                                      {carac.hauteur_bassin_m != null && <><div style={LBL}>Hauteur bassin</div><div style={VAL}>{carac.hauteur_bassin_m} m</div></>}
-                                      {carac.habillage && <><div style={LBL}>Habillage</div><div style={VAL}>{carac.habillage}</div></>}
+                                  {hasHorsSol && (<>
+                                    {maybeHr(hasHorsSol)}
+                                    <div style={GHDR}>Hors-sol</div>
+                                    <div style={GROW}>
+                                      {carac.type_hors_sol && <div><strong>Type :</strong> {carac.type_hors_sol}</div>}
+                                      {carac.hauteur_bassin_m != null && <div><strong>Hauteur bassin :</strong> {carac.hauteur_bassin_m} m</div>}
+                                      {carac.habillage && <div><strong>Habillage :</strong> {carac.habillage}</div>}
                                     </div>
                                   </>)}
 
                                   {/* ── PISCINE — SPA ── */}
-                                  {(carac.nombre_places != null || carac.type_encastrement || carac.abri_spa) && (<>
-                                    <div style={HDR}>Spa</div>
-                                    <div style={ROW}>
-                                      {carac.nombre_places != null && <><div style={LBL}>Places</div><div style={VAL}>{carac.nombre_places}</div></>}
-                                      {carac.type_encastrement && <><div style={LBL}>Encastrement</div><div style={VAL}>{carac.type_encastrement}</div></>}
-                                      {carac.abri_spa && <><div style={LBL}>Abri</div><div style={VAL}>{carac.abri_spa}</div></>}
+                                  {hasSpa && (<>
+                                    {maybeHr(hasSpa)}
+                                    <div style={GHDR}>Spa</div>
+                                    <div style={GROW}>
+                                      {carac.nombre_places != null && <div><strong>Places :</strong> {carac.nombre_places}</div>}
+                                      {carac.type_encastrement && <div><strong>Encastrement :</strong> {carac.type_encastrement}</div>}
+                                      {carac.abri_spa && <div><strong>Abri :</strong> {carac.abri_spa}</div>}
                                     </div>
                                   </>)}
 
                                   {/* ── PISCINE — SÉCURITÉ ── */}
-                                  {Array.isArray(securite.dispositifs) && securite.dispositifs.length > 0 && (<>
-                                    <div style={HDR}>Sécurité</div>
-                                    <div style={ROW}>
-                                      <div style={LBL}>Dispositifs</div><div style={VAL}>{securite.dispositifs.join(', ')}</div>
-                                    </div>
+                                  {hasSecurite && (<>
+                                    {maybeHr(hasSecurite)}
+                                    <div style={GHDR}>Sécurité</div>
+                                    <div style={{ fontSize: 13 }}><strong>Dispositifs :</strong> {securite.dispositifs.join(', ')}</div>
                                   </>)}
 
                                   {/* ── ABRI DE PISCINE ── */}
-                                  {(abri.type_abri || abri.longueur_m != null) && (<>
-                                    <div style={HDR}>Abri piscine</div>
-                                    <div style={ROW}>
-                                      {abri.type_abri && <><div style={LBL}>Type</div><div style={VAL}>{abri.type_abri}</div></>}
-                                      {abri.mobile && <><div style={LBL}>Mobile</div><div style={VAL}>{abri.mobile}</div></>}
-                                      {abri.materiau_structure && <><div style={LBL}>Structure</div><div style={VAL}>{abri.materiau_structure}</div></>}
-                                      {abri.materiau_parois && <><div style={LBL}>Parois</div><div style={VAL}>{abri.materiau_parois}</div></>}
-                                      {(abri.longueur_m || abri.largeur_m) && <><div style={LBL}>Dimensions</div><div style={VAL}>{vUnit(abri.longueur_m, 'm')} × {vUnit(abri.largeur_m, 'm')}</div></>}
+                                  {hasAbri && (<>
+                                    {maybeHr(hasAbri)}
+                                    <div style={GHDR}>Abri piscine</div>
+                                    <div style={GROW}>
+                                      {abri.type_abri && <div><strong>Type :</strong> {abri.type_abri}</div>}
+                                      {abri.mobile && <div><strong>Mobile :</strong> {abri.mobile}</div>}
+                                      {abri.materiau_structure && <div><strong>Structure :</strong> {abri.materiau_structure}</div>}
+                                      {abri.materiau_parois && <div><strong>Parois :</strong> {abri.materiau_parois}</div>}
+                                      {(abri.longueur_m || abri.largeur_m) && <div><strong>Dimensions :</strong> {vUnit(abri.longueur_m, 'm')} × {vUnit(abri.largeur_m, 'm')}</div>}
                                     </div>
                                   </>)}
 
                                   {/* ── TERRASSE — DIMENSIONS ── */}
-                                  {(terrasse.longueur_m || terrasse.largeur_m || terrasse.hauteur_au_dessus_sol_m != null || terrasse.hauteur_au_dessus_sol_unknown) && (<>
-                                    <div style={HDR}>Terrasse — dimensions</div>
-                                    <div style={ROW}>
-                                      {terrasse.longueur_m && <><div style={LBL}>Longueur</div><div style={VAL}>{terrasse.longueur_m} m</div></>}
-                                      {terrasse.largeur_m && <><div style={LBL}>Largeur</div><div style={VAL}>{terrasse.largeur_m} m</div></>}
-                                      {(terrasse.hauteur_au_dessus_sol_m != null || terrasse.hauteur_au_dessus_sol_unknown) && <><div style={LBL}>Hauteur / sol</div><div style={VAL}>{vNsp(terrasse.hauteur_au_dessus_sol_m, terrasse.hauteur_au_dessus_sol_unknown, 'm')}</div></>}
+                                  {hasTerDims && (<>
+                                    {maybeHr(hasTerDims)}
+                                    <div style={GHDR}>Terrasse — dimensions</div>
+                                    <div style={GROW}>
+                                      {terrasse.longueur_m && <div><strong>Longueur :</strong> {terrasse.longueur_m} m</div>}
+                                      {terrasse.largeur_m && <div><strong>Largeur :</strong> {terrasse.largeur_m} m</div>}
+                                      {(terrasse.hauteur_au_dessus_sol_m != null || terrasse.hauteur_au_dessus_sol_unknown) && <div><strong>Hauteur / sol :</strong> {vNsp(terrasse.hauteur_au_dessus_sol_m, terrasse.hauteur_au_dessus_sol_unknown, 'm')}</div>}
                                     </div>
                                   </>)}
 
                                   {/* ── TERRASSE — MATÉRIAUX ── */}
-                                  {(matTer.materiau_revetement || matTer.structure_portante) && (<>
-                                    <div style={HDR}>Terrasse — matériaux</div>
-                                    <div style={ROW}>
-                                      {matTer.materiau_revetement && <><div style={LBL}>Revêtement</div><div style={VAL}>{matVal(matTer.materiau_revetement, matTer.materiau_revetement_autre)}</div></>}
-                                      {matTer.structure_portante && <><div style={LBL}>Structure portante</div><div style={VAL}>{matTer.structure_portante}</div></>}
-                                      {matTer.essence_bois && <><div style={LBL}>Essence bois</div><div style={VAL}>{matTer.essence_bois}</div></>}
-                                      {matTer.sens_pose && <><div style={LBL}>Sens de pose</div><div style={VAL}>{matTer.sens_pose}</div></>}
+                                  {hasTerMat && (<>
+                                    {maybeHr(hasTerMat)}
+                                    <div style={GHDR}>Terrasse — matériaux</div>
+                                    <div style={GROW}>
+                                      {matTer.materiau_revetement && <div><strong>Revêtement :</strong> {matVal(matTer.materiau_revetement, matTer.materiau_revetement_autre)}</div>}
+                                      {matTer.structure_portante && <div><strong>Structure portante :</strong> {matTer.structure_portante}</div>}
+                                      {matTer.essence_bois && <div><strong>Essence bois :</strong> {matTer.essence_bois}</div>}
+                                      {matTer.sens_pose && <div><strong>Sens de pose :</strong> {matTer.sens_pose}</div>}
                                     </div>
                                   </>)}
 
                                   {/* ── TERRASSE — ACCESSIBILITÉ ── */}
-                                  {(access.acces || access.garde_corps) && (<>
-                                    <div style={HDR}>Terrasse — accessibilité</div>
-                                    <div style={ROW}>
-                                      {access.acces && <><div style={LBL}>Accès</div><div style={VAL}>{access.acces}</div></>}
-                                      {access.garde_corps && <><div style={LBL}>Garde-corps</div><div style={VAL}>{access.garde_corps}{access.hauteur_garde_corps_m != null ? ` (${access.hauteur_garde_corps_m} m)` : ''}</div></>}
+                                  {hasTerAcc && (<>
+                                    {maybeHr(hasTerAcc)}
+                                    <div style={GHDR}>Terrasse — accessibilité</div>
+                                    <div style={GROW}>
+                                      {access.acces && <div><strong>Accès :</strong> {access.acces}</div>}
+                                      {access.garde_corps && <div><strong>Garde-corps :</strong> {access.garde_corps}{access.hauteur_garde_corps_m != null ? ` (${access.hauteur_garde_corps_m} m)` : ''}</div>}
                                     </div>
                                   </>)}
 
                                   {/* ── MUR / CLÔTURE — DIMENSIONS ── */}
-                                  {(dimMur.longueur_m != null || dimMur.hauteur_m != null || dimMur.hauteur_variable) && (<>
-                                    <div style={HDR}>Mur / clôture — dimensions</div>
-                                    <div style={ROW}>
-                                      {dimMur.longueur_m != null && <><div style={LBL}>Longueur</div><div style={VAL}>{dimMur.longueur_m} m</div></>}
+                                  {hasMurDims && (<>
+                                    {maybeHr(hasMurDims)}
+                                    <div style={GHDR}>Mur / clôture — dimensions</div>
+                                    <div style={GROW}>
+                                      {dimMur.longueur_m != null && <div><strong>Longueur :</strong> {dimMur.longueur_m} m</div>}
                                       {dimMur.hauteur_variable
-                                        ? <><div style={LBL}>Hauteur</div><div style={VAL}>{vUnit(dimMur.hauteur_min_m, 'm')} → {vUnit(dimMur.hauteur_max_m, 'm')}</div></>
-                                        : dimMur.hauteur_m != null && <><div style={LBL}>Hauteur</div><div style={VAL}>{dimMur.hauteur_m} m</div></>}
+                                        ? <div><strong>Hauteur :</strong> {vUnit(dimMur.hauteur_min_m, 'm')} → {vUnit(dimMur.hauteur_max_m, 'm')}</div>
+                                        : dimMur.hauteur_m != null && <div><strong>Hauteur :</strong> {dimMur.hauteur_m} m</div>}
                                     </div>
                                   </>)}
 
                                   {/* ── MUR / CLÔTURE — MATÉRIAUX ── */}
-                                  {(matMur.materiau || matMur.type_cloture) && (<>
-                                    <div style={HDR}>Mur / clôture — matériaux</div>
-                                    <div style={ROW}>
-                                      {matMur.materiau && <><div style={LBL}>Matériau</div><div style={VAL}>{matVal(matMur.materiau, matMur.materiau_autre)}</div></>}
-                                      {matMur.parement && <><div style={LBL}>Parement</div><div style={VAL}>{matMur.parement}</div></>}
-                                      {matMur.type_cloture && <><div style={LBL}>Type clôture</div><div style={VAL}>{matVal(matMur.type_cloture, matMur.type_cloture_autre)}</div></>}
-                                      {matMur.soubassement && <><div style={LBL}>Soubassement</div><div style={VAL}>{matMur.soubassement}</div></>}
-                                      {matMur.occultation && <><div style={LBL}>Occultation</div><div style={VAL}>{matMur.occultation}</div></>}
+                                  {hasMurMat && (<>
+                                    {maybeHr(hasMurMat)}
+                                    <div style={GHDR}>Mur / clôture — matériaux</div>
+                                    <div style={GROW}>
+                                      {matMur.materiau && <div><strong>Matériau :</strong> {matVal(matMur.materiau, matMur.materiau_autre)}</div>}
+                                      {matMur.parement && <div><strong>Parement :</strong> {matMur.parement}</div>}
+                                      {matMur.type_cloture && <div><strong>Type clôture :</strong> {matVal(matMur.type_cloture, matMur.type_cloture_autre)}</div>}
+                                      {matMur.soubassement && <div><strong>Soubassement :</strong> {matMur.soubassement}</div>}
+                                      {matMur.occultation && <div><strong>Occultation :</strong> {matMur.occultation}</div>}
                                     </div>
                                   </>)}
 
                                   {/* ── PORTAIL ── */}
-                                  {(portail.type_ouverture || portail.materiau || portail.largeur_m != null) && (<>
-                                    <div style={HDR}>Portail</div>
-                                    <div style={ROW}>
-                                      {portail.type_ouverture && <><div style={LBL}>Ouverture</div><div style={VAL}>{portail.type_ouverture}</div></>}
-                                      {(portail.largeur_m != null || portail.hauteur_m != null) && <><div style={LBL}>Dimensions</div><div style={VAL}>{vUnit(portail.largeur_m, 'm')} × {vUnit(portail.hauteur_m, 'm')}</div></>}
-                                      {portail.materiau && <><div style={LBL}>Matériau</div><div style={VAL}>{matVal(portail.materiau, portail.materiau_autre)}</div></>}
-                                      {portail.motorisation && <><div style={LBL}>Motorisation</div><div style={VAL}>{portail.motorisation}</div></>}
-                                      {portail.avec_piliers && <><div style={LBL}>Piliers</div><div style={VAL}>{portail.materiau_piliers || '—'}{portail.chapeaux_piliers && portail.chapeaux_piliers !== 'Aucun' ? ` — chapeaux ${portail.chapeaux_piliers}` : ''}{portail.hauteur_piliers_m != null ? ` — H ${portail.hauteur_piliers_m} m` : ''}</div></>}
+                                  {hasPortail && (<>
+                                    {maybeHr(hasPortail)}
+                                    <div style={GHDR}>Portail</div>
+                                    <div style={GROW}>
+                                      {portail.type_ouverture && <div><strong>Ouverture :</strong> {portail.type_ouverture}</div>}
+                                      {(portail.largeur_m != null || portail.hauteur_m != null) && <div><strong>Dimensions :</strong> {vUnit(portail.largeur_m, 'm')} × {vUnit(portail.hauteur_m, 'm')}</div>}
+                                      {portail.materiau && <div><strong>Matériau :</strong> {matVal(portail.materiau, portail.materiau_autre)}</div>}
+                                      {portail.motorisation && <div><strong>Motorisation :</strong> {portail.motorisation}</div>}
+                                      {portail.avec_piliers && <div><strong>Piliers :</strong> {portail.materiau_piliers || '—'}{portail.chapeaux_piliers && portail.chapeaux_piliers !== 'Aucun' ? ` — chapeaux ${portail.chapeaux_piliers}` : ''}{portail.hauteur_piliers_m != null ? ` — H ${portail.hauteur_piliers_m} m` : ''}</div>}
                                     </div>
                                   </>)}
 
-                                  {/* ── MODIFICATIONS OUVERTURES ── */}
-                                  {modifOuvs.length > 0 && (<>
-                                    <div style={HDR}>Modifications ouvertures ({modifOuvs.length})</div>
+                                  {/* ── MODIFICATIONS OUVERTURES : liste simple ── */}
+                                  {hasModifOuvs && (<>
+                                    {maybeHr(hasModifOuvs)}
+                                    <div style={GHDR}>Modifications ouvertures ({modifOuvs.length})</div>
                                     <div style={{ fontSize: 13, lineHeight: 1.8 }}>
                                       {modifOuvs.map((m, i) => (
-                                        <div key={i} style={{ display: 'grid', gridTemplateColumns: '80px 1fr 140px 1fr', gap: '0 12px', ...MONO, fontSize: ui.size.base, color: ui.color.text }}>
-                                          <span style={{ color: ui.color.textLight }}>{m.action || '—'}</span>
-                                          <span>{m.type_ouverture || '—'}</span>
-                                          <span>{(m.largeur_cm && m.hauteur_cm) ? `${m.largeur_cm} × ${m.hauteur_cm} cm` : '—'}</span>
-                                          <span style={{ color: ui.color.textLight }}>{[m.facade, m.materiau_menuiserie, m.couleur_ral].filter(Boolean).join(' — ') || '—'}</span>
+                                        <div key={i}>
+                                          <strong>{m.action || '—'}</strong> {m.type_ouverture || '—'}
+                                          {(m.largeur_cm && m.hauteur_cm) ? ` — ${m.largeur_cm} × ${m.hauteur_cm} cm` : ''}
+                                          {[m.facade, m.materiau_menuiserie, m.couleur_ral].filter(Boolean).length > 0 && ` (${[m.facade, m.materiau_menuiserie, m.couleur_ral].filter(Boolean).join(' — ')})`}
                                         </div>
                                       ))}
                                     </div>
                                   </>)}
 
                                   {/* ── RAVALEMENT ── */}
-                                  {(ravalement.materiau_actuel || ravalement.materiau_futur || ravalement.surface_totale_m2 != null) && (<>
-                                    <div style={HDR}>Ravalement</div>
-                                    <div style={ROW}>
-                                      {ravalement.surface_totale_m2 != null && <><div style={LBL}>Surface</div><div style={VAL}>{ravalement.surface_totale_m2} m²</div></>}
-                                      {Array.isArray(ravalement.facades_concernees) && ravalement.facades_concernees.length > 0 && <><div style={LBL}>Façades</div><div style={VAL}>{ravalement.facades_concernees.join(', ')}</div></>}
-                                      {(ravalement.materiau_actuel || ravalement.materiau_futur) && <><div style={LBL}>Matériau</div><div style={VAL}>{ravalement.materiau_actuel || '—'} → {ravalement.materiau_futur || '—'}</div></>}
-                                      {(ravalement.couleur_actuelle || ravalement.couleur_future_ral) && <><div style={LBL}>Couleur</div><div style={VAL}>{ravalement.couleur_actuelle || '—'} → {ravalement.couleur_future_ral || '—'}</div></>}
-                                      {ravalement.changement_aspect && <><div style={LBL}>Change aspect</div><div style={VAL}>Oui</div></>}
+                                  {hasRaval && (<>
+                                    {maybeHr(hasRaval)}
+                                    <div style={GHDR}>Ravalement</div>
+                                    <div style={GROW}>
+                                      {ravalement.surface_totale_m2 != null && <div><strong>Surface :</strong> {ravalement.surface_totale_m2} m²</div>}
+                                      {Array.isArray(ravalement.facades_concernees) && ravalement.facades_concernees.length > 0 && <div><strong>Façades :</strong> {ravalement.facades_concernees.join(', ')}</div>}
+                                      {(ravalement.materiau_actuel || ravalement.materiau_futur) && <div><strong>Matériau :</strong> {ravalement.materiau_actuel || '—'} → {ravalement.materiau_futur || '—'}</div>}
+                                      {(ravalement.couleur_actuelle || ravalement.couleur_future_ral) && <div><strong>Couleur :</strong> {ravalement.couleur_actuelle || '—'} → {ravalement.couleur_future_ral || '—'}</div>}
+                                      {ravalement.changement_aspect && <div><strong>Change aspect :</strong> Oui</div>}
                                     </div>
                                   </>)}
 
-                                  {/* ── CHANGEMENT MENUISERIES ── */}
-                                  {changMenuis.length > 0 && (<>
-                                    <div style={HDR}>Changement menuiseries ({changMenuis.length})</div>
+                                  {/* ── CHANGEMENT MENUISERIES : liste simple ── */}
+                                  {hasMenuis && (<>
+                                    {maybeHr(hasMenuis)}
+                                    <div style={GHDR}>Changement menuiseries ({changMenuis.length})</div>
                                     <div style={{ fontSize: 13, lineHeight: 1.8 }}>
                                       {changMenuis.map((m, i) => (
-                                        <div key={i} style={{ display: 'grid', gridTemplateColumns: '50px 1fr 140px 1fr', gap: '0 12px', ...MONO, fontSize: ui.size.base, color: ui.color.text }}>
-                                          <span>{m.nombre || 1}×</span>
-                                          <span>{m.type || '—'}{m.dimensions_standard ? ` (${m.dimensions_standard})` : (m.largeur_cm || m.hauteur_cm) ? ` (${m.largeur_cm || '—'}×${m.hauteur_cm || '—'} cm)` : ''}</span>
-                                          <span style={{ color: ui.color.textLight }}>{(m.materiau_actuel || m.materiau_futur) ? `${m.materiau_actuel || '—'} → ${m.materiau_futur || '—'}` : '—'}</span>
-                                          <span style={{ color: ui.color.textLight }}>{[m.vitrage, m.couleur_future_ral].filter(Boolean).join(' — ') || '—'}</span>
+                                        <div key={i}>
+                                          {m.nombre && m.nombre > 1 ? `${m.nombre}× ` : ''}<strong>{m.type || '—'}</strong>
+                                          {m.dimensions_standard ? ` (${m.dimensions_standard})` : (m.largeur_cm || m.hauteur_cm) ? ` (${m.largeur_cm || '—'} × ${m.hauteur_cm || '—'} cm)` : ''}
+                                          {(m.materiau_actuel || m.materiau_futur) ? ` — ${m.materiau_actuel || '—'} → ${m.materiau_futur || '—'}` : ''}
+                                          {[m.vitrage, m.couleur_future_ral].filter(Boolean).length > 0 && ` — ${[m.vitrage, m.couleur_future_ral].filter(Boolean).join(' — ')}`}
                                         </div>
                                       ))}
                                     </div>
                                   </>)}
 
                                   {/* ── CHANGEMENT COUVERTURE ── */}
-                                  {(changCouv.materiau_actuel || changCouv.materiau_futur || changCouv.surface_totale_m2 != null) && (<>
-                                    <div style={HDR}>Changement couverture</div>
-                                    <div style={ROW}>
-                                      {changCouv.surface_totale_m2 != null && <><div style={LBL}>Surface</div><div style={VAL}>{changCouv.surface_totale_m2} m²</div></>}
-                                      {(changCouv.materiau_actuel || changCouv.materiau_futur) && <><div style={LBL}>Matériau</div><div style={VAL}>{changCouv.materiau_actuel || '—'} → {changCouv.materiau_futur || '—'}</div></>}
-                                      {(changCouv.couleur_actuelle || changCouv.couleur_future) && <><div style={LBL}>Couleur</div><div style={VAL}>{changCouv.couleur_actuelle || '—'} → {changCouv.couleur_future || '—'}</div></>}
-                                      {changCouv.changement_pente && <><div style={LBL}>Pente</div><div style={VAL}>{changCouv.pente_avant_deg ?? '—'}° → {changCouv.pente_apres_deg ?? '—'}°</div></>}
-                                      {changCouv.isolation_sous_toiture && <><div style={LBL}>Isolation sous-toiture</div><div style={VAL}>Oui</div></>}
+                                  {hasCouv && (<>
+                                    {maybeHr(hasCouv)}
+                                    <div style={GHDR}>Changement couverture</div>
+                                    <div style={GROW}>
+                                      {changCouv.surface_totale_m2 != null && <div><strong>Surface :</strong> {changCouv.surface_totale_m2} m²</div>}
+                                      {(changCouv.materiau_actuel || changCouv.materiau_futur) && <div><strong>Matériau :</strong> {changCouv.materiau_actuel || '—'} → {changCouv.materiau_futur || '—'}</div>}
+                                      {(changCouv.couleur_actuelle || changCouv.couleur_future) && <div><strong>Couleur :</strong> {changCouv.couleur_actuelle || '—'} → {changCouv.couleur_future || '—'}</div>}
+                                      {changCouv.changement_pente && <div><strong>Pente :</strong> {changCouv.pente_avant_deg ?? '—'}° → {changCouv.pente_apres_deg ?? '—'}°</div>}
+                                      {changCouv.isolation_sous_toiture && <div><strong>Isolation sous-toiture :</strong> Oui</div>}
                                     </div>
                                   </>)}
 
                                   {/* ── ITE ── */}
-                                  {(ite.materiau_isolant || ite.surface_totale_m2 != null) && (<>
-                                    <div style={HDR}>Isolation thermique extérieure</div>
-                                    <div style={ROW}>
-                                      {ite.surface_totale_m2 != null && <><div style={LBL}>Surface</div><div style={VAL}>{ite.surface_totale_m2} m²</div></>}
-                                      {Array.isArray(ite.facades_concernees) && ite.facades_concernees.length > 0 && <><div style={LBL}>Façades</div><div style={VAL}>{ite.facades_concernees.join(', ')}</div></>}
-                                      {ite.materiau_isolant && <><div style={LBL}>Isolant</div><div style={VAL}>{ite.materiau_isolant}</div></>}
-                                      {ite.epaisseur_cm != null && <><div style={LBL}>Épaisseur</div><div style={VAL}>{ite.epaisseur_cm} cm</div></>}
-                                      {ite.parement_final && <><div style={LBL}>Parement final</div><div style={VAL}>{ite.parement_final}</div></>}
-                                      {ite.couleur_finale_ral && <><div style={LBL}>Couleur</div><div style={VAL}>{ite.couleur_finale_ral}</div></>}
-                                      {ite.surepaisseur_cm != null && <><div style={LBL}>Surépaisseur</div><div style={VAL}>{ite.surepaisseur_cm} cm</div></>}
+                                  {hasIte && (<>
+                                    {maybeHr(hasIte)}
+                                    <div style={GHDR}>Isolation thermique extérieure</div>
+                                    <div style={GROW}>
+                                      {ite.surface_totale_m2 != null && <div><strong>Surface :</strong> {ite.surface_totale_m2} m²</div>}
+                                      {Array.isArray(ite.facades_concernees) && ite.facades_concernees.length > 0 && <div><strong>Façades :</strong> {ite.facades_concernees.join(', ')}</div>}
+                                      {ite.materiau_isolant && <div><strong>Isolant :</strong> {ite.materiau_isolant}</div>}
+                                      {ite.epaisseur_cm != null && <div><strong>Épaisseur :</strong> {ite.epaisseur_cm} cm</div>}
+                                      {ite.parement_final && <div><strong>Parement final :</strong> {ite.parement_final}</div>}
+                                      {ite.couleur_finale_ral && <div><strong>Couleur :</strong> {ite.couleur_finale_ral}</div>}
+                                      {ite.surepaisseur_cm != null && <div><strong>Surépaisseur :</strong> {ite.surepaisseur_cm} cm</div>}
                                     </div>
                                   </>)}
 
                                   {/* ── PANNEAUX SOLAIRES ── */}
-                                  {(solaires.type || solaires.nombre_panneaux != null) && (<>
-                                    <div style={HDR}>Panneaux solaires</div>
-                                    <div style={ROW}>
-                                      {solaires.type && <><div style={LBL}>Type</div><div style={VAL}>{solaires.type}</div></>}
-                                      {solaires.nombre_panneaux != null && <><div style={LBL}>Nombre</div><div style={VAL}>{solaires.nombre_panneaux}</div></>}
-                                      {solaires.surface_totale_m2 != null && <><div style={LBL}>Surface</div><div style={VAL}>{solaires.surface_totale_m2} m²</div></>}
-                                      {solaires.puissance_kwc != null && <><div style={LBL}>Puissance</div><div style={VAL}>{solaires.puissance_kwc} kWc</div></>}
-                                      {solaires.implantation && <><div style={LBL}>Implantation</div><div style={VAL}>{solaires.implantation}</div></>}
-                                      {solaires.pan_toiture && <><div style={LBL}>Pan de toiture</div><div style={VAL}>{solaires.pan_toiture}</div></>}
-                                      {(solaires.orientation_deg != null || solaires.inclinaison_deg != null) && <><div style={LBL}>Orientation / Incl.</div><div style={VAL}>{solaires.orientation_deg ?? '—'}° / {solaires.inclinaison_deg ?? '—'}°</div></>}
-                                      {solaires.couleur_panneaux && <><div style={LBL}>Couleur</div><div style={VAL}>{solaires.couleur_panneaux}</div></>}
-                                      {solaires.raccordement && <><div style={LBL}>Raccordement</div><div style={VAL}>{solaires.raccordement}</div></>}
+                                  {hasSolaires && (<>
+                                    {maybeHr(hasSolaires)}
+                                    <div style={GHDR}>Panneaux solaires</div>
+                                    <div style={GROW}>
+                                      {solaires.type && <div><strong>Type :</strong> {solaires.type}</div>}
+                                      {solaires.nombre_panneaux != null && <div><strong>Nombre :</strong> {solaires.nombre_panneaux}</div>}
+                                      {solaires.surface_totale_m2 != null && <div><strong>Surface :</strong> {solaires.surface_totale_m2} m²</div>}
+                                      {solaires.puissance_kwc != null && <div><strong>Puissance :</strong> {solaires.puissance_kwc} kWc</div>}
+                                      {solaires.implantation && <div><strong>Implantation :</strong> {solaires.implantation}</div>}
+                                      {solaires.pan_toiture && <div><strong>Pan de toiture :</strong> {solaires.pan_toiture}</div>}
+                                      {(solaires.orientation_deg != null || solaires.inclinaison_deg != null) && <div><strong>Orientation / Incl. :</strong> {solaires.orientation_deg ?? '—'}° / {solaires.inclinaison_deg ?? '—'}°</div>}
+                                      {solaires.couleur_panneaux && <div><strong>Couleur :</strong> {solaires.couleur_panneaux}</div>}
+                                      {solaires.raccordement && <div><strong>Raccordement :</strong> {solaires.raccordement}</div>}
                                     </div>
                                   </>)}
 
                                   {/* ── AUTRE — DIMENSIONS APPROX ── */}
-                                  {(dimApprox.surface_au_sol_m2 != null || dimApprox.hauteur_m != null || dimApprox.longueur_m != null || dimApprox.largeur_m != null) && (<>
-                                    <div style={HDR}>Dimensions approximatives</div>
-                                    <div style={ROW}>
-                                      {dimApprox.surface_au_sol_m2 != null && <><div style={LBL}>Surface au sol</div><div style={VAL}>{dimApprox.surface_au_sol_m2} m²</div></>}
-                                      {dimApprox.longueur_m != null && <><div style={LBL}>Longueur</div><div style={VAL}>{dimApprox.longueur_m} m</div></>}
-                                      {dimApprox.largeur_m != null && <><div style={LBL}>Largeur</div><div style={VAL}>{dimApprox.largeur_m} m</div></>}
-                                      {dimApprox.hauteur_m != null && <><div style={LBL}>Hauteur</div><div style={VAL}>{dimApprox.hauteur_m} m</div></>}
+                                  {hasDimApprox && (<>
+                                    {maybeHr(hasDimApprox)}
+                                    <div style={GHDR}>Dimensions approximatives</div>
+                                    <div style={GROW}>
+                                      {dimApprox.surface_au_sol_m2 != null && <div><strong>Surface au sol :</strong> {dimApprox.surface_au_sol_m2} m²</div>}
+                                      {dimApprox.longueur_m != null && <div><strong>Longueur :</strong> {dimApprox.longueur_m} m</div>}
+                                      {dimApprox.largeur_m != null && <div><strong>Largeur :</strong> {dimApprox.largeur_m} m</div>}
+                                      {dimApprox.hauteur_m != null && <div><strong>Hauteur :</strong> {dimApprox.hauteur_m} m</div>}
                                     </div>
                                   </>)}
 
                                   {/* ── AUTRE — MATÉRIAUX PRINCIPAUX ── */}
-                                  {matPrinc && typeof matPrinc === 'string' && matPrinc.trim() && (<>
-                                    <div style={HDR}>Matériaux principaux</div>
-                                    <div style={{ fontSize: ui.size.base, color: ui.color.text, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{matPrinc}</div>
+                                  {hasMatPrinc && (<>
+                                    {maybeHr(hasMatPrinc)}
+                                    <div style={GHDR}>Matériaux principaux</div>
+                                    <div style={{ fontSize: 13, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{matPrinc}</div>
                                   </>)}
 
-                                  {/* ── COMMENTAIRE DU CLIENT ── */}
+                                  {/* ── COMMENTAIRE DU CLIENT : plus discret (13px, pas d'italique) ── */}
                                   {data.commentaire && (
-                                    <div style={{ marginTop: ui.space.lg, padding: 10, background: ui.color.bgSuccess, borderRadius: ui.radius.md, fontSize: ui.size.sm, color: ui.color.textSuccess, fontStyle: 'italic', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+                                    <div style={{ marginTop: 12, padding: '8px 10px', background: ui.color.bgSuccess, borderRadius: 6, fontSize: 13, color: ui.color.textSuccess, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
                                       💬 {data.commentaire}
                                     </div>
                                   )}
 
                                   {/* Ancienne description_libre (type autre) */}
                                   {o.description_libre && (
-                                    <div style={{ marginTop: ui.space.sm, fontSize: ui.size.base, color: ui.color.textMuted, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{o.description_libre}</div>
+                                    <div style={{ marginTop: 8, fontSize: 13, color: ui.color.textMuted, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{o.description_libre}</div>
                                   )}
                                 </div>
                               )
