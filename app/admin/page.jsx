@@ -160,10 +160,10 @@ export default function AdminPage() {
   }
   const label = (v) => LABELS[v] || v || '-'
 
-  const computeSectionStatus = (d, photos, croquisFiles) => {
+  const computeSectionStatus = (d, photos, ouvrages) => {
     if (!d) return { progress: 0, sections: [] }
 
-    // Coordonnées (8)
+    // Coordonnées (8 champs CERFA)
     let coordCount = 0
     if (d.client_civilite) coordCount++
     if (d.client_nom) coordCount++
@@ -174,47 +174,17 @@ export default function AdminPage() {
     if (d.client_telephone) coordCount++
     if (d.client_email) coordCount++
 
-    // Construction (10)
-    let constrCount = 0
-    if (d.dimensions_longueur) constrCount++
-    if (d.dimensions_largeur) constrCount++
-    if (d.fondation) constrCount++
-    if (d.hauteur_faitage || d.hauteur_faitage_nsp) constrCount++
-    if (d.hauteur_egout || d.hauteur_egout_nsp) constrCount++
-    if (d.pente_toiture || d.pente_toiture_nsp) constrCount++
-    if (d.debord_toit || d.debord_toit_nsp) constrCount++
-    if (d.materiau_facade) constrCount++
-    if (d.materiau_couverture) constrCount++
-    if (d.menuiserie_materiau || d.menuiserie_couleur) constrCount++
-
-    // Pièces
-    let piecesStatus = 'empty'
-    try {
-      const ouv = JSON.parse(d.ouvertures_description || '[]')
-      if (Array.isArray(ouv) && ouv.length > 0) {
-        const hasComplete = ouv.some(p => p.piece && p.longueur && p.largeur && p.ouvertures?.length > 0)
-        const hasPartial = ouv.some(p => p.piece)
-        piecesStatus = hasComplete ? 'complete' : hasPartial ? 'partial' : 'empty'
-      }
-    } catch { if (d.ouvertures_description) piecesStatus = 'partial' }
-
-    // Croquis
-    const croquisCount = (croquisFiles || []).length
-    let croquisStatus = 'empty'
-    if (croquisCount > 0) {
-      let checklistOk = false
-      try {
-        const cl = JSON.parse(d.croquis_checklist || '{}')
-        checklistOk = cl.murs && cl.pieces && cl.ouvertures && cl.dimensions_batiment
-      } catch {}
-      croquisStatus = checklistOk ? 'complete' : 'partial'
+    // Ouvrages (calculé depuis la liste d'ouvrages répétables)
+    const ouvragesList = Array.isArray(ouvrages) ? ouvrages : []
+    let ouvragesFilled = 0
+    let ouvragesTotal = 0
+    for (const o of ouvragesList) {
+      const { filled, total } = computeOuvrageProgress(o)
+      ouvragesFilled += filled
+      ouvragesTotal += total
     }
-
-    // Chauffage (3)
-    let chauffCount = 0
-    if (d.chauffage_principal) chauffCount++
-    if (d.eau_chaude) chauffCount++
-    if (d.isolation_type) chauffCount++
+    const ouvragesPct = ouvragesTotal > 0 ? Math.round((ouvragesFilled / ouvragesTotal) * 100) : 0
+    const ouvragesStatus = ouvragesList.length === 0 ? 'empty' : ouvragesPct === 100 ? 'complete' : 'partial'
 
     // Terrain (5)
     let terrainCount = 0
@@ -231,24 +201,22 @@ export default function AdminPage() {
     if (d.assainissement) terrainCount++
     if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) terrainCount++
 
-    // Photos (5 max)
-    const photoCount = (photos || []).length
+    // Photos terrain (5 max)
+    const photoCount = Math.min((photos || []).length, 5)
 
-    // Calcul progression globale
-    let total = coordCount + constrCount + chauffCount + terrainCount + photoCount
-    if (piecesStatus === 'complete' || (piecesStatus === 'partial' && (() => { try { const o = JSON.parse(d.ouvertures_description || '[]'); return Array.isArray(o) && o.some(p => p.piece && p.longueur && p.largeur) } catch { return !!d.ouvertures_description } })())) total++
-    else if (piecesStatus === 'partial') { /* partial but no dimensions = 0 */ }
-    if (croquisCount > 0) total++
-    const progress = Math.round((total / 33) * 100)
+    // Progression globale pondérée :
+    //   Coordonnées 20% + Ouvrages 50% + Terrain 20% + Photos 10%
+    const coordPct = coordCount / 8
+    const terrainPct = terrainCount / 5
+    const photoPct = photoCount / 5
+    const ouvragesRatio = ouvragesTotal > 0 ? ouvragesFilled / ouvragesTotal : 0
+    const progress = Math.round((0.2 * coordPct + 0.5 * ouvragesRatio + 0.2 * terrainPct + 0.1 * photoPct) * 100)
 
     const status = (filled, max) => filled === max ? 'complete' : filled > 0 ? 'partial' : 'empty'
 
     const sections = [
       { name: 'Coordonnées', status: status(coordCount, 8), filled: coordCount, max: 8, reason: 'nécessaire pour le CERFA' },
-      { name: 'Construction', status: status(constrCount, 10), filled: constrCount, max: 10, reason: 'nécessaire pour les plans' },
-      { name: 'Pièces', status: piecesStatus, reason: 'dimensions + ouvertures nécessaires pour les plans' },
-      { name: 'Croquis', status: croquisStatus, detail: croquisCount > 0 ? `${croquisCount} fichier${croquisCount > 1 ? 's' : ''}` : null, reason: 'bloquant pour démarrer les plans' },
-      { name: 'Chauffage', status: status(chauffCount, 3), filled: chauffCount, max: 3, reason: 'nécessaire pour l\'étude RE2020' },
+      { name: `Ouvrages ${ouvragesList.length}`, status: ouvragesStatus, detail: `${ouvragesPct}%`, reason: 'dimensions, matériaux et croquis nécessaires pour démarrer les plans' },
       { name: 'Terrain', status: status(terrainCount, 5), filled: terrainCount, max: 5, reason: 'nécessaire pour le plan de masse' },
       { name: 'Photos terrain', status: status(photoCount, 5), filled: photoCount, max: 5, reason: 'nécessaires pour l\'insertion paysagère' },
     ]
@@ -256,8 +224,8 @@ export default function AdminPage() {
     return { progress, sections }
   }
 
-  const computeDetailsProgress = (d, photos, croquisFiles) => {
-    return computeSectionStatus(d, photos, croquisFiles).progress
+  const computeDetailsProgress = (d, photos, ouvrages) => {
+    return computeSectionStatus(d, photos, ouvrages).progress
   }
 
   const fetchProjectDetails = async (projectId) => {
@@ -408,7 +376,7 @@ export default function AdminPage() {
                   )}
                   <span style={{ fontSize: 12 }}>{STATUS_LABELS[p.status] || p.status}</span>
                   {p.status !== 'pending' && projectDetails[p.id] && (() => {
-                    const pct = computeDetailsProgress(projectDetails[p.id], projectPhotos[p.id] || [], projectCroquis[p.id] || [])
+                    const pct = computeDetailsProgress(projectDetails[p.id], projectPhotos[p.id] || [], projectOuvrages[p.id] || [])
                     const cfg = pct === 100 ? { bg: '#e8f5ee', color: '#1a5c3a', text: 'Complet' }
                       : pct >= 70 ? { bg: '#fff3e0', color: '#e65100', text: 'Quasi complet' }
                       : pct > 0 ? { bg: '#fce4ec', color: '#c62828', text: 'Incomplet' }
@@ -874,8 +842,7 @@ export default function AdminPage() {
                   {p.status !== 'pending' && projectDetails[p.id] && (() => {
                     const d = projectDetails[p.id]
                     const photos = projectPhotos[p.id] || []
-                    const croquis = projectCroquis[p.id] || []
-                    const { progress, sections } = computeSectionStatus(d, photos, croquis)
+                    const { progress, sections } = computeSectionStatus(d, photos, projectOuvrages[p.id] || [])
                     const nspOrVal = (val, nsp, unit) => nsp ? 'À proposer' : val ? `${val} ${unit}` : '-'
                     const raccordements = d.raccordement_aucun ? ['Aucun'] : [d.raccordement_eau && 'Eau', d.raccordement_electricite && 'Électricité', d.raccordement_gaz && 'Gaz', d.raccordement_fibre && 'Fibre'].filter(Boolean)
                     const missing = sections.filter(s => s.status !== 'complete')
