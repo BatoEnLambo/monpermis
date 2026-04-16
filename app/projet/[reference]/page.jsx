@@ -10,6 +10,7 @@ import TerrainPhotosUpload from '../../../components/TerrainPhotosUpload'
 import CoordonneesCerfaForm from '../../../components/CoordonneesCerfaForm'
 import OuvragesSection from '../../../components/OuvragesSection'
 import { computeOuvragesGlobalProgress } from '../../../src/config/ouvrageTypes'
+import { computeProjectProgress } from '../../../lib/progress'
 import '../../../styles/dashboard.css'
 
 const ACCENT = "#1a5c3a"
@@ -211,48 +212,13 @@ function ProjetContent() {
     }, 500)
   }, [project?.id])
 
-  // Calcul progression fiche technique
-  // Section 1 (8 pts) : coordonnées
-  // Section 2 (10 pts) : moyenne pondérée de la progression de chaque ouvrage
-  // Section 3 (10 pts) : terrain 5 + photos 5
-  // Total : 28 points
-  const computeProgress = useCallback(() => {
-    if (!details) return 0
-    const d = details
-    let count = 0
-    // Coordonnées (8)
-    if (d.client_civilite) count++
-    if (d.client_nom) count++
-    if (d.client_prenom) count++
-    if (d.client_date_naissance) count++
-    if (d.client_commune_naissance) count++
-    if (d.client_departement_naissance) count++
-    if (d.client_telephone) count++
-    if (d.client_email) count++
-    // Ouvrages (10 pts proportionnels à la complétion moyenne)
-    const ouvragesRatio = computeOuvragesGlobalProgress(ouvrages) // 0..1
-    count += ouvragesRatio * 10
-    // Terrain (5)
-    if (d.parcelle_nsp || d.parcelle_section || d.parcelle_numero) count++
-    if (d.constructions_existantes === false) {
-      count++
-    } else if (d.constructions_existantes === true) {
-      try {
-        const liste = JSON.parse(d.constructions_existantes_liste || '[]')
-        if (Array.isArray(liste) && liste.some(item => item.nom)) count++
-      } catch { if (d.constructions_existantes_liste) count++ }
-    }
-    if (d.implantation_description) count++
-    if (d.assainissement) count++
-    if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) count++
-    // Photos (cap à 5)
-    count += Math.min(photoCount, 5)
-    return Math.round((count / 28) * 100)
-  }, [details, photoCount, ouvrages])
+  // Calcul progression fiche technique (source unique : lib/progress).
+  // Pondération : 20% coordonnées + 50% ouvrages + 20% terrain + 10% photos.
+  // Partagé avec l'admin et le cron /api/reminders.
+  const progress = details ? computeProjectProgress(details, ouvrages, photoCount) : 0
 
   // Sauvegarde du pourcentage en DB pour l'admin et les relances
   const progressSaveRef = useRef(null)
-  const progress = computeProgress()
   useEffect(() => {
     if (!project?.id || progress === undefined || progress === null) return
     if (progressSaveRef.current) clearTimeout(progressSaveRef.current)
@@ -357,7 +323,7 @@ function ProjetContent() {
 
       {/* 2. Timeline avancement */}
       {(() => {
-        const ficheComplete = details ? computeProgress() === 100 : false
+        const ficheComplete = progress === 100
         const states = getTimelineStates(project.status, ficheComplete)
         return (
           <div className="dash-progress" style={{ background: WHITE, border: `1px solid ${GRAY_200}`, borderRadius: 14, padding: 24, marginBottom: 20 }}>
@@ -437,7 +403,6 @@ function ProjetContent() {
 
       {/* Fiche technique — Maison neuve + devis custom */}
       {showFicheTechnique && details && (() => {
-        const progress = computeProgress()
         return (
           <>
             {/* Barre de progression globale — sticky */}

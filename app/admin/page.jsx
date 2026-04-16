@@ -8,6 +8,7 @@ import { getMessages, sendMessage, markAsRead } from '../../lib/messages'
 import AdminNav from '../../components/AdminNav'
 import { formatOuvrageType, getOuvrageType, computeOuvrageProgress } from '../../src/config/ouvrageTypes'
 import { ui } from '../../lib/ui'
+import { computeProjectSections, computeProjectProgress } from '../../lib/progress'
 
 const STATUS_LABELS = {
   pending: '🟡 En attente de paiement',
@@ -161,72 +162,29 @@ export default function AdminPage() {
   }
   const label = (v) => LABELS[v] || v || '-'
 
+  // Wrapper autour de lib/progress qui produit la shape `{ progress, sections }`
+  // attendue par le rendu admin (badges par section + liste des éléments
+  // manquants). Le calcul lui-même est délégué à lib/progress pour rester
+  // aligné avec /projet/[reference] et /api/reminders.
   const computeSectionStatus = (d, photos, ouvrages) => {
     if (!d) return { progress: 0, sections: [] }
-
-    // Coordonnées (8 champs CERFA)
-    let coordCount = 0
-    if (d.client_civilite) coordCount++
-    if (d.client_nom) coordCount++
-    if (d.client_prenom) coordCount++
-    if (d.client_date_naissance) coordCount++
-    if (d.client_commune_naissance) coordCount++
-    if (d.client_departement_naissance) coordCount++
-    if (d.client_telephone) coordCount++
-    if (d.client_email) coordCount++
-
-    // Ouvrages (calculé depuis la liste d'ouvrages répétables)
-    const ouvragesList = Array.isArray(ouvrages) ? ouvrages : []
-    let ouvragesFilled = 0
-    let ouvragesTotal = 0
-    for (const o of ouvragesList) {
-      const { filled, total } = computeOuvrageProgress(o)
-      ouvragesFilled += filled
-      ouvragesTotal += total
-    }
-    const ouvragesPct = ouvragesTotal > 0 ? Math.round((ouvragesFilled / ouvragesTotal) * 100) : 0
-    const ouvragesStatus = ouvragesList.length === 0 ? 'empty' : ouvragesPct === 100 ? 'complete' : 'partial'
-
-    // Terrain (5)
-    let terrainCount = 0
-    if (d.parcelle_nsp || d.parcelle_section || d.parcelle_numero) terrainCount++
-    if (d.constructions_existantes === false) {
-      terrainCount++
-    } else if (d.constructions_existantes === true) {
-      try {
-        const liste = JSON.parse(d.constructions_existantes_liste || '[]')
-        if (Array.isArray(liste) && liste.some(item => item.nom)) terrainCount++
-      } catch { if (d.constructions_existantes_liste) terrainCount++ }
-    }
-    if (d.implantation_description) terrainCount++
-    if (d.assainissement) terrainCount++
-    if (d.raccordement_eau || d.raccordement_electricite || d.raccordement_gaz || d.raccordement_fibre || d.raccordement_aucun) terrainCount++
-
-    // Photos terrain (5 max)
-    const photoCount = Math.min((photos || []).length, 5)
-
-    // Progression globale pondérée :
-    //   Coordonnées 20% + Ouvrages 50% + Terrain 20% + Photos 10%
-    const coordPct = coordCount / 8
-    const terrainPct = terrainCount / 5
-    const photoPct = photoCount / 5
-    const ouvragesRatio = ouvragesTotal > 0 ? ouvragesFilled / ouvragesTotal : 0
-    const progress = Math.round((0.2 * coordPct + 0.5 * ouvragesRatio + 0.2 * terrainPct + 0.1 * photoPct) * 100)
-
-    const status = (filled, max) => filled === max ? 'complete' : filled > 0 ? 'partial' : 'empty'
-
+    const photoCount = Array.isArray(photos) ? photos.length : (photos || 0)
+    const s = computeProjectSections(d, ouvrages, photoCount)
+    const progress = computeProjectProgress(d, ouvrages, photoCount)
+    const statusFor = (ratio) => ratio === 1 ? 'complete' : ratio > 0 ? 'partial' : 'empty'
+    const ouvPct = Math.round(s.ouvrages.ratio * 100)
     const sections = [
-      { name: 'Coordonnées', status: status(coordCount, 8), filled: coordCount, max: 8, reason: 'nécessaire pour le CERFA' },
-      { name: `Ouvrages ${ouvragesList.length}`, status: ouvragesStatus, detail: `${ouvragesPct}%`, reason: 'dimensions, matériaux et croquis nécessaires pour démarrer les plans' },
-      { name: 'Terrain', status: status(terrainCount, 5), filled: terrainCount, max: 5, reason: 'nécessaire pour le plan de masse' },
-      { name: 'Photos terrain', status: status(photoCount, 5), filled: photoCount, max: 5, reason: 'nécessaires pour l\'insertion paysagère' },
+      { name: 'Coordonnées',    status: statusFor(s.coordonnees.ratio), filled: s.coordonnees.filled, max: s.coordonnees.total, reason: 'nécessaire pour le CERFA' },
+      { name: `Ouvrages ${s.ouvrages.count}`, status: statusFor(s.ouvrages.ratio), detail: `${ouvPct}%`, reason: 'dimensions, matériaux et croquis nécessaires pour démarrer les plans' },
+      { name: 'Terrain',        status: statusFor(s.terrain.ratio),     filled: s.terrain.filled,     max: s.terrain.total,     reason: 'nécessaire pour le plan de masse' },
+      { name: 'Photos terrain', status: statusFor(s.photos.ratio),      filled: s.photos.filled,      max: s.photos.total,      reason: 'nécessaires pour l\'insertion paysagère' },
     ]
-
     return { progress, sections }
   }
 
   const computeDetailsProgress = (d, photos, ouvrages) => {
-    return computeSectionStatus(d, photos, ouvrages).progress
+    const photoCount = Array.isArray(photos) ? photos.length : (photos || 0)
+    return computeProjectProgress(d, ouvrages, photoCount)
   }
 
   const fetchProjectDetails = async (projectId) => {

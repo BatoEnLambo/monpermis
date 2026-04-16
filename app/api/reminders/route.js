@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { supabaseAdmin as supabase } from '../../../lib/supabaseAdmin'
-import { computeOuvrageProgress } from '../../../src/config/ouvrageTypes'
+import { computeProjectProgress } from '../../../lib/progress'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -113,91 +113,9 @@ function templateJ7(prenom, typeProjet, clientUrl) {
   `)
 }
 
-// ─── Section 1 : informations personnelles (CERFA) — 8 champs ───
-function computeSection1Ratio(d) {
-  if (!d) return 0
-  const fields = [
-    d.client_civilite,
-    d.client_nom,
-    d.client_prenom,
-    d.client_date_naissance,
-    d.client_commune_naissance,
-    d.client_departement_naissance,
-    d.client_telephone,
-    d.client_email,
-  ]
-  const filled = fields.filter(Boolean).length
-  return filled / fields.length
-}
-
-// ─── Section 3 : terrain — 5 éléments ───
-function computeSection3Ratio(d) {
-  if (!d) return 0
-  let filled = 0
-  const total = 5
-
-  // Parcelle cadastrale
-  if (d.parcelle_nsp || d.parcelle_section || d.parcelle_numero) filled++
-
-  // Constructions existantes
-  if (d.constructions_existantes === false) {
-    filled++
-  } else if (d.constructions_existantes === true) {
-    try {
-      const liste = JSON.parse(d.constructions_existantes_liste || '[]')
-      if (Array.isArray(liste) && liste.some(item => item.nom)) filled++
-    } catch {
-      if (d.constructions_existantes_liste) filled++
-    }
-  }
-
-  // Implantation
-  if (d.implantation_description) filled++
-
-  // Assainissement
-  if (d.assainissement) filled++
-
-  // Raccordements
-  if (
-    d.raccordement_eau ||
-    d.raccordement_electricite ||
-    d.raccordement_gaz ||
-    d.raccordement_fibre ||
-    d.raccordement_aucun
-  ) {
-    filled++
-  }
-
-  return filled / total
-}
-
-// ─── Section 2 : ouvrages — moyenne des progressions individuelles ───
-function computeOuvragesRatio(ouvrages) {
-  if (!Array.isArray(ouvrages) || ouvrages.length === 0) return 0
-  let totalPct = 0
-  for (const o of ouvrages) {
-    const { filled, total } = computeOuvrageProgress({
-      name: o.name,
-      type: o.type,
-      subtype: o.subtype,
-      data: o.data || {},
-    })
-    const pct = total > 0 ? filled / total : 0
-    totalPct += pct
-  }
-  return totalPct / ouvrages.length
-}
-
-// ─── Progression globale pondérée ───
-//   30% section 1 (CERFA) + 50% ouvrages + 20% section 3 (terrain)
-// Retourne un entier 0-100.
-function computeProgress(details, ouvrages) {
-  const s1 = computeSection1Ratio(details)
-  const s2 = computeOuvragesRatio(ouvrages)
-  const s3 = computeSection3Ratio(details)
-  const weighted = 0.3 * s1 + 0.5 * s2 + 0.2 * s3
-  return Math.round(weighted * 100)
-}
+// Le calcul de progression est centralisé dans lib/progress.js
+// (partagé avec /admin et /projet/[reference]).
+// Pondération : 20% coordonnées + 50% ouvrages + 20% terrain + 10% photos.
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
@@ -244,7 +162,18 @@ export async function GET(request) {
         .select('name, type, subtype, data')
         .eq('project_id', p.id)
 
-      const percentage = computeProgress(details, ouvrages || [])
+      // Compter les photos terrain uploadées dans Storage
+      // (documents/{project_id}/photos-terrain/). Le cron ne les comptait
+      // pas avant la refactorisation ; maintenant que lib/progress pèse les
+      // photos pour 10%, il faut les inclure pour rester aligné avec l'UI.
+      const { data: photoFiles } = await supabase.storage
+        .from('documents')
+        .list(`${p.id}/photos-terrain`)
+      const photoCount = (photoFiles || [])
+        .filter(f => f.name && f.name !== '.emptyFolderPlaceholder')
+        .length
+
+      const percentage = computeProjectProgress(details, ouvrages || [], photoCount)
       const clientUrl = `${BASE_URL}/projet/${p.reference}?token=${p.token}`
       const prenom = details?.client_prenom || p.first_name || ''
       // On évite d'injecter "custom" dans le mail client — c'est une valeur
