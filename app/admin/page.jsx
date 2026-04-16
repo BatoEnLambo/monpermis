@@ -7,6 +7,7 @@ import { uploadFile, getDocuments, deleteDocument } from '../../lib/storage'
 import { getMessages, sendMessage, markAsRead } from '../../lib/messages'
 import AdminNav from '../../components/AdminNav'
 import { formatOuvrageType, getOuvrageType, computeOuvrageProgress } from '../../src/config/ouvrageTypes'
+import { ui } from '../../lib/ui'
 
 const STATUS_LABELS = {
   pending: '🟡 En attente de paiement',
@@ -302,21 +303,21 @@ export default function AdminPage() {
   }
 
   return (
-    <div style={{ maxWidth: 1000, margin: '0 auto', padding: '20px' }}>
+    <div style={{ maxWidth: 1000, margin: '0 auto', padding: '20px', fontFamily: ui.font.sans, color: ui.color.text }}>
       <AdminNav onRefresh={fetchProjects} />
 
-      <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
-        <div style={{ padding: '8px 14px', background: '#e8f5ee', borderRadius: 8, fontSize: 13, fontWeight: 600 }}>
+      <div style={{ display: 'flex', gap: ui.space.md, marginBottom: ui.space.xl, flexWrap: 'wrap' }}>
+        <div style={{ padding: `${ui.space.sm}px 14px`, background: ui.color.bgSuccess, borderRadius: ui.radius.md, fontSize: ui.size.sm, fontWeight: ui.weight.semibold }}>
           Total : {projects.length}
         </div>
-        <div style={{ padding: '8px 14px', background: '#e8f5ee', borderRadius: 8, fontSize: 13, fontWeight: 600, color: '#1a5c3a' }}>
+        <div style={{ padding: `${ui.space.sm}px 14px`, background: ui.color.bgSuccess, borderRadius: ui.radius.md, fontSize: ui.size.sm, fontWeight: ui.weight.semibold, color: ui.color.primary }}>
           Payés : {projects.filter(p => p.status !== 'pending').length}
         </div>
-        <div style={{ padding: '8px 14px', background: '#fff3e0', borderRadius: 8, fontSize: 13, fontWeight: 600, color: '#e65100' }}>
+        <div style={{ padding: `${ui.space.sm}px 14px`, background: ui.color.bgWarning, borderRadius: ui.radius.md, fontSize: ui.size.sm, fontWeight: ui.weight.semibold, color: ui.color.textWarning }}>
           En attente : {projects.filter(p => p.status === 'pending').length}
         </div>
         {totalUnread > 0 && (
-          <div style={{ padding: '8px 14px', background: '#fff3e0', borderRadius: 8, fontSize: 13, fontWeight: 600, color: '#e65100' }}>
+          <div style={{ padding: `${ui.space.sm}px 14px`, background: ui.color.bgWarning, borderRadius: ui.radius.md, fontSize: ui.size.sm, fontWeight: ui.weight.semibold, color: ui.color.textWarning }}>
             💬 {totalUnread} message{totalUnread > 1 ? 's' : ''}
           </div>
         )}
@@ -324,12 +325,12 @@ export default function AdminPage() {
 
       {/* Messages non lus */}
       {totalUnread > 0 && (
-        <div style={{ background: '#fff3e0', border: '1px solid #ffe0b2', borderRadius: 12, padding: 20, marginBottom: 24 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ background: '#e65100', color: '#fff', borderRadius: '50%', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700 }}>{totalUnread}</span>
+        <div style={{ background: ui.color.bgWarning, border: '1px solid #ffe0b2', borderRadius: ui.radius.xl, padding: ui.space.xl, marginBottom: ui.space.xxl }}>
+          <div style={{ fontSize: ui.size.lg, fontWeight: ui.weight.bold, marginBottom: ui.space.md, display: 'flex', alignItems: 'center', gap: ui.space.sm }}>
+            <span style={{ background: ui.color.textWarning, color: '#fff', borderRadius: '50%', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: ui.size.sm, fontWeight: ui.weight.bold }}>{totalUnread}</span>
             message{totalUnread > 1 ? 's' : ''} non lu{totalUnread > 1 ? 's' : ''}
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: ui.space.sm }}>
             {projects.filter(p => getUnreadCount(p) > 0).map(p => {
               const unread = getUnreadCount(p)
               const lastMsg = (projectMessages[p.id] || []).filter(m => m.sender === 'client').slice(-1)[0]
@@ -339,15 +340,15 @@ export default function AdminPage() {
                     handleSelectProject(p.id)
                     document.getElementById(`project-${p.id}`)?.scrollIntoView({ behavior: 'smooth' })
                   }}
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: '#fff', borderRadius: 10, cursor: 'pointer', border: '1px solid #ffe0b2', transition: 'background 0.15s' }}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: `${ui.space.md}px ${ui.space.lg}px`, background: '#fff', borderRadius: ui.radius.lg, cursor: 'pointer', border: '1px solid #ffe0b2', transition: 'background 0.15s' }}
                   onMouseOver={e => e.currentTarget.style.background = '#fff8f0'}
                   onMouseOut={e => e.currentTarget.style.background = '#fff'}
                 >
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 600 }}>{p.first_name} {p.last_name} <span style={{ color: '#888', fontWeight: 400 }}>({p.reference})</span></div>
-                    {lastMsg && <div style={{ fontSize: 13, color: '#666', marginTop: 2, maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lastMsg.content}</div>}
+                    <div style={{ fontSize: ui.size.base, fontWeight: ui.weight.semibold }}>{p.first_name} {p.last_name} <span style={{ color: ui.color.textLight, fontWeight: ui.weight.regular }}>({p.reference})</span></div>
+                    {lastMsg && <div style={{ fontSize: ui.size.sm, color: ui.color.textLight, marginTop: 2, maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lastMsg.content}</div>}
                   </div>
-                  <span style={{ background: '#e65100', color: '#fff', borderRadius: 12, padding: '2px 10px', fontSize: 12, fontWeight: 700 }}>{unread}</span>
+                  <span style={{ background: ui.color.textWarning, color: '#fff', borderRadius: ui.radius.xl, padding: '2px 10px', fontSize: ui.size.xs, fontWeight: ui.weight.bold }}>{unread}</span>
                 </div>
               )
             })}
@@ -358,33 +359,33 @@ export default function AdminPage() {
       {loading ? (
         <p>Chargement...</p>
       ) : projects.length === 0 ? (
-        <p style={{ color: '#888' }}>Aucun projet pour le moment.</p>
+        <p style={{ color: ui.color.textLight }}>Aucun projet pour le moment.</p>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: ui.space.sm }}>
           {projects.map(p => (
-            <div key={p.id} id={`project-${p.id}`} style={{ border: '1px solid #e8e7e4', borderRadius: 10, padding: 16, background: '#fff', cursor: 'pointer' }}
+            <div key={p.id} id={`project-${p.id}`} style={{ border: `1px solid ${ui.color.border}`, borderRadius: ui.radius.lg, padding: ui.space.lg, background: '#fff', cursor: 'pointer' }}
               onClick={() => handleSelectProject(p.id)}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: ui.space.sm }}>
                 <div>
-                  <span style={{ fontWeight: 700, fontSize: 15 }}>{p.reference}</span>
-                  <span style={{ color: '#888', fontSize: 13, marginLeft: 8 }}>{p.first_name} {p.last_name}</span>
+                  <span style={{ fontWeight: ui.weight.bold, fontSize: ui.size.md }}>{p.reference}</span>
+                  <span style={{ color: ui.color.textLight, fontSize: ui.size.sm, marginLeft: ui.space.sm }}>{p.first_name} {p.last_name}</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <span style={{ fontSize: 15, fontWeight: 600 }}>{p.price ? p.price + ' €' : 'Sur devis'}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: ui.space.md }}>
+                  <span style={{ fontSize: ui.size.md, fontWeight: ui.weight.semibold }}>{p.price ? p.price + ' €' : 'Sur devis'}</span>
                   {p.options && p.options.includes('RE2020') && (
-                    <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 6, background: '#e8f5ee', color: '#1a5c3a' }}>RE2020</span>
+                    <span style={{ fontSize: 10, fontWeight: ui.weight.semibold, padding: '2px 6px', borderRadius: ui.radius.sm, background: ui.color.bgSuccess, color: ui.color.primary }}>RE2020</span>
                   )}
-                  <span style={{ fontSize: 12 }}>{STATUS_LABELS[p.status] || p.status}</span>
+                  <span style={{ fontSize: ui.size.xs }}>{STATUS_LABELS[p.status] || p.status}</span>
                   {p.status !== 'pending' && projectDetails[p.id] && (() => {
                     const pct = computeDetailsProgress(projectDetails[p.id], projectPhotos[p.id] || [], projectOuvrages[p.id] || [])
-                    const cfg = pct === 100 ? { bg: '#e8f5ee', color: '#1a5c3a', text: 'Complet' }
-                      : pct >= 70 ? { bg: '#fff3e0', color: '#e65100', text: 'Quasi complet' }
-                      : pct > 0 ? { bg: '#fce4ec', color: '#c62828', text: 'Incomplet' }
-                      : { bg: '#f5f4f2', color: '#888', text: 'Vide' }
-                    return <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 8, background: cfg.bg, color: cfg.color }}>{pct}% — {cfg.text}</span>
+                    const cfg = pct === 100 ? { bg: ui.color.bgSuccess, color: ui.color.textSuccess, text: 'Complet' }
+                      : pct >= 70 ? { bg: ui.color.bgWarning, color: ui.color.textWarning, text: 'Quasi complet' }
+                      : pct > 0 ? { bg: '#fce4ec', color: ui.color.textError, text: 'Incomplet' }
+                      : { bg: ui.color.bgMuted, color: ui.color.textLight, text: 'Vide' }
+                    return <span style={{ fontSize: 11, fontWeight: ui.weight.semibold, padding: '2px 8px', borderRadius: ui.radius.md, background: cfg.bg, color: cfg.color }}>{pct}% — {cfg.text}</span>
                   })()}
                   {getUnreadCount(p) > 0 && (
-                    <span style={{ background: '#e65100', color: '#fff', borderRadius: 10, padding: '2px 8px', fontSize: 11, fontWeight: 700, marginLeft: 8 }}>
+                    <span style={{ background: ui.color.textWarning, color: '#fff', borderRadius: ui.radius.lg, padding: '2px 8px', fontSize: 11, fontWeight: ui.weight.bold, marginLeft: ui.space.sm }}>
                       {getUnreadCount(p)} msg
                     </span>
                   )}
@@ -392,7 +393,7 @@ export default function AdminPage() {
               </div>
 
               {selected === p.id && (
-                <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #f0f0f0', fontSize: 14 }} onClick={e => e.stopPropagation()}>
+                <div style={{ marginTop: ui.space.lg, paddingTop: ui.space.lg, borderTop: `1px solid ${ui.color.border}`, fontSize: ui.size.base }} onClick={e => e.stopPropagation()}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 24px' }}>
                     {p.title && (
                       <div style={{ gridColumn: '1 / -1' }}><strong>Titre :</strong> {p.title}</div>
@@ -416,23 +417,23 @@ export default function AdminPage() {
 
                   {/* Lien magique */}
                   {p.token && (
-                    <div style={{ marginTop: 16, padding: 12, background: '#f5f4f2', borderRadius: 8 }}>
-                      <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>Lien client :</div>
+                    <div style={{ marginTop: ui.space.lg, padding: ui.space.md, background: ui.color.bgMuted, borderRadius: ui.radius.md }}>
+                      <div style={{ fontSize: ui.size.xs, color: ui.color.textLight, marginBottom: ui.space.xs }}>Lien client :</div>
                       <a href={`/projet/${p.reference}?token=${p.token}`} target="_blank" rel="noopener noreferrer"
-                        style={{ fontSize: 13, color: '#1a5c3a', wordBreak: 'break-all' }}>
+                        style={{ fontSize: ui.size.sm, color: ui.color.primary, wordBreak: 'break-all' }}>
                         /projet/{p.reference}?token={p.token}
                       </a>
                     </div>
                   )}
 
                   {/* Changement de statut */}
-                  <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 600 }}>Changer le statut :</span>
+                  <div style={{ marginTop: ui.space.lg, display: 'flex', alignItems: 'center', gap: ui.space.sm }}>
+                    <span style={{ fontSize: ui.size.sm, fontWeight: ui.weight.semibold }}>Changer le statut :</span>
                     <select
                       value={p.status}
                       onChange={(e) => { e.stopPropagation(); updateStatus(p.id, e.target.value) }}
                       onClick={(e) => e.stopPropagation()}
-                      style={{ padding: '6px 10px', borderRadius: 6, border: '1px solid #ddd', fontSize: 14 }}
+                      style={{ padding: '6px 10px', borderRadius: ui.radius.sm, border: `1px solid ${ui.color.border}`, fontSize: ui.size.base }}
                     >
                       {STATUS_OPTIONS.map(s => (
                         <option key={s} value={s}>{STATUS_LABELS[s]}</option>
@@ -447,11 +448,11 @@ export default function AdminPage() {
                     const vUnit = (val, unit) => (val == null || val === '') ? '—' : `${val} ${unit}`
                     const vNsp = (val, unknown, unit) => unknown ? 'NSP' : vUnit(val, unit)
                     const matVal = (val, autre) => (val === 'Autre' && autre) ? autre : (val || '—')
-                    const MONO = { fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace" }
-                    const ROW = { display: 'grid', gridTemplateColumns: '180px 1fr', gap: '4px 12px', fontSize: 13, lineHeight: 1.6 }
-                    const LBL = { fontSize: 13, fontWeight: 600, color: '#44433f' }
-                    const VAL = { fontSize: 14, color: '#1c1c1a', ...MONO }
-                    const HDR = { fontSize: 13, fontWeight: 700, color: '#1a5c3a', textTransform: 'uppercase', letterSpacing: '0.04em', marginTop: 16, marginBottom: 8 }
+                    const MONO = { fontFamily: ui.font.mono }
+                    const ROW = { display: 'grid', gridTemplateColumns: '180px 1fr', gap: `${ui.space.xs}px ${ui.space.md}px`, fontSize: ui.size.sm, lineHeight: 1.6 }
+                    const LBL = { fontSize: ui.size.sm, fontWeight: ui.weight.semibold, color: ui.color.textMuted }
+                    const VAL = { fontSize: ui.size.base, color: ui.color.text, ...MONO }
+                    const HDR = { fontSize: ui.size.sm, fontWeight: ui.weight.bold, color: ui.color.primary, textTransform: 'uppercase', letterSpacing: '0.04em', marginTop: ui.space.lg, marginBottom: ui.space.sm }
 
                     const exportJson = (o) => {
                       const blob = new Blob([JSON.stringify({ name: o.name, type: o.type, subtype: o.subtype, data: o.data }, null, 2)], { type: 'application/json' })
@@ -466,14 +467,14 @@ export default function AdminPage() {
                     }
 
                     return (
-                      <div style={{ marginTop: 16 }}>
-                        <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, color: '#1c1c1a' }}>
+                      <div style={{ marginTop: ui.space.lg }}>
+                        <div style={{ fontSize: ui.size.base, fontWeight: ui.weight.bold, marginBottom: ui.space.md, color: ui.color.text }}>
                           Ouvrages ({list.length})
                         </div>
                         {list.length === 0 ? (
-                          <div style={{ fontSize: 13, color: '#888' }}>Aucun ouvrage déclaré.</div>
+                          <div style={{ fontSize: ui.size.sm, color: ui.color.textLight }}>Aucun ouvrage déclaré.</div>
                         ) : (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: ui.space.lg }}>
                             {list.map(o => {
                               const type = getOuvrageType(o.type)
                               const data = o.data || {}
@@ -506,18 +507,18 @@ export default function AdminPage() {
                               const isPdf = (u) => (u || '').toLowerCase().endsWith('.pdf')
 
                               return (
-                                <div key={o.id} style={{ background: '#fff', border: '1px solid #e8e7e4', borderRadius: 12, padding: 20 }}>
+                                <div key={o.id} style={{ background: '#fff', border: `1px solid ${ui.color.border}`, borderRadius: ui.radius.xl, padding: ui.space.xl, boxShadow: ui.shadow.card }}>
 
                                   {/* ── HEADER ── */}
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: ui.space.md, marginBottom: ui.space.lg }}>
                                     <span style={{ fontSize: 28 }}>{type?.icon || '📦'}</span>
                                     <div style={{ flex: 1, minWidth: 0 }}>
-                                      <div style={{ fontSize: 18, fontWeight: 700, color: '#1c1c1a' }}>{o.name}</div>
-                                      <div style={{ fontSize: 13, color: '#8a8985', marginTop: 2 }}>{formatOuvrageType(o.type, o.subtype)}</div>
+                                      <div style={{ fontSize: ui.size.xl, fontWeight: ui.weight.bold, color: ui.color.text }}>{o.name}</div>
+                                      <div style={{ fontSize: ui.size.sm, color: ui.color.textLight, marginTop: 2 }}>{formatOuvrageType(o.type, o.subtype)}</div>
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-                                      <span style={{ fontSize: 12, fontWeight: 700, padding: '4px 10px', borderRadius: 10, background: pct === 100 ? '#e8f5ee' : '#fff3e0', color: pct === 100 ? '#1a5c3a' : '#e65100' }}>{pct}%</span>
-                                      <button onClick={(e) => { e.stopPropagation(); exportJson(o) }} style={{ fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 8, border: '1px solid #d4d3d0', background: '#fff', color: '#44433f', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                                      <span style={{ fontSize: ui.size.xs, fontWeight: ui.weight.bold, padding: `${ui.space.xs}px 10px`, borderRadius: ui.radius.lg, background: pct === 100 ? ui.color.bgSuccess : ui.color.bgWarning, color: pct === 100 ? ui.color.textSuccess : ui.color.textWarning }}>{pct}%</span>
+                                      <button onClick={(e) => { e.stopPropagation(); exportJson(o) }} style={{ fontSize: ui.size.xs, fontWeight: ui.weight.semibold, padding: `${ui.space.xs}px 10px`, borderRadius: ui.radius.md, border: `1px solid ${ui.color.border}`, background: '#fff', color: ui.color.textMuted, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                                         📋 Exporter JSON
                                       </button>
                                     </div>
@@ -525,16 +526,16 @@ export default function AdminPage() {
 
                                   {/* ── CROQUIS DU CLIENT ── */}
                                   {croquisUrls.length > 0 && (
-                                    <div style={{ marginBottom: 20 }}>
-                                      <div style={{ fontSize: 13, fontWeight: 700, color: '#1c1c1a', marginBottom: 8 }}>Croquis du client</div>
+                                    <div style={{ marginBottom: ui.space.xl }}>
+                                      <div style={{ fontSize: ui.size.sm, fontWeight: ui.weight.bold, color: ui.color.text, marginBottom: ui.space.sm }}>Croquis du client</div>
                                       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                                         {croquisUrls.map(url => isPdf(url) ? (
-                                          <a key={url} href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 600, color: '#1a5c3a', textDecoration: 'none' }}>
+                                          <a key={url} href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: ui.space.sm, fontSize: ui.size.sm, fontWeight: ui.weight.semibold, color: ui.color.primary, textDecoration: 'none' }}>
                                             📄 Ouvrir le PDF
                                           </a>
                                         ) : (
                                           <a key={url} href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'block' }}>
-                                            <img src={url} alt="croquis" style={{ maxWidth: 600, width: '100%', objectFit: 'contain', borderRadius: 8, border: '1px solid #e8e7e4' }} />
+                                            <img src={url} alt="croquis" style={{ maxWidth: 600, width: '100%', objectFit: 'contain', borderRadius: ui.radius.md, border: `1px solid ${ui.color.border}` }} />
                                           </a>
                                         ))}
                                       </div>
@@ -543,12 +544,12 @@ export default function AdminPage() {
 
                                   {/* ── Photos ouvrage (anciennes photo_urls) ── */}
                                   {(o.photo_urls || []).length > 0 && (
-                                    <div style={{ marginBottom: 20 }}>
-                                      <div style={{ fontSize: 13, fontWeight: 700, color: '#1c1c1a', marginBottom: 8 }}>Photos</div>
+                                    <div style={{ marginBottom: ui.space.xl }}>
+                                      <div style={{ fontSize: ui.size.sm, fontWeight: ui.weight.bold, color: ui.color.text, marginBottom: ui.space.sm }}>Photos</div>
                                       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                                         {o.photo_urls.map(url => (
                                           <a key={url} href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'block' }}>
-                                            <img src={url} alt="" style={{ maxWidth: 280, maxHeight: 200, objectFit: 'contain', borderRadius: 8, border: '1px solid #e8e7e4' }} />
+                                            <img src={url} alt="" style={{ maxWidth: 280, maxHeight: 200, objectFit: 'contain', borderRadius: ui.radius.md, border: `1px solid ${ui.color.border}` }} />
                                           </a>
                                         ))}
                                       </div>
@@ -582,13 +583,13 @@ export default function AdminPage() {
                                   {/* ── OUVERTURES ── */}
                                   {ouvs.length > 0 && (<>
                                     <div style={HDR}>Ouvertures ({ouvs.length})</div>
-                                    <div style={{ fontSize: 13, lineHeight: 1.8 }}>
+                                    <div style={{ fontSize: ui.size.sm, lineHeight: 1.8 }}>
                                       {ouvs.map((ou, i) => (
-                                        <div key={i} style={{ display: 'grid', gridTemplateColumns: '50px 1fr 140px 1fr', gap: '0 12px', ...MONO, fontSize: 14, color: '#1c1c1a' }}>
+                                        <div key={i} style={{ display: 'grid', gridTemplateColumns: '50px 1fr 140px 1fr', gap: `0 ${ui.space.md}px`, ...MONO, fontSize: ui.size.base, color: ui.color.text }}>
                                           <span>{ou.nombre || 1}×</span>
                                           <span>{ou.type || '—'}</span>
                                           <span>{(ou.largeur_cm && ou.hauteur_cm) ? `${ou.largeur_cm} × ${ou.hauteur_cm} cm` : '—'}</span>
-                                          <span style={{ color: '#8a8985' }}>{ou.facade || '—'}</span>
+                                          <span style={{ color: ui.color.textLight }}>{ou.facade || '—'}</span>
                                         </div>
                                       ))}
                                     </div>
@@ -605,7 +606,7 @@ export default function AdminPage() {
                                     {raccord.description_existant && (
                                       <div style={{ marginTop: 8 }}>
                                         <div style={LBL}>Existant</div>
-                                        <div style={{ fontSize: 14, color: '#1c1c1a', marginTop: 4, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{raccord.description_existant}</div>
+                                        <div style={{ fontSize: ui.size.base, color: ui.color.text, marginTop: ui.space.xs, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{raccord.description_existant}</div>
                                       </div>
                                     )}
                                   </>)}
@@ -756,11 +757,11 @@ export default function AdminPage() {
                                     <div style={HDR}>Modifications ouvertures ({modifOuvs.length})</div>
                                     <div style={{ fontSize: 13, lineHeight: 1.8 }}>
                                       {modifOuvs.map((m, i) => (
-                                        <div key={i} style={{ display: 'grid', gridTemplateColumns: '80px 1fr 140px 1fr', gap: '0 12px', ...MONO, fontSize: 14, color: '#1c1c1a' }}>
-                                          <span style={{ color: '#8a8985' }}>{m.action || '—'}</span>
+                                        <div key={i} style={{ display: 'grid', gridTemplateColumns: '80px 1fr 140px 1fr', gap: '0 12px', ...MONO, fontSize: ui.size.base, color: ui.color.text }}>
+                                          <span style={{ color: ui.color.textLight }}>{m.action || '—'}</span>
                                           <span>{m.type_ouverture || '—'}</span>
                                           <span>{(m.largeur_cm && m.hauteur_cm) ? `${m.largeur_cm} × ${m.hauteur_cm} cm` : '—'}</span>
-                                          <span style={{ color: '#8a8985' }}>{[m.facade, m.materiau_menuiserie, m.couleur_ral].filter(Boolean).join(' — ') || '—'}</span>
+                                          <span style={{ color: ui.color.textLight }}>{[m.facade, m.materiau_menuiserie, m.couleur_ral].filter(Boolean).join(' — ') || '—'}</span>
                                         </div>
                                       ))}
                                     </div>
@@ -783,11 +784,11 @@ export default function AdminPage() {
                                     <div style={HDR}>Changement menuiseries ({changMenuis.length})</div>
                                     <div style={{ fontSize: 13, lineHeight: 1.8 }}>
                                       {changMenuis.map((m, i) => (
-                                        <div key={i} style={{ display: 'grid', gridTemplateColumns: '50px 1fr 140px 1fr', gap: '0 12px', ...MONO, fontSize: 14, color: '#1c1c1a' }}>
+                                        <div key={i} style={{ display: 'grid', gridTemplateColumns: '50px 1fr 140px 1fr', gap: '0 12px', ...MONO, fontSize: ui.size.base, color: ui.color.text }}>
                                           <span>{m.nombre || 1}×</span>
                                           <span>{m.type || '—'}{m.dimensions_standard ? ` (${m.dimensions_standard})` : (m.largeur_cm || m.hauteur_cm) ? ` (${m.largeur_cm || '—'}×${m.hauteur_cm || '—'} cm)` : ''}</span>
-                                          <span style={{ color: '#8a8985' }}>{(m.materiau_actuel || m.materiau_futur) ? `${m.materiau_actuel || '—'} → ${m.materiau_futur || '—'}` : '—'}</span>
-                                          <span style={{ color: '#8a8985' }}>{[m.vitrage, m.couleur_future_ral].filter(Boolean).join(' — ') || '—'}</span>
+                                          <span style={{ color: ui.color.textLight }}>{(m.materiau_actuel || m.materiau_futur) ? `${m.materiau_actuel || '—'} → ${m.materiau_futur || '—'}` : '—'}</span>
+                                          <span style={{ color: ui.color.textLight }}>{[m.vitrage, m.couleur_future_ral].filter(Boolean).join(' — ') || '—'}</span>
                                         </div>
                                       ))}
                                     </div>
@@ -849,19 +850,19 @@ export default function AdminPage() {
                                   {/* ── AUTRE — MATÉRIAUX PRINCIPAUX ── */}
                                   {matPrinc && typeof matPrinc === 'string' && matPrinc.trim() && (<>
                                     <div style={HDR}>Matériaux principaux</div>
-                                    <div style={{ fontSize: 14, color: '#1c1c1a', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{matPrinc}</div>
+                                    <div style={{ fontSize: ui.size.base, color: ui.color.text, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{matPrinc}</div>
                                   </>)}
 
                                   {/* ── COMMENTAIRE DU CLIENT ── */}
                                   {data.commentaire && (
-                                    <div style={{ marginTop: 16, padding: 10, background: '#e8f5ee', borderRadius: 8, fontSize: 13, color: '#1a5c3a', fontStyle: 'italic', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+                                    <div style={{ marginTop: ui.space.lg, padding: 10, background: ui.color.bgSuccess, borderRadius: ui.radius.md, fontSize: ui.size.sm, color: ui.color.textSuccess, fontStyle: 'italic', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
                                       💬 {data.commentaire}
                                     </div>
                                   )}
 
                                   {/* Ancienne description_libre (type autre) */}
                                   {o.description_libre && (
-                                    <div style={{ marginTop: 8, fontSize: 14, color: '#44433f', whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{o.description_libre}</div>
+                                    <div style={{ marginTop: ui.space.sm, fontSize: ui.size.base, color: ui.color.textMuted, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{o.description_libre}</div>
                                   )}
                                 </div>
                               )
@@ -881,45 +882,45 @@ export default function AdminPage() {
                     const raccordements = d.raccordement_aucun ? ['Aucun'] : [d.raccordement_eau && 'Eau', d.raccordement_electricite && 'Électricité', d.raccordement_gaz && 'Gaz', d.raccordement_fibre && 'Fibre'].filter(Boolean)
                     const missing = sections.filter(s => s.status !== 'complete')
                     const statusIcon = { complete: '✅', partial: '🟡', empty: '⚪' }
-                    const statusBg = { complete: '#e8f5ee', partial: '#fff3e0', empty: '#f5f4f2' }
-                    const statusColor = { complete: '#1a5c3a', partial: '#e65100', empty: '#888' }
+                    const statusBg = { complete: ui.color.bgSuccess, partial: ui.color.bgWarning, empty: ui.color.bgMuted }
+                    const statusColor = { complete: ui.color.textSuccess, partial: ui.color.textWarning, empty: ui.color.textLight }
                     return (
-                      <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #f0f0f0' }}>
+                      <div style={{ marginTop: ui.space.xl, paddingTop: ui.space.lg, borderTop: `1px solid ${ui.color.border}` }}>
 
                         {/* État du dossier */}
-                        <div style={{ background: '#fafaf9', border: '1px solid #e8e7e4', borderRadius: 10, padding: 16, marginBottom: 16 }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                            <div style={{ fontSize: 14, fontWeight: 700 }}>État du dossier</div>
-                            <span style={{ fontSize: 13, fontWeight: 700, padding: '2px 10px', borderRadius: 10, background: progress === 100 ? '#e8f5ee' : '#fff3e0', color: progress === 100 ? '#1a5c3a' : '#e65100' }}>
+                        <div style={{ background: ui.color.bgSoft, border: `1px solid ${ui.color.border}`, borderRadius: ui.radius.lg, padding: ui.space.lg, marginBottom: ui.space.lg }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: ui.space.md }}>
+                            <div style={{ fontSize: ui.size.lg, fontWeight: ui.weight.semibold }}>État du dossier</div>
+                            <span style={{ fontSize: ui.size.sm, fontWeight: ui.weight.bold, padding: '2px 10px', borderRadius: ui.radius.lg, background: progress === 100 ? ui.color.bgSuccess : ui.color.bgWarning, color: progress === 100 ? ui.color.textSuccess : ui.color.textWarning }}>
                               {progress}%
                             </span>
                           </div>
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: missing.length > 0 ? 12 : 0 }}>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: missing.length > 0 ? ui.space.md : 0 }}>
                             {sections.map(s => (
-                              <span key={s.name} style={{ fontSize: 11, fontWeight: 500, padding: '3px 8px', borderRadius: 6, background: statusBg[s.status], color: statusColor[s.status], whiteSpace: 'nowrap' }}>
+                              <span key={s.name} style={{ fontSize: 11, fontWeight: ui.weight.medium, padding: '3px 8px', borderRadius: ui.radius.sm, background: statusBg[s.status], color: statusColor[s.status], whiteSpace: 'nowrap' }}>
                                 {statusIcon[s.status]} {s.name}{s.filled !== undefined ? ` ${s.filled}/${s.max}` : ''}
                               </span>
                             ))}
                           </div>
                           {progress === 100 ? (
-                            <div style={{ fontSize: 13, fontWeight: 600, color: '#1a5c3a' }}>✅ Dossier complet — prêt à démarrer</div>
+                            <div style={{ fontSize: ui.size.sm, fontWeight: ui.weight.semibold, color: ui.color.textSuccess }}>✅ Dossier complet — prêt à démarrer</div>
                           ) : missing.length > 0 && (
-                            <div style={{ fontSize: 12, color: '#444', lineHeight: 1.6 }}>
-                              <div style={{ fontWeight: 600, marginBottom: 4, color: '#e65100' }}>⚠ Éléments manquants :</div>
+                            <div style={{ fontSize: ui.size.xs, color: ui.color.textMuted, lineHeight: 1.6 }}>
+                              <div style={{ fontWeight: ui.weight.semibold, marginBottom: ui.space.xs, color: ui.color.textWarning }}>⚠ Éléments manquants :</div>
                               {missing.map(s => (
-                                <div key={s.name}>• <strong>{s.name}</strong> : {s.status === 'empty' ? (s.name === 'Croquis' ? 'aucun fichier uploadé' : s.name === 'Pièces' ? 'aucune pièce renseignée' : `aucun champ rempli`) : s.filled !== undefined ? `${s.filled}/${s.max} remplis` : s.detail || 'partiel'} <span style={{ color: '#888' }}>({s.reason})</span></div>
+                                <div key={s.name}>• <strong>{s.name}</strong> : {s.status === 'empty' ? (s.name === 'Croquis' ? 'aucun fichier uploadé' : s.name === 'Pièces' ? 'aucune pièce renseignée' : `aucun champ rempli`) : s.filled !== undefined ? `${s.filled}/${s.max} remplis` : s.detail || 'partiel'} <span style={{ color: ui.color.textLight }}>({s.reason})</span></div>
                               ))}
                             </div>
                           )}
                         </div>
 
                         {/* Groupe 1 — Informations client */}
-                        <div style={{ background: '#fff', border: '1px solid #e8e7e4', borderRadius: 10, padding: 16, marginBottom: 12 }}>
+                        <div style={{ background: '#fff', border: `1px solid ${ui.color.border}`, borderRadius: ui.radius.lg, padding: ui.space.lg, marginBottom: ui.space.md }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-                            <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#1a472a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>1</div>
-                            <div style={{ fontSize: 14, fontWeight: 700, color: '#1a5c3a' }}>Informations client</div>
+                            <div style={{ width: 28, height: 28, borderRadius: '50%', background: ui.color.primaryDark, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: ui.size.sm, fontWeight: ui.weight.bold, flexShrink: 0 }}>1</div>
+                            <div style={{ fontSize: ui.size.lg, fontWeight: ui.weight.semibold, color: ui.color.primary }}>Informations client</div>
                           </div>
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13 }}>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: ui.size.sm }}>
                             <div><strong>Identité :</strong> {[d.client_civilite === 'M' ? 'M.' : d.client_civilite, d.client_nom, d.client_prenom].filter(Boolean).join(' ') || '-'}</div>
                             <div><strong>Date de naissance :</strong> {d.client_date_naissance || '-'}</div>
                             <div><strong>Commune de naissance :</strong> {d.client_commune_naissance || '-'}</div>
@@ -932,15 +933,15 @@ export default function AdminPage() {
                         </div>
 
                         {/* Groupe 3 — Terrain */}
-                        <div style={{ background: '#fff', border: '1px solid #e8e7e4', borderRadius: 10, padding: 16, marginBottom: 12 }}>
+                        <div style={{ background: '#fff', border: `1px solid ${ui.color.border}`, borderRadius: ui.radius.lg, padding: ui.space.lg, marginBottom: ui.space.md }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-                            <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#1a472a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>3</div>
-                            <div style={{ fontSize: 14, fontWeight: 700, color: '#1a5c3a' }}>Terrain</div>
+                            <div style={{ width: 28, height: 28, borderRadius: '50%', background: ui.color.primaryDark, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: ui.size.sm, fontWeight: ui.weight.bold, flexShrink: 0 }}>3</div>
+                            <div style={{ fontSize: ui.size.lg, fontWeight: ui.weight.semibold, color: ui.color.primary }}>Terrain</div>
                           </div>
 
                           {/* Parcelle */}
-                          <div style={{ fontSize: 12, fontWeight: 600, color: '#1a5c3a', marginBottom: 6 }}>Parcelle</div>
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13 }}>
+                          <div style={{ fontSize: ui.size.xs, fontWeight: ui.weight.semibold, color: ui.color.primary, marginBottom: 6 }}>Parcelle</div>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: ui.size.sm }}>
                             {d.parcelle_nsp ? (
                               <div style={{ gridColumn: '1 / -1' }}><strong>Parcelle :</strong> Non renseigné par le client</div>
                             ) : (d.parcelle_section || d.parcelle_numero || d.parcelle_surface) ? (
@@ -949,16 +950,16 @@ export default function AdminPage() {
                           </div>
 
                           {/* Constructions existantes */}
-                          <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '12px 0' }} />
-                          <div style={{ fontSize: 12, fontWeight: 600, color: '#1a5c3a', marginBottom: 6 }}>Constructions existantes</div>
-                          <div style={{ fontSize: 13 }}>
+                          <hr style={{ border: 'none', borderTop: `1px solid ${ui.color.border}`, margin: '12px 0' }} />
+                          <div style={{ fontSize: ui.size.xs, fontWeight: ui.weight.semibold, color: ui.color.primary, marginBottom: 6 }}>Constructions existantes</div>
+                          <div style={{ fontSize: ui.size.sm }}>
                             <strong>Constructions existantes :</strong>{' '}
                             {d.constructions_existantes === true ? (() => {
                               let liste = []
                               try { liste = JSON.parse(d.constructions_existantes_liste || '[]') } catch {}
                               if (Array.isArray(liste) && liste.length > 0) {
                                 return <div style={{ marginTop: 4 }}>{liste.map((c, i) => (
-                                  <div key={i} style={{ background: '#fafaf9', border: '1px solid #e8e7e4', borderRadius: 6, padding: '6px 10px', marginTop: 4, fontSize: 12 }}>
+                                  <div key={i} style={{ background: ui.color.bgSoft, border: `1px solid ${ui.color.border}`, borderRadius: ui.radius.sm, padding: '6px 10px', marginTop: 4, fontSize: ui.size.xs }}>
                                     <strong>{c.nom || '(sans nom)'}</strong>
                                     {c.surface ? ` — ${c.surface} m²` : ''}
                                     {c.annee ? ` — ${c.annee}` : ''}
@@ -972,9 +973,9 @@ export default function AdminPage() {
                           </div>
 
                           {/* Implantation, assainissement, raccordements */}
-                          <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '12px 0' }} />
-                          <div style={{ fontSize: 12, fontWeight: 600, color: '#1a5c3a', marginBottom: 6 }}>Emplacement et raccordements</div>
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13 }}>
+                          <hr style={{ border: 'none', borderTop: `1px solid ${ui.color.border}`, margin: '12px 0' }} />
+                          <div style={{ fontSize: ui.size.xs, fontWeight: ui.weight.semibold, color: ui.color.primary, marginBottom: 6 }}>Emplacement et raccordements</div>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: ui.size.sm }}>
                             <div><strong>Assainissement :</strong> {label(d.assainissement)}</div>
                             <div><strong>Raccordements :</strong> {raccordements.length > 0 ? raccordements.join(', ') : '-'}</div>
                             <div style={{ gridColumn: '1 / -1' }}><strong>Implantation :</strong> {d.implantation_description || '-'}</div>
@@ -983,11 +984,11 @@ export default function AdminPage() {
                           {/* Photos terrain */}
                           {photos.length > 0 && (
                             <>
-                              <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '12px 0' }} />
-                              <div style={{ fontSize: 12, fontWeight: 600, color: '#1a5c3a', marginBottom: 6 }}>Photos terrain ({photos.length}/5)</div>
-                              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                              <hr style={{ border: 'none', borderTop: `1px solid ${ui.color.border}`, margin: '12px 0' }} />
+                              <div style={{ fontSize: ui.size.xs, fontWeight: ui.weight.semibold, color: ui.color.primary, marginBottom: 6 }}>Photos terrain ({photos.length}/5)</div>
+                              <div style={{ display: 'flex', gap: ui.space.sm, flexWrap: 'wrap' }}>
                                 {photos.map((photo, i) => (
-                                  <a key={i} href={photo.url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: 80, height: 60, borderRadius: 6, overflow: 'hidden', border: '1px solid #e8e7e4' }}>
+                                  <a key={i} href={photo.url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: 80, height: 60, borderRadius: ui.radius.sm, overflow: 'hidden', border: `1px solid ${ui.color.border}` }}>
                                     <img src={photo.url} alt={photo.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                                   </a>
                                 ))}
@@ -1001,59 +1002,59 @@ export default function AdminPage() {
 
                   {/* Documents client */}
                   {projectDocs[p.id] && (
-                    <div style={{ marginTop: 20 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                        <div style={{ fontSize: 14, fontWeight: 700 }}>Documents client</div>
+                    <div style={{ marginTop: ui.space.xl }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: ui.space.sm }}>
+                        <div style={{ fontSize: ui.size.lg, fontWeight: ui.weight.semibold }}>Documents client</div>
                         <button
                           onClick={(e) => { e.stopPropagation(); handleDownloadAll(p) }}
                           disabled={zipping === p.id}
                           style={{
-                            padding: '6px 14px', borderRadius: 8, border: '1px solid #ddd', background: '#fff',
-                            fontSize: 13, fontWeight: 600, cursor: zipping === p.id ? 'default' : 'pointer',
-                            opacity: zipping === p.id ? 0.6 : 1, color: '#1a5c3a',
+                            padding: '10px 18px', borderRadius: ui.radius.md, border: `1px solid ${ui.color.border}`, background: '#fff',
+                            fontSize: ui.size.sm, fontWeight: ui.weight.semibold, cursor: zipping === p.id ? 'default' : 'pointer',
+                            opacity: zipping === p.id ? 0.6 : 1, color: ui.color.primary,
                           }}
                         >
                           {zipping === p.id ? 'Téléchargement...' : '📥 Télécharger tout (.zip)'}
                         </button>
                       </div>
                       {projectDocs[p.id].filter(d => d.uploaded_by === 'client').length > 0 ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: ui.space.xs }}>
                           {projectDocs[p.id].filter(d => d.uploaded_by === 'client').map(doc => (
-                            <div key={doc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f0f0f0' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <div key={doc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${ui.color.border}` }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: ui.space.sm }}>
                                 <span style={{ fontSize: 11 }}>📄</span>
-                                <span style={{ fontSize: 13 }}>{doc.file_name}</span>
-                                <span style={{ fontSize: 11, color: '#888' }}>{new Date(doc.created_at).toLocaleDateString('fr-FR')}</span>
+                                <span style={{ fontSize: ui.size.sm }}>{doc.file_name}</span>
+                                <span style={{ fontSize: ui.size.xs, color: ui.color.textLight }}>{new Date(doc.created_at).toLocaleDateString('fr-FR')}</span>
                               </div>
                               <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
-                                style={{ fontSize: 12, color: '#1a5c3a', fontWeight: 600, textDecoration: 'none' }}>
+                                style={{ fontSize: ui.size.xs, color: ui.color.primary, fontWeight: ui.weight.semibold, textDecoration: 'none' }}>
                                 Télécharger
                               </a>
                             </div>
                           ))}
                         </div>
                       ) : (
-                        <p style={{ fontSize: 13, color: '#888', margin: 0 }}>Aucun document client pour le moment.</p>
+                        <p style={{ fontSize: ui.size.sm, color: ui.color.textLight, margin: 0 }}>Aucun document client pour le moment.</p>
                       )}
                     </div>
                   )}
 
                   {/* Documents admin (dossier livré) */}
                   {projectDocs[p.id] && (
-                    <div style={{ marginTop: 20 }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Dossier livré</div>
+                    <div style={{ marginTop: ui.space.xl }}>
+                      <div style={{ fontSize: ui.size.lg, fontWeight: ui.weight.semibold, marginBottom: ui.space.sm }}>Dossier livré</div>
                       {projectDocs[p.id].filter(d => d.uploaded_by === 'admin').length > 0 && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 12 }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: ui.space.xs, marginBottom: ui.space.md }}>
                           {projectDocs[p.id].filter(d => d.uploaded_by === 'admin').map(doc => (
-                            <div key={doc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f0f0f0' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <div key={doc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${ui.color.border}` }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: ui.space.sm }}>
                                 <span style={{ fontSize: 11 }}>📦</span>
-                                <span style={{ fontSize: 13 }}>{doc.file_name}</span>
-                                <span style={{ fontSize: 11, color: '#888' }}>{new Date(doc.created_at).toLocaleDateString('fr-FR')}</span>
+                                <span style={{ fontSize: ui.size.sm }}>{doc.file_name}</span>
+                                <span style={{ fontSize: ui.size.xs, color: ui.color.textLight }}>{new Date(doc.created_at).toLocaleDateString('fr-FR')}</span>
                               </div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
                                 <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
-                                  style={{ fontSize: 12, color: '#1a5c3a', fontWeight: 600, textDecoration: 'none' }}>
+                                  style={{ fontSize: ui.size.xs, color: ui.color.primary, fontWeight: ui.weight.semibold, textDecoration: 'none' }}>
                                   Voir
                                 </a>
                                 <span onClick={async (e) => {
@@ -1061,7 +1062,7 @@ export default function AdminPage() {
                                   await deleteDocument(doc.id, doc.file_url)
                                   const docs = await getDocuments(p.id)
                                   setProjectDocs(prev => ({ ...prev, [p.id]: docs }))
-                                }} style={{ color: '#c0392b', cursor: 'pointer', fontSize: 13, marginLeft: 12 }}>
+                                }} style={{ color: ui.color.textError, cursor: 'pointer', fontSize: ui.size.sm, marginLeft: ui.space.md }}>
                                   Supprimer
                                 </span>
                               </div>
@@ -1070,9 +1071,9 @@ export default function AdminPage() {
                         </div>
                       )}
                       <label style={{
-                        display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px',
-                        background: '#1a5c3a', color: '#fff', borderRadius: 8, fontSize: 13, fontWeight: 600,
-                        cursor: adminUploading === p.id ? 'default' : 'pointer', opacity: adminUploading === p.id ? 0.6 : 1,
+                        display: 'inline-flex', alignItems: 'center', gap: ui.space.sm, padding: '10px 18px',
+                        background: ui.color.primary, color: '#fff', borderRadius: ui.radius.md, fontSize: ui.size.sm, fontWeight: ui.weight.semibold,
+                        cursor: adminUploading === p.id ? 'default' : 'pointer', opacity: adminUploading === p.id ? 0.6 : 1, border: 'none',
                       }}>
                         {adminUploading === p.id ? 'Envoi en cours...' : '📤 Uploader le dossier final'}
                         <input type="file" multiple style={{ display: 'none' }}
@@ -1083,11 +1084,11 @@ export default function AdminPage() {
                   )}
 
                   {/* Messagerie client */}
-                  <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #f0f0f0' }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Messagerie client</div>
-                    <div style={{ maxHeight: 300, overflowY: 'auto', marginBottom: 12, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <div style={{ marginTop: ui.space.xl, paddingTop: ui.space.lg, borderTop: `1px solid ${ui.color.border}` }}>
+                    <div style={{ fontSize: ui.size.lg, fontWeight: ui.weight.semibold, marginBottom: ui.space.md }}>Messagerie client</div>
+                    <div style={{ maxHeight: 300, overflowY: 'auto', marginBottom: ui.space.md, display: 'flex', flexDirection: 'column', gap: 6 }}>
                       {(!projectMessages[p.id] || projectMessages[p.id].length === 0) ? (
-                        <div style={{ fontSize: 13, color: '#888' }}>Aucun message</div>
+                        <div style={{ fontSize: ui.size.sm, color: ui.color.textLight }}>Aucun message</div>
                       ) : (
                         projectMessages[p.id].map(msg => (
                           <div key={msg.id} style={{
@@ -1095,20 +1096,20 @@ export default function AdminPage() {
                             maxWidth: '80%',
                           }}>
                             <div style={{
-                              padding: '8px 12px', borderRadius: 10, fontSize: 13, lineHeight: 1.4,
-                              background: msg.sender === 'admin' ? '#1a5c3a' : '#f5f4f2',
-                              color: msg.sender === 'admin' ? '#fff' : '#1c1c1a',
+                              padding: '8px 12px', borderRadius: ui.radius.lg, fontSize: ui.size.sm, lineHeight: 1.4,
+                              background: msg.sender === 'admin' ? ui.color.primary : ui.color.bgMuted,
+                              color: msg.sender === 'admin' ? '#fff' : ui.color.text,
                             }}>
                               {msg.content}
                             </div>
-                            <div style={{ fontSize: 10, color: '#888', marginTop: 2, textAlign: msg.sender === 'admin' ? 'right' : 'left' }}>
+                            <div style={{ fontSize: 10, color: ui.color.textLight, marginTop: 2, textAlign: msg.sender === 'admin' ? 'right' : 'left' }}>
                               {msg.sender === 'admin' ? 'Vous' : p.first_name} · {new Date(msg.created_at).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                             </div>
                           </div>
                         ))
                       )}
                     </div>
-                    <div style={{ display: 'flex', gap: 8 }}>
+                    <div style={{ display: 'flex', gap: ui.space.sm }}>
                       <input
                         type="text"
                         value={adminReply[p.id] || ''}
@@ -1124,7 +1125,7 @@ export default function AdminPage() {
                         }}
                         onClick={e => e.stopPropagation()}
                         placeholder="Répondre au client..."
-                        style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid #ddd', fontSize: 14, outline: 'none' }}
+                        style={{ flex: 1, padding: '8px 12px', borderRadius: ui.radius.md, border: `1px solid ${ui.color.border}`, fontSize: ui.size.base, outline: 'none' }}
                       />
                       <button
                         onClick={async (e) => {
@@ -1135,7 +1136,7 @@ export default function AdminPage() {
                           const msgs = await getMessages(p.id)
                           setProjectMessages(prev => ({ ...prev, [p.id]: msgs }))
                         }}
-                        style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#1a5c3a', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                        style={{ padding: '10px 18px', borderRadius: ui.radius.md, border: 'none', background: ui.color.primary, color: '#fff', fontSize: ui.size.sm, fontWeight: ui.weight.semibold, cursor: 'pointer' }}
                       >
                         Envoyer
                       </button>
